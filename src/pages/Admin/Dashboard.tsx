@@ -1,0 +1,150 @@
+import React from 'react';
+import { Row, Col, Card, Statistic, Progress, Badge } from 'antd';
+import {
+  UsersOutlined, FileTextOutlined, CommentOutlined,
+  ArrowUpOutlined, FireOutlined, TrophyOutlined,
+} from '@ant-design/icons';
+import styles from './index.less';
+
+const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+const activityData = [15, 22, 18, 28, 25, 32, 19];
+const maxActivity = Math.max(...activityData);
+
+const topTags = [
+  { name: 'Java', count: 87, color: '#f97316' },
+  { name: 'JavaScript', count: 76, color: '#eab308' },
+  { name: 'React', count: 65, color: '#06b6d4' },
+  { name: 'Python', count: 54, color: '#3b82f6' },
+  { name: 'SQL', count: 43, color: '#8b5cf6' },
+];
+
+const recentActivity = [
+  { user: 'Nguyễn Văn A', action: 'đăng bài "Giải thích OOP trong Java"', time: '10 phút trước', emoji: '📝' },
+  { user: 'Trần Thị B', action: 'bình luận trên bài "React Hooks"', time: '25 phút trước', emoji: '💬' },
+  { user: 'Lê Văn C', action: 'đăng ký tài khoản mới', time: '1 giờ trước', emoji: '👤' },
+  { user: 'Phạm Minh D', action: 'vote bài "SQL Optimization"', time: '2 giờ trước', emoji: '👍' },
+  { user: 'PGS.TS Lê Minh Đức', action: 'chọn câu trả lời hay nhất', time: '3 giờ trước', emoji: '✅' },
+];
+
+export default function AdminDashboard() {
+  const keyStats = [
+    { title: 'Tổng Người Dùng', value: 1250, icon: <UsersOutlined />, color: '#3b82f6', trend: '+12%', up: true },
+    { title: 'Tổng Bài Viết', value: 485, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
+    { title: 'Bài Hôm Nay', value: 23, icon: <FireOutlined />, color: '#10b981', trend: '+5 so với hôm qua', up: true },
+    { title: 'Bình Luận Mới', value: 156, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
+  ];
+
+  return (
+    <div className={styles.adminDashboard}>
+      <div className={styles.dashboardHeader}>
+        <h1>📊 Bảng Điều Khiển</h1>
+        <p>Chào mừng trở lại! Đây là tổng quan hệ thống hôm nay.</p>
+      </div>
+
+      {/* Key Stats */}
+      <div className={styles.statsGrid}>
+        {keyStats.map((stat, i) => (
+          <div key={i} className={styles.statCard}>
+            <div className={styles.statIcon} style={{ background: `${stat.color}18`, color: stat.color }}>
+              {stat.icon}
+            </div>
+            <div className={styles.statContent}>
+              <div className={styles.statValue} style={{ color: stat.color }}>
+                {stat.value.toLocaleString('vi')}
+              </div>
+              <div className={styles.statTitle}>{stat.title}</div>
+              <div className={`${styles.statTrend} ${stat.up ? styles.trendUp : styles.trendDown}`}>
+                <ArrowUpOutlined /> {stat.trend}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.chartsRow}>
+        {/* Activity Chart */}
+        <div className={styles.chartCard}>
+          <div className={styles.chartTitle}>📈 Bài Viết Theo Ngày</div>
+          <div className={styles.barChart}>
+            {activityData.map((val, i) => (
+              <div key={i} className={styles.barItem}>
+                <div className={styles.barWrapper}>
+                  <div
+                    className={styles.bar}
+                    style={{ height: `${(val / maxActivity) * 100}%` }}
+                  >
+                    <span className={styles.barValue}>{val}</span>
+                  </div>
+                </div>
+                <span className={styles.barLabel}>{weekDays[i]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Tags */}
+        <div className={styles.chartCard}>
+          <div className={styles.chartTitle}>🏷️ Tags Phổ Biến Nhất</div>
+          <div className={styles.topTagsList}>
+            {topTags.map((tag, i) => (
+              <div key={i} className={styles.topTagItem}>
+                <div className={styles.topTagRank} style={{ color: tag.color }}>#{i + 1}</div>
+                <span className={styles.topTagDot} style={{ background: tag.color }} />
+                <span className={styles.topTagName}>{tag.name}</span>
+                <div className={styles.topTagBar}>
+                  <div
+                    className={styles.topTagFill}
+                    style={{
+                      width: `${(tag.count / topTags[0].count) * 100}%`,
+                      background: tag.color,
+                    }}
+                  />
+                </div>
+                <span className={styles.topTagCount}>{tag.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Activity Feed */}
+      <div className={styles.activityCard}>
+        <div className={styles.chartTitle}>⚡ Hoạt Động Gần Đây</div>
+        <div className={styles.activityList}>
+          {recentActivity.map((item, i) => (
+            <div key={i} className={styles.activityItem}>
+              <span className={styles.activityEmoji}>{item.emoji}</span>
+              <div className={styles.activityContent}>
+                <span className={styles.activityUser}>{item.user}</span>
+                <span className={styles.activityAction}> {item.action}</span>
+              </div>
+              <span className={styles.activityTime}>{item.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className={styles.quickActions}>
+        <div className={styles.chartTitle}>⚡ Thao Tác Nhanh</div>
+        <div className={styles.quickActionsGrid}>
+          {[
+            { label: 'Xem Báo Cáo', emoji: '⚠️', color: '#f59e0b', path: '/admin/reports' },
+            { label: 'Quản Lý User', emoji: '👥', color: '#3b82f6', path: '/admin/users' },
+            { label: 'Quản Lý Bài', emoji: '📝', color: '#10b981', path: '/admin/posts' },
+            { label: 'Xem Diễn Đàn', emoji: '💬', color: '#8b5cf6', path: '/forum' },
+          ].map((action, i) => (
+            <button
+              key={i}
+              className={styles.quickAction}
+              onClick={() => (window.location.href = action.path)}
+            >
+              <span className={styles.quickActionEmoji}>{action.emoji}</span>
+              <span className={styles.quickActionLabel}>{action.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

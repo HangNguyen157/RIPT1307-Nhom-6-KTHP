@@ -1,0 +1,261 @@
+.appWrapper {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: background var(--transition-normal);
+}
+
+.darkMode {
+  :global {
+    .ant-card {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .ant-card-head {
+      background: var(--bg-card) !important;
+      border-bottom-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .ant-card-head-title {
+      color: var(--text-primary) !important;
+    }
+
+    .ant-typography, h1, h2, h3, h4, h5, p, span, div {
+      color: inherit;
+    }
+
+    .ant-input,
+    .ant-input-affix-wrapper,
+    .ant-select-selector,
+    .ant-input-search .ant-input {
+      background: var(--bg-tertiary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .ant-select-dropdown {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .ant-select-item {
+      color: var(--text-primary) !important;
+
+      &:hover, &.ant-select-item-option-active {
+        background: var(--bg-tertiary) !important;
+      }
+    }
+
+    .ant-collapse {
+      background: transparent !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .ant-collapse-item {
+      border-bottom-color: var(--border-color) !important;
+    }
+
+    .ant-collapse-header {
+      color: var(--text-primary) !important;
+    }
+
+    .ant-collapse-content {
+      background: var(--bg-card) !important;
+      border-top-color: var(--border-color) !important;
+    }
+
+    .ant-tag {
+      background: var(--bg-tertiary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .ant-divider {
+      border-color: var(--border-color) !important;
+    }
+
+    .ant-table {
+      background: var(--bg-card) !important;
+      color: var(--text-primary) !important;
+
+      .ant-table-thead > tr > th {
+        background: var(--bg-tertiary) !important;
+        color: var(--text-primary) !important;
+        border-bottom-color: var(--border-color) !important;
+      }
+
+      .ant-table-tbody > tr > td {
+        border-bottom-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+      }
+
+      .ant-table-tbody > tr:hover > td {
+        background: var(--bg-tertiary) !important;
+      }
+    }
+
+    .ant-modal-content {
+      background: var(--bg-card) !important;
+    }
+
+    .ant-modal-header {
+      background: var(--bg-card) !important;
+      border-bottom-color: var(--border-color) !important;
+    }
+
+    .ant-modal-title {
+      color: var(--text-primary) !important;
+    }
+
+    .ant-form-item-label > label {
+      color: var(--text-secondary) !important;
+    }
+
+    .ant-input-search-button {
+      background: var(--color-primary) !important;
+      border-color: var(--color-primary) !important;
+    }
+
+    .ant-badge-count {
+      background: var(--color-primary) !important;
+    }
+
+    .ant-tabs-tab {
+      color: var(--text-secondary) !important;
+
+      &.ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: var(--color-primary) !important;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: var(--color-primary) !important;
+    }
+  }
+}
+
+.mainLayout {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 120px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+  gap: 24px;
+}
+
+.desktopSidebar {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 16px 0;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 16px 0;
+  min-width: 0;
+  padding-bottom: 80px; // space for mobile bottom nav
+
+  @media (min-width: 769px) {
+    padding-bottom: 16px;
+  }
+}
+
+.fullWidth {
+  max-width: 100%;
+  padding: 0;
+
+  .content {
+    padding: 0;
+  }
+}
+
+.mobileSidebarToggle {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 100;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  box-shadow: var(--shadow-lg);
+
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+.mobileDrawer {
+  :global {
+    .ant-drawer-body {
+      background: var(--bg-sidebar);
+    }
+  }
+}
+
+// Mobile Bottom Navigation
+.mobileBottomNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 10%);
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 12px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 10px;
+    transition: color var(--transition-fast);
+
+    span:first-child {
+      font-size: 20px;
+    }
+
+    &:hover {
+      color: var(--color-primary);
+    }
+
+    &.navItemCenter {
+      background: var(--color-primary);
+      border-radius: 12px;
+      color: white;
+      padding: 6px 16px;
+      margin-top: -20px;
+      box-shadow: 0 -4px 12px rgba(220, 38, 38, 40%);
+
+      &:hover {
+        color: white;
+        background: var(--color-primary-hover);
+      }
+    }
+  }
+}
