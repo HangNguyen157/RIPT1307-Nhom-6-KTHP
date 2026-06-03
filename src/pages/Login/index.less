@@ -11,8 +11,8 @@
   display: flex;
   width: 100%;
   max-width: 1000px;
-  min-height: 600px;
-  border-radius: 24px;
+  min-height: 580px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-xl);
 }
@@ -24,26 +24,25 @@
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 
   @media (max-width: 768px) { display: none; }
 }
 
 .logo {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .title {
-  font-size: 38px;
-  font-weight: 900;
+  font-size: 34px;
+  font-weight: 800;
   line-height: 1.2;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 15px;
   opacity: 0.85;
   margin: 0;
   line-height: 1.6;
@@ -52,7 +51,7 @@
 .features {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 
   .feature {
     display: flex;
@@ -60,7 +59,7 @@
     gap: 10px;
     font-size: 14px;
 
-    span:first-child { font-size: 20px; }
+    span:first-child { font-size: 18px; }
   }
 }
 
@@ -74,7 +73,7 @@
     font-size: 13px;
     opacity: 0.85;
 
-    .statNum { font-size: 20px; font-weight: 900; opacity: 1; margin-bottom: 2px; }
+    .statNum { font-size: 18px; font-weight: 800; opacity: 1; margin-bottom: 2px; }
   }
 }
 
@@ -91,41 +90,18 @@
 .formContainer {
   width: 100%;
 
-  .formTitle { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px; }
-  .formSubtitle { color: var(--text-secondary); margin: 0 0 20px; }
+  .formTitle { font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+  .formSubtitle { color: var(--text-secondary); margin: 0 0 24px; font-size: 14px; }
 }
 
-.demoSection { margin-bottom: 20px; }
-
-.demoLabel { font-size: 12px; color: var(--text-tertiary); margin-bottom: 8px; }
-
-.demoButtons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.demoBtn {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: all 0.15s;
-
-  &:hover { border-color: var(--color-primary); color: var(--color-primary); }
-}
-
-.input { border-radius: 10px !important; }
+.input { border-radius: 8px !important; }
 
 .options { width: 100%; justify-content: space-between; }
 
 .submitBtn {
-  border-radius: 10px !important;
-  height: 44px !important;
-  font-weight: 700 !important;
+  border-radius: 8px !important;
+  height: 42px !important;
+  font-weight: 600 !important;
   font-size: 15px !important;
 }
 

@@ -98,8 +98,8 @@ export default function Forum() {
       {/* Page Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Diễn Đàn Hỏi Đáp</h1>
-          <p className={styles.pageSubtitle}>Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên</p>
+          <h1 className={styles.pageTitle}>Diễn đàn hỏi đáp</h1>
+          <p className={styles.pageSubtitle}>{mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên</p>
         </div>
         <Button
           type="primary"
@@ -108,7 +108,7 @@ export default function Forum() {
           className={styles.askBtn}
           onClick={() => history.push('/post/new')}
         >
-          + Đặt Câu Hỏi
+          Đặt câu hỏi
         </Button>
       </div>
 
@@ -188,7 +188,7 @@ export default function Forum() {
               ))}
             </div>
             <button className={styles.viewMoreBtn} onClick={() => history.push('/leaderboard')}>
-              Xem Bảng Xếp Hạng <RightOutlined />
+              Xem bảng xếp hạng
             </button>
           </div>
 

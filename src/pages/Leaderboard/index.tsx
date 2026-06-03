@@ -48,7 +48,7 @@ export default function Leaderboard() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>🏆 Bảng Xếp Hạng</h1>
+          <h1 className={styles.pageTitle}>Bảng xếp hạng</h1>
           <p className={styles.pageSubtitle}>Top người đóng góp của cộng đồng EduForum</p>
         </div>
       </div>

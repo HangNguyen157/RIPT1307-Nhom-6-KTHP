@@ -95,14 +95,13 @@ export default function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.heroBadge}>🎓 Nền tảng học thuật #1 PTIT</div>
+          <div className={styles.heroBadge}>🎓 Diễn đàn học thuật PTIT</div>
           <h1 className={styles.heroTitle}>
             Kết Nối<br />
             <span className={styles.heroTitleHighlight}>Tri Thức Sinh Viên</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng viên.
-            Giống StackOverflow nhưng dành riêng cho bạn.
+            Nơi sinh viên và giảng viên PTIT cùng hỏi đáp, chia sẻ kiến thức và giải quyết bài tập.
           </p>
           <div className={styles.heroCta}>
             <Button
@@ -112,14 +111,14 @@ export default function Home() {
               className={styles.ctaPrimary}
               onClick={() => history.push('/post/new')}
             >
-              ✏️ Đặt Câu Hỏi Ngay
+              Đặt câu hỏi
             </Button>
             <Button
               size="large"
               className={styles.ctaSecondary}
               onClick={() => history.push('/forum')}
             >
-              Khám Phá Diễn Đàn <ArrowRightOutlined />
+              Vào diễn đàn
             </Button>
           </div>
 
@@ -173,9 +172,9 @@ export default function Home() {
       {/* Hot Questions */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2>🔥 Câu Hỏi Nổi Bật</h2>
+          <h2>Câu hỏi nổi bật</h2>
           <Button type="link" danger onClick={() => history.push('/forum')}>
-            Xem Tất Cả <ArrowRightOutlined />
+            Xem tất cả
           </Button>
         </div>
         <div className={styles.postGrid}>
@@ -202,7 +201,7 @@ export default function Home() {
       {/* Features Section */}
       <section className={styles.featuresSection}>
         <div className={styles.sectionHeader}>
-          <h2>✨ Tại Sao Chọn EduForum?</h2>
+          <h2>Tính năng nổi bật</h2>
         </div>
         <div className={styles.featuresGrid}>
           {features.map((f, i) => (
@@ -218,9 +217,9 @@ export default function Home() {
       {/* Top Contributors */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2>🏆 Top Đóng Góp Viên</h2>
+          <h2>Top đóng góp</h2>
           <Button type="link" danger onClick={() => history.push('/leaderboard')}>
-            Xem Bảng Xếp Hạng <ArrowRightOutlined />
+            Bảng xếp hạng
           </Button>
         </div>
         <div className={styles.contributorsGrid}>
@@ -245,16 +244,16 @@ export default function Home() {
       {/* CTA Banner */}
       <section className={styles.ctaBanner}>
         <div className={styles.ctaBannerContent}>
-          <h2>Sẵn sàng chia sẻ kiến thức?</h2>
-          <p>Tham gia cùng hàng nghìn sinh viên và giảng viên ngay hôm nay</p>
+          <h2>Tham gia cộng đồng EduForum</h2>
+          <p>Hàng nghìn sinh viên và giảng viên đang học tập cùng nhau</p>
           <div className={styles.ctaBannerActions}>
             <Button size="large" type="primary" className={styles.ctaBannerBtn}
               onClick={() => history.push('/register')}>
-              Đăng Ký Miễn Phí
+              Đăng ký ngay
             </Button>
             <Button size="large" ghost className={styles.ctaBannerGhost}
               onClick={() => history.push('/forum')}>
-              Khám Phá Ngay
+              Vào diễn đàn
             </Button>
           </div>
         </div>

@@ -180,7 +180,7 @@ export default function PostDetail() {
   return (
     <div className={styles.postDetail}>
       <button className={styles.backBtn} onClick={() => history.push('/forum')}>
-        <ArrowLeftOutlined /> Quay Lại Diễn Đàn
+        <ArrowLeftOutlined /> Quay lại
       </button>
 
       {/* Question */}
@@ -259,7 +259,7 @@ export default function PostDetail() {
             onClick={() => setIsBookmarked(!isBookmarked)}
           >
             {isBookmarked ? <BookmarkFilled /> : <BookmarkOutlined />}
-            {isBookmarked ? 'Đã Lưu' : 'Lưu Bài'}
+            {isBookmarked ? 'Đã lưu' : 'Lưu bài'}
           </button>
           <button className={styles.actionBtn}
             onClick={() => { navigator.clipboard.writeText(window.location.href); message.success('Đã sao chép link!'); }}>
@@ -366,7 +366,7 @@ export default function PostDetail() {
 
         {/* Answer Form */}
         <div className={styles.answerForm}>
-          <h3>✍️ Viết Câu Trả Lời</h3>
+          <h3>Viết câu trả lời</h3>
           {!currentUser && (
             <div className={styles.loginPrompt}>
               <span>Bạn cần đăng nhập để trả lời.</span>
@@ -390,7 +390,7 @@ export default function PostDetail() {
           <div className={styles.answerFormActions}>
             <Button type="primary" danger size="large"
               disabled={!newAnswer.trim()} onClick={handleSubmitAnswer}>
-              📤 Đăng Câu Trả Lời
+              Đăng câu trả lời
             </Button>
             <span className={styles.charCount}>{newAnswer.length} ký tự</span>
           </div>

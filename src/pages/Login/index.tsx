@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, Divider, Space, message } from 'antd';
-import { UserOutlined, LockOutlined, EyeOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Checkbox, Space, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import { authUtils } from '@/utils/auth';
 import styles from './index.less';
@@ -8,23 +8,18 @@ import styles from './index.less';
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const demoUsers = authUtils.getDemoCredentials();
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
       await authUtils.login(values.email, values.password);
-      message.success('🎉 Đăng nhập thành công!');
+      message.success('Đăng nhập thành công!');
       setTimeout(() => history.push('/home'), 500);
     } catch (error: any) {
-      message.error(error.message || 'Đăng nhập thất bại');
+      message.error(error.message || 'Email hoặc mật khẩu không đúng');
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillDemo = (email: string) => {
-    form.setFieldsValue({ email, password: 'password123' });
   };
 
   return (
@@ -54,22 +49,16 @@ export default function Login() {
         <div className={styles.rightSide}>
           <div className={styles.formContainer}>
             <h2 className={styles.formTitle}>Đăng Nhập</h2>
-            <p className={styles.formSubtitle}>Chào mừng bạn quay lại! 👋</p>
+            <p className={styles.formSubtitle}>Chào mừng bạn quay lại!</p>
 
-            {/* Demo accounts */}
-            <div className={styles.demoSection}>
-              <div className={styles.demoLabel}>Tài khoản demo (click để điền):</div>
-              <div className={styles.demoButtons}>
-                {demoUsers.map((u) => (
-                  <button key={u.email} className={styles.demoBtn} onClick={() => fillDemo(u.email)}>
-                    {u.role === 'admin' ? '⚙️' : u.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'} {u.name.split(' ').pop()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
-              <Form.Item name="email" rules={[{ required: true, message: 'Vui lòng nhập email' }, { type: 'email' }]}>
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
+              <Form.Item
+                name="email"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập email' },
+                  { type: 'email', message: 'Email không hợp lệ' },
+                ]}
+              >
                 <Input
                   size="large"
                   prefix={<UserOutlined />}
@@ -78,7 +67,10 @@ export default function Login() {
                 />
               </Form.Item>
 
-              <Form.Item name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}>
+              <Form.Item
+                name="password"
+                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+              >
                 <Input.Password
                   size="large"
                   prefix={<LockOutlined />}
@@ -95,9 +87,16 @@ export default function Login() {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" danger size="large" block loading={loading} htmlType="submit"
-                  className={styles.submitBtn}>
-                  🚀 Đăng Nhập
+                <Button
+                  type="primary"
+                  danger
+                  size="large"
+                  block
+                  loading={loading}
+                  htmlType="submit"
+                  className={styles.submitBtn}
+                >
+                  Đăng Nhập
                 </Button>
               </Form.Item>
             </Form>
@@ -105,7 +104,7 @@ export default function Login() {
             <div className={styles.footer}>
               <span>Chưa có tài khoản? </span>
               <Button type="link" danger onClick={() => history.push('/register')}>
-                Đăng ký ngay →
+                Đăng ký ngay
               </Button>
             </div>
           </div>

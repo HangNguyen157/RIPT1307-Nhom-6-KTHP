@@ -44,8 +44,8 @@ export default function Register() {
       <div className={styles.container}>
         {/* Left Side - Info */}
         <div className={styles.leftSide}>
-          <div className={styles.logo}>📚 Trang</div>
-          <h1 className={styles.title}>Gia Nhập Cộng Đồng</h1>
+          <div className={styles.logo}>📚 EduForum</div>
+          <h1 className={styles.title}>Tham gia EduForum</h1>
           <p className={styles.subtitle}>
             Bắt đầu hành trình học tập của bạn ngay hôm nay
           </p>
@@ -68,7 +68,7 @@ export default function Register() {
         {/* Right Side - Form */}
         <div className={styles.rightSide}>
           <div className={styles.formContainer}>
-            <h2 className={styles.formTitle}>Đăng Ký Tài Khoản</h2>
+            <h2 className={styles.formTitle}>Đăng ký tài khoản</h2>
 
             <Form
               form={form}
@@ -274,7 +274,7 @@ export default function Register() {
                   loading={loading}
                   htmlType="submit"
                 >
-                  Đăng Ký
+                  Đăng ký
                 </Button>
               </Form.Item>
             </Form>
@@ -297,7 +297,7 @@ export default function Register() {
                 danger
                 onClick={() => history.push('/login')}
               >
-                Đăng nhập ngay
+              Đăng nhập
               </Button>
             </div>
           </div>

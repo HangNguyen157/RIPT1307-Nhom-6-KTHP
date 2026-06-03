@@ -89,7 +89,7 @@ export default function CreatePost() {
   return (
     <div className={styles.createPostPage}>
       <div className={styles.header}>
-        <h1>Tạo Bài Viết Mới</h1>
+        <h1>Tạo bài viết</h1>
         <p>Chia sẻ câu hỏi hoặc kiến thức của bạn với cộng đồng</p>
       </div>
 
@@ -266,7 +266,7 @@ Bạn có thể:
               loading={loading}
               htmlType="submit"
             >
-              Đăng Bài
+              Đăng bài
             </Button>
             <Button size="large" onClick={() => history.push('/')}>
               Hủy

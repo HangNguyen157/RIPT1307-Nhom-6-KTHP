@@ -60,7 +60,7 @@ export default function Tags() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>🏷️ Tất Cả Thẻ</h1>
+          <h1 className={styles.pageTitle}>Tất cả thẻ</h1>
           <p className={styles.pageSubtitle}>{ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
         </div>
         {followed.length > 0 && (
