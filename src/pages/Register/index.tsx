@@ -1,15 +1,20 @@
 import {
+  IdcardOutlined,
+  LockOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { history } from '@umijs/max';
+import {
+  Button,
+  Checkbox,
+  Divider,
   Form,
   Input,
-  Button,
   Select,
-  Divider,
   Space,
   message,
-  Checkbox,
 } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
 import { useState } from 'react';
 import styles from './index.less';
 
@@ -28,7 +33,9 @@ export default function Register() {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      message.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản');
+      message.success(
+        'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản',
+      );
       setTimeout(() => {
         history.push('/login');
       }, 2000);
@@ -227,7 +234,7 @@ export default function Register() {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error('Mật khẩu xác nhận không khớp')
+                        new Error('Mật khẩu xác nhận không khớp'),
                       );
                     },
                   }),
@@ -256,8 +263,8 @@ export default function Register() {
                   Tôi đồng ý với{' '}
                   <Button type="link" danger size="small">
                     Điều khoản dịch vụ
-                  </Button>
-                  {' '}và{' '}
+                  </Button>{' '}
+                  và{' '}
                   <Button type="link" danger size="small">
                     Chính sách bảo mật
                   </Button>
@@ -292,12 +299,8 @@ export default function Register() {
 
             <div className={styles.footer}>
               <span>Đã có tài khoản? </span>
-              <Button
-                type="link"
-                danger
-                onClick={() => history.push('/login')}
-              >
-              Đăng nhập
+              <Button type="link" danger onClick={() => history.push('/login')}>
+                Đăng nhập
               </Button>
             </div>
           </div>

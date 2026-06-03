@@ -9,7 +9,7 @@
   align-items: center;
   padding: 0 20px;
   background: #0f0606;
-  border-bottom: 1px solid rgba(255,255,255,5%);
+  border-bottom: 1px solid rgba(255, 255, 255, 5%);
 
   span {
     color: white;
@@ -59,8 +59,12 @@
   gap: 16px;
   margin-bottom: 24px;
 
-  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 480px) { grid-template-columns: 1fr; }
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .statCard {
@@ -110,8 +114,12 @@
       align-items: center;
       gap: 2px;
 
-      &.trendUp { color: #10b981; }
-      &.trendDown { color: #ef4444; }
+      &.trendUp {
+        color: #10b981;
+      }
+      &.trendDown {
+        color: #ef4444;
+      }
     }
   }
 }
@@ -123,7 +131,9 @@
   gap: 16px;
   margin-bottom: 24px;
 
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chartCard {
@@ -170,7 +180,9 @@
     transition: opacity 0.2s;
     min-height: 4px;
 
-    &:hover { opacity: 0.8; }
+    &:hover {
+      opacity: 0.8;
+    }
 
     .barValue {
       position: absolute;
@@ -202,9 +214,23 @@
   align-items: center;
   gap: 10px;
 
-  .topTagRank { font-size: 14px; font-weight: 700; min-width: 24px; }
-  .topTagDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .topTagName { font-size: 14px; font-weight: 600; color: var(--text-primary); min-width: 80px; }
+  .topTagRank {
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 24px;
+  }
+  .topTagDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .topTagName {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 80px;
+  }
 
   .topTagBar {
     flex: 1;
@@ -220,7 +246,13 @@
     }
   }
 
-  .topTagCount { font-size: 13px; font-weight: 700; color: var(--text-secondary); min-width: 32px; text-align: right; }
+  .topTagCount {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    min-width: 32px;
+    text-align: right;
+  }
 }
 
 // Activity
@@ -232,7 +264,11 @@
   margin-bottom: 24px;
 }
 
-.activityList { display: flex; flex-direction: column; gap: 12px; }
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 .activityItem {
   display: flex;
@@ -242,14 +278,31 @@
   border-radius: 10px;
   transition: background 0.15s;
 
-  &:hover { background: var(--bg-secondary); }
+  &:hover {
+    background: var(--bg-secondary);
+  }
 
-  .activityEmoji { font-size: 20px; flex-shrink: 0; }
+  .activityEmoji {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
 
-  .activityContent { flex: 1; font-size: 14px; color: var(--text-primary); }
-  .activityUser { font-weight: 700; }
-  .activityAction { color: var(--text-secondary); }
-  .activityTime { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
+  .activityContent {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  .activityUser {
+    font-weight: 700;
+  }
+  .activityAction {
+    color: var(--text-secondary);
+  }
+  .activityTime {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
 }
 
 // Quick Actions
@@ -265,7 +318,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 
-  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .quickAction {
@@ -286,8 +341,14 @@
     transform: translateY(-2px);
   }
 
-  .quickActionEmoji { font-size: 28px; }
-  .quickActionLabel { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .quickActionEmoji {
+    font-size: 28px;
+  }
+  .quickActionLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
 }
 
 // ===== Admin Section (shared) =====
@@ -320,9 +381,13 @@
   min-width: 160px;
   transition: all 0.2s;
 
-  &:hover { box-shadow: var(--shadow-sm); }
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
 
-  .miniStatIcon { font-size: 24px; }
+  .miniStatIcon {
+    font-size: 24px;
+  }
 
   .miniStatValue {
     font-size: 22px;
@@ -364,18 +429,42 @@
   align-items: center;
   gap: 10px;
 
-  .userName { font-weight: 700; font-size: 14px; color: var(--text-primary); }
-  .userEmail { font-size: 12px; color: var(--text-secondary); }
+  .userName {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  .userEmail {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
 }
 
-.repScore { font-weight: 700; color: var(--color-primary); }
+.repScore {
+  font-weight: 700;
+  color: var(--color-primary);
+}
 
-.bannedRow { opacity: 0.6; }
-.reportedRow { background: #fffbeb !important; }
+.bannedRow {
+  opacity: 0.6;
+}
+.reportedRow {
+  background: #fffbeb !important;
+}
 
 .postCell {
-  .postTitle { font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
-  .postMeta { display: flex; gap: 10px; font-size: 12px; color: var(--text-tertiary); }
+  .postTitle {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .postMeta {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
 }
 
 // ===== Reports =====
@@ -389,16 +478,30 @@
   gap: 16px;
   transition: all 0.2s;
 
-  &:hover { box-shadow: var(--shadow-sm); }
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
 
-  &.resolved { opacity: 0.6; }
+  &.resolved {
+    opacity: 0.6;
+  }
 }
 
-.reportIcon { font-size: 24px; flex-shrink: 0; }
+.reportIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
 
-.reportContent { flex: 1; }
+.reportContent {
+  flex: 1;
+}
 
-.reportTitle { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.reportTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
 
 .reportMeta {
   font-size: 12px;
@@ -417,4 +520,9 @@
   display: inline-block;
 }
 
-.reportActions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.reportActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Drawer, Button } from 'antd';
-import { Outlet, useLocation, history } from '@umijs/max';
 import { MenuOutlined } from '@ant-design/icons';
+import { history, Outlet, useLocation } from '@umijs/max';
+import { Button, Drawer, Layout } from 'antd';
+import { useEffect, useState } from 'react';
 
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 
-import styles from './index.less';
 import '@/styles/variables.less';
+import styles from './index.less';
 
 const { Content } = Layout;
 
@@ -18,10 +18,7 @@ export default function MainLayout() {
   const location = useLocation();
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (
-      (localStorage.getItem('forum_theme') as 'light' | 'dark') ||
-      'light'
-    );
+    return (localStorage.getItem('forum_theme') as 'light' | 'dark') || 'light';
   });
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -82,9 +79,7 @@ export default function MainLayout() {
 
         {/* PAGE CONTENT */}
         <Content
-          className={`${styles.content} ${
-            isFullWidth ? styles.fullWidth : ''
-          }`}
+          className={`${styles.content} ${isFullWidth ? styles.fullWidth : ''}`}
         >
           <Outlet />
         </Content>

@@ -128,8 +128,9 @@ export const BADGES: Record<string, Badge> = {
 
 export function getReputationLevel(points: number): ReputationLevel {
   return (
-    REPUTATION_LEVELS.find((l) => points >= l.minPoints && points <= l.maxPoints) ||
-    REPUTATION_LEVELS[0]
+    REPUTATION_LEVELS.find(
+      (l) => points >= l.minPoints && points <= l.maxPoints,
+    ) || REPUTATION_LEVELS[0]
   );
 }
 
@@ -137,14 +138,17 @@ export function getNextLevel(points: number): ReputationLevel | null {
   const currentIndex = REPUTATION_LEVELS.findIndex(
     (l) => points >= l.minPoints && points <= l.maxPoints,
   );
-  return currentIndex < REPUTATION_LEVELS.length - 1 ? REPUTATION_LEVELS[currentIndex + 1] : null;
+  return currentIndex < REPUTATION_LEVELS.length - 1
+    ? REPUTATION_LEVELS[currentIndex + 1]
+    : null;
 }
 
 export function getProgressToNextLevel(points: number): number {
   const current = getReputationLevel(points);
   const next = getNextLevel(points);
   if (!next) return 100;
-  const progress = ((points - current.minPoints) / (next.minPoints - current.minPoints)) * 100;
+  const progress =
+    ((points - current.minPoints) / (next.minPoints - current.minPoints)) * 100;
   return Math.min(100, Math.max(0, progress));
 }
 

@@ -1,8 +1,9 @@
-import React from 'react';
-import { Row, Col, Card, Statistic, Progress, Badge } from 'antd';
 import {
-  UsersOutlined, FileTextOutlined, CommentOutlined,
-  ArrowUpOutlined, FireOutlined, TrophyOutlined,
+  ArrowUpOutlined,
+  CommentOutlined,
+  FileTextOutlined,
+  FireOutlined,
+  UsersOutlined,
 } from '@ant-design/icons';
 import styles from './index.less';
 
@@ -19,19 +20,72 @@ const topTags = [
 ];
 
 const recentActivity = [
-  { user: 'Nguyễn Văn A', action: 'đăng bài "Giải thích OOP trong Java"', time: '10 phút trước', emoji: '📝' },
-  { user: 'Trần Thị B', action: 'bình luận trên bài "React Hooks"', time: '25 phút trước', emoji: '💬' },
-  { user: 'Lê Văn C', action: 'đăng ký tài khoản mới', time: '1 giờ trước', emoji: '👤' },
-  { user: 'Phạm Minh D', action: 'vote bài "SQL Optimization"', time: '2 giờ trước', emoji: '👍' },
-  { user: 'PGS.TS Lê Minh Đức', action: 'chọn câu trả lời hay nhất', time: '3 giờ trước', emoji: '✅' },
+  {
+    user: 'Nguyễn Văn A',
+    action: 'đăng bài "Giải thích OOP trong Java"',
+    time: '10 phút trước',
+    emoji: '📝',
+  },
+  {
+    user: 'Trần Thị B',
+    action: 'bình luận trên bài "React Hooks"',
+    time: '25 phút trước',
+    emoji: '💬',
+  },
+  {
+    user: 'Lê Văn C',
+    action: 'đăng ký tài khoản mới',
+    time: '1 giờ trước',
+    emoji: '👤',
+  },
+  {
+    user: 'Phạm Minh D',
+    action: 'vote bài "SQL Optimization"',
+    time: '2 giờ trước',
+    emoji: '👍',
+  },
+  {
+    user: 'PGS.TS Lê Minh Đức',
+    action: 'chọn câu trả lời hay nhất',
+    time: '3 giờ trước',
+    emoji: '✅',
+  },
 ];
 
 export default function AdminDashboard() {
   const keyStats = [
-    { title: 'Tổng Người Dùng', value: 1250, icon: <UsersOutlined />, color: '#3b82f6', trend: '+12%', up: true },
-    { title: 'Tổng Bài Viết', value: 485, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
-    { title: 'Bài Hôm Nay', value: 23, icon: <FireOutlined />, color: '#10b981', trend: '+5 so với hôm qua', up: true },
-    { title: 'Bình Luận Mới', value: 156, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
+    {
+      title: 'Tổng Người Dùng',
+      value: 1250,
+      icon: <UsersOutlined />,
+      color: '#3b82f6',
+      trend: '+12%',
+      up: true,
+    },
+    {
+      title: 'Tổng Bài Viết',
+      value: 485,
+      icon: <FileTextOutlined />,
+      color: '#dc2626',
+      trend: '+8%',
+      up: true,
+    },
+    {
+      title: 'Bài Hôm Nay',
+      value: 23,
+      icon: <FireOutlined />,
+      color: '#10b981',
+      trend: '+5 so với hôm qua',
+      up: true,
+    },
+    {
+      title: 'Bình Luận Mới',
+      value: 156,
+      icon: <CommentOutlined />,
+      color: '#f59e0b',
+      trend: '+23%',
+      up: true,
+    },
   ];
 
   return (
@@ -45,7 +99,10 @@ export default function AdminDashboard() {
       <div className={styles.statsGrid}>
         {keyStats.map((stat, i) => (
           <div key={i} className={styles.statCard}>
-            <div className={styles.statIcon} style={{ background: `${stat.color}18`, color: stat.color }}>
+            <div
+              className={styles.statIcon}
+              style={{ background: `${stat.color}18`, color: stat.color }}
+            >
               {stat.icon}
             </div>
             <div className={styles.statContent}>
@@ -53,7 +110,11 @@ export default function AdminDashboard() {
                 {stat.value.toLocaleString('vi')}
               </div>
               <div className={styles.statTitle}>{stat.title}</div>
-              <div className={`${styles.statTrend} ${stat.up ? styles.trendUp : styles.trendDown}`}>
+              <div
+                className={`${styles.statTrend} ${
+                  stat.up ? styles.trendUp : styles.trendDown
+                }`}
+              >
                 <ArrowUpOutlined /> {stat.trend}
               </div>
             </div>
@@ -88,8 +149,13 @@ export default function AdminDashboard() {
           <div className={styles.topTagsList}>
             {topTags.map((tag, i) => (
               <div key={i} className={styles.topTagItem}>
-                <div className={styles.topTagRank} style={{ color: tag.color }}>#{i + 1}</div>
-                <span className={styles.topTagDot} style={{ background: tag.color }} />
+                <div className={styles.topTagRank} style={{ color: tag.color }}>
+                  #{i + 1}
+                </div>
+                <span
+                  className={styles.topTagDot}
+                  style={{ background: tag.color }}
+                />
                 <span className={styles.topTagName}>{tag.name}</span>
                 <div className={styles.topTagBar}>
                   <div
@@ -129,10 +195,30 @@ export default function AdminDashboard() {
         <div className={styles.chartTitle}>⚡ Thao Tác Nhanh</div>
         <div className={styles.quickActionsGrid}>
           {[
-            { label: 'Xem Báo Cáo', emoji: '⚠️', color: '#f59e0b', path: '/admin/reports' },
-            { label: 'Quản Lý User', emoji: '👥', color: '#3b82f6', path: '/admin/users' },
-            { label: 'Quản Lý Bài', emoji: '📝', color: '#10b981', path: '/admin/posts' },
-            { label: 'Xem Diễn Đàn', emoji: '💬', color: '#8b5cf6', path: '/forum' },
+            {
+              label: 'Xem Báo Cáo',
+              emoji: '⚠️',
+              color: '#f59e0b',
+              path: '/admin/reports',
+            },
+            {
+              label: 'Quản Lý User',
+              emoji: '👥',
+              color: '#3b82f6',
+              path: '/admin/users',
+            },
+            {
+              label: 'Quản Lý Bài',
+              emoji: '📝',
+              color: '#10b981',
+              path: '/admin/posts',
+            },
+            {
+              label: 'Xem Diễn Đàn',
+              emoji: '💬',
+              color: '#8b5cf6',
+              path: '/forum',
+            },
           ].map((action, i) => (
             <button
               key={i}

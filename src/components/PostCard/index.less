@@ -68,8 +68,12 @@
   color: var(--text-secondary);
   line-height: 1;
 
-  &.liked { color: var(--color-primary); }
-  &.disliked { color: #3b82f6; }
+  &.liked {
+    color: var(--color-primary);
+  }
+  &.disliked {
+    color: #3b82f6;
+  }
 }
 
 // Content
@@ -233,7 +237,8 @@
   align-items: center;
   transition: color 0.2s;
 
-  &:hover, &.bookmarked {
+  &:hover,
+  &.bookmarked {
     color: var(--color-primary);
   }
 }

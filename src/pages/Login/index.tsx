@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, Space, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
 import { authUtils } from '@/utils/auth';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
+import { Button, Checkbox, Form, Input, Space, message } from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 export default function Login() {
@@ -28,20 +28,47 @@ export default function Login() {
         {/* Left Side */}
         <div className={styles.leftSide}>
           <div className={styles.logo}>📚 EduForum</div>
-          <h1 className={styles.title}>Kết Nối<br />Tri Thức Sinh Viên</h1>
-          <p className={styles.subtitle}>Hỏi, trả lời và cùng nhau học tập với cộng đồng PTIT</p>
+          <h1 className={styles.title}>
+            Kết Nối
+            <br />
+            Tri Thức Sinh Viên
+          </h1>
+          <p className={styles.subtitle}>
+            Hỏi, trả lời và cùng nhau học tập với cộng đồng PTIT
+          </p>
 
           <div className={styles.features}>
-            <div className={styles.feature}><span>💡</span><span>Chia sẻ kiến thức của bạn</span></div>
-            <div className={styles.feature}><span>🎓</span><span>Học từ giảng viên và chuyên gia</span></div>
-            <div className={styles.feature}><span>🏆</span><span>Tích điểm uy tín và huy hiệu</span></div>
-            <div className={styles.feature}><span>🤝</span><span>Kết nối với cộng đồng học thuật</span></div>
+            <div className={styles.feature}>
+              <span>💡</span>
+              <span>Chia sẻ kiến thức của bạn</span>
+            </div>
+            <div className={styles.feature}>
+              <span>🎓</span>
+              <span>Học từ giảng viên và chuyên gia</span>
+            </div>
+            <div className={styles.feature}>
+              <span>🏆</span>
+              <span>Tích điểm uy tín và huy hiệu</span>
+            </div>
+            <div className={styles.feature}>
+              <span>🤝</span>
+              <span>Kết nối với cộng đồng học thuật</span>
+            </div>
           </div>
 
           <div className={styles.stats}>
-            <div className={styles.statItem}><div className={styles.statNum}>10.000+</div><div>Câu hỏi</div></div>
-            <div className={styles.statItem}><div className={styles.statNum}>2.000+</div><div>Sinh viên</div></div>
-            <div className={styles.statItem}><div className={styles.statNum}>500+</div><div>Giảng viên</div></div>
+            <div className={styles.statItem}>
+              <div className={styles.statNum}>10.000+</div>
+              <div>Câu hỏi</div>
+            </div>
+            <div className={styles.statItem}>
+              <div className={styles.statNum}>2.000+</div>
+              <div>Sinh viên</div>
+            </div>
+            <div className={styles.statItem}>
+              <div className={styles.statNum}>500+</div>
+              <div>Giảng viên</div>
+            </div>
           </div>
         </div>
 
@@ -82,7 +109,9 @@ export default function Login() {
               <Form.Item>
                 <Space className={styles.options}>
                   <Checkbox>Ghi nhớ đăng nhập</Checkbox>
-                  <Button type="link" danger size="small">Quên mật khẩu?</Button>
+                  <Button type="link" danger size="small">
+                    Quên mật khẩu?
+                  </Button>
                 </Space>
               </Form.Item>
 
@@ -103,7 +132,11 @@ export default function Login() {
 
             <div className={styles.footer}>
               <span>Chưa có tài khoản? </span>
-              <Button type="link" danger onClick={() => history.push('/register')}>
+              <Button
+                type="link"
+                danger
+                onClick={() => history.push('/register')}
+              >
                 Đăng ký ngay
               </Button>
             </div>

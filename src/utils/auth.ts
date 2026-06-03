@@ -163,6 +163,10 @@ export const authUtils = {
   },
 
   getDemoCredentials() {
-    return MOCK_USERS.map((u) => ({ email: u.email, role: u.role, name: u.name }));
+    return MOCK_USERS.map((u) => ({
+      email: u.email,
+      role: u.role,
+      name: u.name,
+    }));
   },
 };

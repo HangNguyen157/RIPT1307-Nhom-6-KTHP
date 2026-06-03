@@ -84,7 +84,9 @@
     cursor: pointer;
     font-size: 14px;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .roleBadge {
@@ -96,7 +98,8 @@
     color: var(--text-tertiary);
   }
 
-  .timestamp, .viewCount {
+  .timestamp,
+  .viewCount {
     font-size: 13px;
     color: var(--text-tertiary);
   }
@@ -122,7 +125,10 @@
   color: var(--text-primary);
   margin: 0 0 16px;
 
-  strong { color: var(--text-primary); font-weight: 700; }
+  strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
 }
 
 .codeWrapper {
@@ -172,7 +178,9 @@
   margin: 0;
   white-space: pre;
 
-  code { font-family: inherit; }
+  code {
+    font-family: inherit;
+  }
 }
 
 .tagRow {
@@ -223,8 +231,13 @@
   align-items: center;
   transition: color 0.2s;
 
-  &:hover, &.active { color: var(--color-primary); }
-  &.activeDown { color: #3b82f6; }
+  &:hover,
+  &.active {
+    color: var(--color-primary);
+  }
+  &.activeDown {
+    color: #3b82f6;
+  }
 }
 
 .voteCount {
@@ -333,7 +346,10 @@
     justify-content: center;
     transition: all 0.2s;
 
-    &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
   }
 
   .smallVoteNum {
@@ -349,7 +365,10 @@
   }
 }
 
-.answerContent { flex: 1; min-width: 0; }
+.answerContent {
+  flex: 1;
+  min-width: 0;
+}
 
 .answerMeta {
   display: flex;
@@ -363,10 +382,14 @@
     color: var(--color-primary);
     cursor: pointer;
     font-size: 14px;
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  .roleBadge { font-size: 14px; }
+  .roleBadge {
+    font-size: 14px;
+  }
 
   .repBadge {
     background: #fef3c7;
@@ -377,9 +400,14 @@
     font-weight: 600;
   }
 
-  .metaDot { color: var(--text-tertiary); }
+  .metaDot {
+    color: var(--text-tertiary);
+  }
 
-  .timestamp { font-size: 12px; color: var(--text-tertiary); }
+  .timestamp {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
 }
 
 .answerText {
@@ -399,7 +427,10 @@
     padding: 4px 8px;
     border-radius: 6px;
     transition: all 0.2s;
-    &:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    &:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
   }
 
   .selectBestBtn {
@@ -415,7 +446,9 @@
     font-weight: 600;
     padding: 4px 12px;
     transition: all 0.2s;
-    &:hover { background: #f0fdf4; }
+    &:hover {
+      background: #f0fdf4;
+    }
   }
 }
 
@@ -439,9 +472,16 @@
     font-size: 13px;
     line-height: 1.6;
 
-    .replyAuthor { font-weight: 700; color: var(--color-primary); }
-    .replyText { color: var(--text-primary); }
-    .replyTime { color: var(--text-tertiary); }
+    .replyAuthor {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .replyText {
+      color: var(--text-primary);
+    }
+    .replyTime {
+      color: var(--text-tertiary);
+    }
   }
 }
 
@@ -494,7 +534,10 @@
     color: var(--text-secondary);
     font-weight: 600;
     transition: all 0.15s;
-    &:hover { background: var(--bg-tertiary); border-color: var(--text-tertiary); }
+    &:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-tertiary);
+    }
   }
 }
 
@@ -512,8 +555,12 @@
   outline: none;
   transition: border-color 0.2s;
 
-  &:focus { border-color: var(--color-primary); }
-  &::placeholder { color: var(--text-tertiary); }
+  &:focus {
+    border-color: var(--color-primary);
+  }
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
 }
 
 .answerFormActions {

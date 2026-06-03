@@ -8,7 +8,8 @@ export default defineConfig({
         colorLink: '#dc2626',
         colorLinkHover: '#b91c1c',
         borderRadius: 8,
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif",
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif",
       },
     },
   },

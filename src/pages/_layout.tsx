@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Drawer, Button } from 'antd';
-import { Outlet, useLocation, history } from '@umijs/max';
 import { MenuOutlined } from '@ant-design/icons';
+import { history, Outlet, useLocation } from '@umijs/max';
+import { Button, Drawer, Layout } from 'antd';
+import { useEffect, useState } from 'react';
 
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -18,10 +18,7 @@ export default function AppLayout() {
   const location = useLocation();
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (
-      (localStorage.getItem('forum_theme') as 'light' | 'dark') ||
-      'light'
-    );
+    return (localStorage.getItem('forum_theme') as 'light' | 'dark') || 'light';
   });
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -82,9 +79,7 @@ export default function AppLayout() {
 
         {/* PAGE CONTENT */}
         <Content
-          className={`${styles.content} ${
-            isFullWidth ? styles.fullWidth : ''
-          }`}
+          className={`${styles.content} ${isFullWidth ? styles.fullWidth : ''}`}
         >
           <Outlet />
         </Content>
@@ -93,6 +88,7 @@ export default function AppLayout() {
       {/* MOBILE NAV */}
       <nav className={styles.mobileBottomNav}>
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/home')}
         >
@@ -101,6 +97,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/forum')}
         >
@@ -109,6 +106,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={`${styles.navItem} ${styles.navItemCenter}`}
           onClick={() => history.push('/post/new')}
         >
@@ -117,6 +115,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/tags')}
         >
@@ -125,6 +124,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/leaderboard')}
         >

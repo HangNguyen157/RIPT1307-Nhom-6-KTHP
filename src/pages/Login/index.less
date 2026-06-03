@@ -26,7 +26,9 @@
   flex-direction: column;
   gap: 20px;
 
-  @media (max-width: 768px) { display: none; }
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .logo {
@@ -59,7 +61,9 @@
     gap: 10px;
     font-size: 14px;
 
-    span:first-child { font-size: 18px; }
+    span:first-child {
+      font-size: 18px;
+    }
   }
 }
 
@@ -73,7 +77,12 @@
     font-size: 13px;
     opacity: 0.85;
 
-    .statNum { font-size: 18px; font-weight: 800; opacity: 1; margin-bottom: 2px; }
+    .statNum {
+      font-size: 18px;
+      font-weight: 800;
+      opacity: 1;
+      margin-bottom: 2px;
+    }
   }
 }
 
@@ -84,19 +93,35 @@
   display: flex;
   align-items: center;
 
-  @media (max-width: 768px) { padding: 40px 24px; }
+  @media (max-width: 768px) {
+    padding: 40px 24px;
+  }
 }
 
 .formContainer {
   width: 100%;
 
-  .formTitle { font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
-  .formSubtitle { color: var(--text-secondary); margin: 0 0 24px; font-size: 14px; }
+  .formTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+  }
+  .formSubtitle {
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+    font-size: 14px;
+  }
 }
 
-.input { border-radius: 8px !important; }
+.input {
+  border-radius: 8px !important;
+}
 
-.options { width: 100%; justify-content: space-between; }
+.options {
+  width: 100%;
+  justify-content: space-between;
+}
 
 .submitBtn {
   border-radius: 8px !important;
