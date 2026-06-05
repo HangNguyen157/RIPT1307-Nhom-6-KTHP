@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Space, Tag, Divider, Form, Input, Tooltip, message } from 'antd';
 import {
   LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled,
   ShareAltOutlined, StarOutlined, StarFilled,
   CheckCircleFilled, CheckCircleOutlined, ArrowLeftOutlined, CopyOutlined,
 } from '@ant-design/icons';
-import { useParams, history } from '@umijs/max';
+import { useParams, history, request } from '@umijs/max';
+import type { Comment } from '@/server/models';
 import { authUtils } from '@/utils/auth';
-import {
-  getQuestionById,
-  getCommentsByQuestionId,
-} from '@/server/seed/questions';
 import styles from './index.less';
 
 const DEFAULT_QUESTION_ID = '1';
@@ -18,64 +15,180 @@ const DEFAULT_QUESTION_ID = '1';
 export default function PostDetail() {
   const { id: routeId } = useParams<{ id: string }>();
   const questionId = routeId || DEFAULT_QUESTION_ID;
-  const question = getQuestionById(questionId) ?? getQuestionById(DEFAULT_QUESTION_ID)!;
-  const initialComments = getCommentsByQuestionId(questionId);
 
-  const POST_DATA = {
-    id: question.id,
-    title: question.title,
-    content: question.content ?? question.excerpt,
-    author: question.author,
-    authorId: question.authorId ?? '2',
-    authorRole: question.authorRole ?? 'student',
-    authorRep: question.authorRep ?? 0,
-    timestamp: question.timestamp,
-    tags: question.tags,
-    subject: question.subject ?? '',
-    votes: question.votes,
-    views: question.views,
-  };
+  const [post, setPost] = useState<any>(null);
+  const [answers, setAnswers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const currentUser = authUtils.getCurrentUser();
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
-  const [votes, setVotes] = useState(POST_DATA.votes);
+  const [votes, setVotes] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [answers, setAnswers] = useState(initialComments);
   const [newAnswer, setNewAnswer] = useState('');
-  const [isOwner] = useState(currentUser?.id === POST_DATA.authorId);
 
-  const handleVote = (type: 'up' | 'down') => {
-    if (type === 'up') {
-      if (!isLiked) { setVotes(votes + (isDisliked ? 2 : 1)); setIsLiked(true); setIsDisliked(false); }
-      else { setVotes(votes - 1); setIsLiked(false); }
-    } else {
-      if (!isDisliked) { setVotes(votes - (isLiked ? 2 : 1)); setIsDisliked(true); setIsLiked(false); }
-      else { setVotes(votes + 1); setIsDisliked(false); }
+  const fetchPostData = async () => {
+    setLoading(true);
+    try {
+      const resPost = await request<{ success: boolean; data: { question: any } }>(`/api/posts/${questionId}`, {
+        method: 'GET',
+      });
+      if (resPost && resPost.success) {
+        setPost(resPost.data.question);
+        setVotes(resPost.data.question.votes);
+      } else {
+        message.error('Không tìm thấy bài viết');
+      }
+
+      const resComments = await request<{ success: boolean; data: any[] }>(`/api/posts/${questionId}/comments`, {
+        method: 'GET',
+      });
+      if (resComments && resComments.success) {
+        setAnswers(resComments.data);
+      }
+    } catch (error) {
+      console.error('Lỗi tải chi tiết bài viết:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSelectBest = (answerId: string) => {
-    if (!isOwner) { message.warning('Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất'); return; }
-    setAnswers(answers.map((a) => ({ ...a, isBest: a.id === answerId })));
-    message.success('Đã chọn câu trả lời hay nhất!');
+  useEffect(() => {
+    fetchPostData();
+  }, [questionId]);
+
+  const isOwner = currentUser?.id === post?.authorId;
+
+  const handleVote = async (type: 'up' | 'down') => {
+    if (!currentUser) {
+      message.warning('Vui lòng đăng nhập để vote');
+      history.push('/login');
+      return;
+    }
+    const val = type === 'up' ? 1 : -1;
+    try {
+      const res = await request<{ success: boolean; data: { votes: number } }>(`/api/posts/${questionId}/vote`, {
+        method: 'POST',
+        data: {
+          targetType: 'question',
+          targetId: questionId,
+          userId: currentUser.id,
+          value: val,
+        },
+      });
+      if (res && res.success) {
+        setVotes(res.data.votes);
+        if (type === 'up') {
+          if (!isLiked) {
+            setIsLiked(true);
+            setIsDisliked(false);
+          } else {
+            setIsLiked(false);
+          }
+        } else {
+          if (!isDisliked) {
+            setIsDisliked(true);
+            setIsLiked(false);
+          } else {
+            setIsDisliked(false);
+          }
+        }
+        message.success('Đã cập nhật vote!');
+      }
+    } catch (err: any) {
+      message.error(err.message || 'Lỗi xử lý vote');
+    }
   };
 
-  const handleSubmitAnswer = () => {
-    if (!newAnswer.trim()) { message.warning('Vui lòng nhập câu trả lời'); return; }
-    if (!currentUser) { message.warning('Vui lòng đăng nhập để trả lời'); history.push('/login'); return; }
-    const newAns = {
-      id: Date.now().toString(), author: currentUser.name,
-      authorId: currentUser.id, authorRole: currentUser.role,
-      authorRep: currentUser.reputation, avatar: currentUser.name.charAt(0),
-      timestamp: 'Vừa xong', votes: 0, isBest: false, content: newAnswer, replies: [],
-    };
-    setAnswers([...answers, newAns]);
-    setNewAnswer('');
-    message.success('Câu trả lời đã được đăng!');
+  const handleCommentVote = async (commentId: string, type: 'up' | 'down') => {
+    if (!currentUser) {
+      message.warning('Vui lòng đăng nhập để vote');
+      history.push('/login');
+      return;
+    }
+    const val = type === 'up' ? 1 : -1;
+    try {
+      const res = await request<{ success: boolean; data: { votes: number } }>(`/api/posts/${questionId}/vote`, {
+        method: 'POST',
+        data: {
+          targetType: 'comment',
+          targetId: commentId,
+          userId: currentUser.id,
+          value: val,
+        },
+      });
+      if (res && res.success) {
+        setAnswers(answers.map(ans => ans.id === commentId ? { ...ans, votes: res.data.votes } : ans));
+        message.success('Đã cập nhật vote!');
+      }
+    } catch (err: any) {
+      message.error(err.message || 'Lỗi xử lý vote');
+    }
+  };
+
+  const handleSelectBest = async (answerId: string) => {
+    if (!isOwner) {
+      message.warning('Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất');
+      return;
+    }
+    try {
+      const res = await request<{ success: boolean }>(`/api/posts/${questionId}/comments`, {
+        method: 'PUT',
+        data: {
+          commentId: answerId,
+          isBest: true,
+        },
+      });
+      if (res && res.success) {
+        setAnswers(answers.map((a) => ({ ...a, isBest: a.id === answerId })));
+        if (post) {
+          setPost({ ...post, isSolved: true });
+        }
+        message.success('Đã chọn câu trả lời hay nhất!');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Không thể cập nhật câu trả lời hay nhất');
+    }
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!newAnswer.trim()) {
+      message.warning('Vui lòng nhập câu trả lời');
+      return;
+    }
+    if (!currentUser) {
+      message.warning('Vui lòng đăng nhập để trả lời');
+      history.push('/login');
+      return;
+    }
+    try {
+      const res = await request<{ success: boolean; data: any }>(`/api/posts/${questionId}/comments`, {
+        method: 'POST',
+        data: {
+          content: newAnswer,
+          authorId: currentUser.id,
+        },
+      });
+      if (res && res.success) {
+        setAnswers([...answers, res.data]);
+        setNewAnswer('');
+        message.success('Câu trả lời đã được đăng!');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Không thể đăng câu trả lời');
+    }
   };
 
   const sortedAnswers = [...answers].sort((a, b) => (b.isBest ? 1 : 0) - (a.isBest ? 1 : 0));
+
+
+  if (loading || !post) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <p>Đang tải bài viết...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.postDetail}>
@@ -90,35 +203,36 @@ export default function PostDetail() {
             {answers.some((a) => a.isBest) && (
               <span className={styles.solvedBadge}><CheckCircleFilled /> Đã Giải Quyết</span>
             )}
-            <span className={styles.subjectBadge}>{POST_DATA.subject}</span>
+            {post.subject && <span className={styles.subjectBadge}>{post.subject}</span>}
           </div>
-          <h1 className={styles.questionTitle}>{POST_DATA.title}</h1>
+          <h1 className={styles.questionTitle}>{post.title}</h1>
           <div className={styles.questionMeta}>
             <Avatar size={32} style={{ background: 'var(--color-primary)' }}>
-              {POST_DATA.author.charAt(0)}
+              {post.author ? post.author.charAt(0) : 'U'}
             </Avatar>
-            <span className={styles.authorName} onClick={() => history.push(`/profile/${POST_DATA.authorId}`)}>
-              {POST_DATA.author}
+            <span className={styles.authorName} onClick={() => history.push(`/profile/${post.authorId}`)}>
+              {post.author}
             </span>
             <span className={styles.roleBadge}>
-              {POST_DATA.authorRole === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
+              {post.authorRole === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
             </span>
+            {post.authorRep !== undefined && <span className={styles.repBadge}>⭐ {post.authorRep}</span>}
             <span className={styles.metaDot}>·</span>
-            <span className={styles.timestamp}>{POST_DATA.timestamp}</span>
+            <span className={styles.timestamp}>{post.timestamp}</span>
             <span className={styles.metaDot}>·</span>
-            <span className={styles.viewCount}>{POST_DATA.views} lượt xem</span>
+            <span className={styles.viewCount}>{post.views} lượt xem</span>
           </div>
         </div>
 
         {/* Content */}
         <div className={styles.questionContent}>
-          {POST_DATA.content.split('\n\n').map((block, i) => {
+          {post.content ? post.content.split('\n\n').map((block: string, i: number) => {
             if (block.startsWith('```')) {
               const code = block.replace(/```\w*\n?/, '').replace(/```$/, '');
               return (
                 <div key={i} className={styles.codeWrapper}>
                   <div className={styles.codeHeader}>
-                    <span>Java</span>
+                    <span>Code</span>
                     <button className={styles.copyBtn}
                       onClick={() => { navigator.clipboard.writeText(code); message.success('Đã sao chép!'); }}>
                       <CopyOutlined /> Sao Chép
@@ -133,12 +247,12 @@ export default function PostDetail() {
             }
             return <p key={i} className={styles.contentP}
               dangerouslySetInnerHTML={{ __html: block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
-          })}
+          }) : null}
         </div>
 
         {/* Tags */}
         <div className={styles.tagRow}>
-          {POST_DATA.tags.map((tag) => (
+          {post.tags && post.tags.map((tag: string) => (
             <span key={tag} className={styles.tag}>{tag}</span>
           ))}
         </div>
@@ -185,11 +299,11 @@ export default function PostDetail() {
 
             <div className={styles.answerLayout}>
               <div className={styles.answerVoteCol}>
-                <button className={styles.smallVoteBtn}>
+                <button className={styles.smallVoteBtn} onClick={() => handleCommentVote(answer.id, 'up')}>
                   <LikeOutlined />
                 </button>
                 <span className={styles.smallVoteNum}>{answer.votes}</span>
-                <button className={styles.smallVoteBtn}>
+                <button className={styles.smallVoteBtn} onClick={() => handleCommentVote(answer.id, 'down')}>
                   <DislikeOutlined />
                 </button>
                 {answer.isBest && <CheckCircleFilled className={styles.bestIcon} />}
@@ -212,13 +326,13 @@ export default function PostDetail() {
                 </div>
 
                 <div className={styles.answerText}>
-                  {answer.content.split('\n\n').map((block, i) => {
+                  {answer.content && answer.content.split('\n\n').map((block: string, i: number) => {
                     if (block.startsWith('```')) {
                       const code = block.replace(/```\w*\n?/, '').replace(/```$/, '');
                       return (
                         <div key={i} className={styles.codeWrapper}>
                           <div className={styles.codeHeader}>
-                            <span>Java</span>
+                            <span>Code</span>
                             <button className={styles.copyBtn}
                               onClick={() => { navigator.clipboard.writeText(code); message.success('Đã sao chép!'); }}>
                               <CopyOutlined /> Sao Chép
@@ -243,9 +357,9 @@ export default function PostDetail() {
                 </div>
 
                 {/* Replies */}
-                {answer.replies.length > 0 && (
+                {answer.replies && answer.replies.length > 0 && (
                   <div className={styles.replies}>
-                    {answer.replies.map((reply) => (
+                    {answer.replies.map((reply: any) => (
                       <div key={reply.id} className={styles.reply}>
                         <Avatar size={24} style={{ background: '#6b7280', flexShrink: 0 }}>
                           {reply.author.charAt(0)}
@@ -299,3 +413,4 @@ export default function PostDetail() {
     </div>
   );
 }
+

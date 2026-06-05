@@ -1,37 +1,56 @@
-import React, { useState } from 'react';
-import { Button, Select, Input, Table, Tag, Space, Badge, Popconfirm, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Select, Input, Table, Tag, Space, Badge, Popconfirm, message, Spin } from 'antd';
 import { SearchOutlined, DeleteOutlined, PushpinOutlined, EyeOutlined, CheckOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { history, request } from '@umijs/max';
 import styles from './index.less';
 
-const POSTS = MOCK_QUESTIONS.map((q) => ({
-  id: q.id,
-  title: q.title,
-  author: q.author,
-  subject: q.subject ?? '',
-  votes: q.votes,
-  comments: q.comments,
-  status: q.status ?? 'active',
-  isSolved: q.isSolved ?? false,
-  createdAt: q.createdAt ?? '',
-}));
-
 export default function AdminPosts() {
-  const [posts, setPosts] = useState(POSTS);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const res = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+        method: 'GET',
+      });
+      if (res && res.success) {
+        setPosts(res.data.list);
+      }
+    } catch (error) {
+      console.error('Lỗi tải bài viết:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const deletePost = async (id: string) => {
+    try {
+      const res = await request<{ success: boolean; message?: string }>(`/api/posts/${id}`, {
+        method: 'DELETE',
+      });
+      if (res && res.success) {
+        setPosts(posts.filter((p) => p.id !== id));
+        message.success('Đã xóa bài viết thành công!');
+      } else {
+        message.error(res?.message || 'Xóa bài viết thất bại');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Lỗi khi xóa bài viết');
+    }
+  };
 
   const filtered = posts.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === 'all' || p.status === statusFilter;
     return matchSearch && matchStatus;
   });
-
-  const deletePost = (id: string) => {
-    setPosts(posts.filter((p) => p.id !== id));
-    message.success('Đã xóa bài viết');
-  };
 
   const columns = [
     {
@@ -135,6 +154,7 @@ export default function AdminPosts() {
       </div>
 
       <Table
+        loading={loading}
         dataSource={filtered}
         columns={columns}
         rowKey="id"

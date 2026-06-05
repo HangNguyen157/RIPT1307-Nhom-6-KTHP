@@ -1,18 +1,29 @@
 import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
-import { MOCK_ADMIN_USERS } from '@/server/seed/users';
+import { initDatabase } from '@/server/db';
+import { UserEntity, QuestionEntity, CommentEntity } from '@/server/models/entities';
 
-export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
+export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
+  await initDatabase();
+
   if (req.method === 'GET') {
-    res.status(200).json({
-      success: true,
-      data: {
-        totalUsers: MOCK_ADMIN_USERS.length,
-        totalPosts: MOCK_QUESTIONS.length,
-        totalComments: MOCK_QUESTIONS.reduce((s, q) => s + q.comments, 0),
-        activeUsers: MOCK_ADMIN_USERS.filter((u) => u.status !== 'banned').length,
-      },
-    });
+    try {
+      const totalUsers = await UserEntity.count();
+      const totalPosts = await QuestionEntity.count();
+      const totalComments = await CommentEntity.count();
+      const activeUsers = await UserEntity.count({ where: { status: 'active' } });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          totalUsers,
+          totalPosts,
+          totalComments,
+          activeUsers
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Lỗi lấy số liệu thống kê dashboard', error: String(error) });
+    }
     return;
   }
 

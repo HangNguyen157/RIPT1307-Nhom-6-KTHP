@@ -1,5 +1,3 @@
-/** Tag model — danh mục thẻ theo môn / lĩnh vực. */
-
 export type TagCategory =
   | 'language'
   | 'framework'

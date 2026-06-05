@@ -2,7 +2,7 @@ import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { register } from '@/server/services/authService';
 import type { UserRole } from '@/server/models/User';
 
-export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
+export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ success: false, message: 'Method not allowed' });
     return;
@@ -10,7 +10,7 @@ export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   try {
     const { name, email, password, role, department, studentId } = req.body ?? {};
-    const result = register({
+    const result = await register({
       name,
       email,
       password,

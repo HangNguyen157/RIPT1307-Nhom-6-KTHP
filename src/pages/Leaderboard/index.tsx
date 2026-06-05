@@ -1,19 +1,7 @@
-import React, { useState } from 'react';
-import { Button } from 'antd';
-import { history } from '@umijs/max';
+import React, { useState, useEffect } from 'react';
+import { Button, Spin } from 'antd';
+import { history, request } from '@umijs/max';
 import styles from './index.less';
-
-const ALL_USERS = [
-  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430, posts: 85, answers: 210, badges: ['advisor', 'top-contributor'], dept: 'Khoa CNTT', joined: '2023' },
-  { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250, posts: 28, answers: 45, badges: ['expert', 'helpful'], dept: 'CNTT', joined: '2024' },
-  { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980, posts: 35, answers: 78, badges: ['expert'], dept: 'KTPM', joined: '2024' },
-  { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870, posts: 42, answers: 120, badges: ['helpful'], dept: 'Khoa CNTT', joined: '2023' },
-  { id: '6', name: 'Lê Thị Lan', role: 'student', rep: 654, posts: 18, answers: 34, badges: ['helpful'], dept: 'HTTT', joined: '2024' },
-  { id: '7', name: 'Phạm Đức Thắng', role: 'student', rep: 521, posts: 15, answers: 29, badges: [], dept: 'KTPM', joined: '2024' },
-  { id: '8', name: 'GV. Ngô Thị Mai', role: 'teacher', rep: 480, posts: 30, answers: 95, badges: ['helpful'], dept: 'Khoa CNTT', joined: '2023' },
-  { id: '9', name: 'Đinh Hùng Cường', role: 'student', rep: 389, posts: 12, answers: 18, badges: [], dept: 'ATTT', joined: '2024' },
-  { id: '10', name: 'Vũ Thị Thanh', role: 'student', rep: 312, posts: 9, answers: 15, badges: [], dept: 'CNTT', joined: '2025' },
-];
 
 const MEDAL_CONFIG = [
   { label: '#1', bg: 'linear-gradient(135deg, #ffd700, #f59e0b)', textColor: '#92400e' },
@@ -28,13 +16,41 @@ const PERIOD_OPTIONS = [
 ];
 
 export default function Leaderboard() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
 
-  const filtered = ALL_USERS.filter((u) => roleFilter === 'all' || u.role === roleFilter);
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      setLoading(true);
+      try {
+        const res = await request<{ success: boolean; data: { list: any[] } }>('/api/leaderboard');
+        if (res && res.success) {
+          setUsers(res.data.list);
+        }
+      } catch (error) {
+        console.error('Lỗi tải bảng xếp hạng:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
+
+  const filtered = users.filter((u) => roleFilter === 'all' || u.role === roleFilter);
 
   const top3 = filtered.slice(0, 3);
   const rest = filtered.slice(3);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <Spin size="large" tip="Đang tải bảng xếp hạng..." />
+      </div>
+    );
+  }
+
 
   return (
     <div className={styles.leaderboardPage}>

@@ -1,63 +1,68 @@
-import React, { useState } from 'react';
-import { Avatar, Button, Tabs, Tag, Progress, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Button, Tabs, Tag, Progress, Tooltip, Spin, message } from 'antd';
 import {
   EditOutlined, MailOutlined, TrophyOutlined,
   FireOutlined, LikeOutlined, CalendarOutlined,
   BookOutlined, MessageOutlined, StarOutlined,
 } from '@ant-design/icons';
-import { useParams, history } from '@umijs/max';
+import { useParams, history, request } from '@umijs/max';
 import { getReputationLevel, getNextLevel, getProgressToNextLevel, getBadgesByIds } from '@/utils/reputation';
 import PostCard from '@/components/PostCard';
+import { authUtils } from '@/utils/auth';
 import styles from './index.less';
 
-const MOCK_USER = {
-  id: '2', name: 'Trần Thị Hương', email: 'huong@student.ptit.edu.vn',
-  role: 'student', department: 'Công Nghệ Thông Tin', major: 'Lập Trình Web',
-  studentId: 'B21DCCN123', bio: 'Sinh viên năm 3 ngành CNTT, đam mê Web Development và AI. Yêu thích React, Node.js và Python.',
-  reputation: 1250, posts: 28, answers: 45, votes: 320, followers: 89, following: 34,
-  joinDate: '01/09/2024', badges: ['first-question', 'helpful', '100-votes'],
-  topTags: ['React', 'JavaScript', 'Python', 'Java'],
-};
-
-const userPosts = [
-  {
-    id: '1', title: 'Giải thích OOP trong Java: Class, Object, Inheritance',
-    excerpt: 'OOP là nền tảng của Java. Tôi sẽ giải thích chi tiết về các khái niệm cốt lõi...',
-    author: MOCK_USER.name, tags: ['Java', 'OOP', 'Lập Trình'],
-    votes: 45, comments: 12, views: 523, timestamp: '2 giờ trước', subject: 'Lập Trình Cơ Bản', isSolved: true,
-  },
-  {
-    id: '2', title: 'React Hooks: useState, useEffect, useContext',
-    excerpt: 'React Hooks là một cách mới để viết components trong React...',
-    author: MOCK_USER.name, tags: ['React', 'JavaScript', 'Web Development'],
-    votes: 67, comments: 23, views: 892, timestamp: '5 giờ trước', subject: 'Web Development', isSolved: false,
-  },
-];
-
-// Activity Heatmap - generate last 52 weeks
-const generateHeatmap = () => {
-  const data = [];
-  for (let w = 0; w < 52; w++) {
-    const week = [];
-    for (let d = 0; d < 7; d++) {
-      const rand = Math.random();
-      week.push(rand < 0.5 ? 0 : rand < 0.7 ? 1 : rand < 0.85 ? 2 : rand < 0.95 ? 3 : 4);
-    }
-    data.push(week);
-  }
-  return data;
-};
-
-const heatmapData = generateHeatmap();
-const heatColors = ['#e5e7eb', '#fecaca', '#f87171', '#ef4444', '#b91c1c'];
-
 export default function Profile() {
-  const { id } = useParams<{ id: string }>();
-  const user = MOCK_USER;
+  const { id: paramId } = useParams<{ id: string }>();
+  const currentUser = authUtils.getCurrentUser();
+  const userId = paramId || currentUser?.id || '2';
+
+  const [user, setUser] = useState<any>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      setLoading(true);
+      try {
+        const resUser = await request<{ success: boolean; data: any }>(`/api/admin/users/${userId}`, {
+          method: 'GET',
+        });
+        if (resUser && resUser.success) {
+          setUser(resUser.data);
+        }
+
+        const resPosts = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+          method: 'GET',
+          params: {
+            authorId: userId,
+          },
+        });
+        if (resPosts && resPosts.success) {
+          setPosts(resPosts.data.list);
+        }
+      } catch (err) {
+        console.error('Lỗi tải thông tin cá nhân:', err);
+        message.error('Không thể tải thông tin trang cá nhân');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfileData();
+  }, [userId]);
+
+  if (loading || !user) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <Spin size="large" tip="Đang tải thông tin cá nhân..." />
+      </div>
+    );
+  }
+
   const repLevel = getReputationLevel(user.reputation);
   const nextLevel = getNextLevel(user.reputation);
   const progress = getProgressToNextLevel(user.reputation);
-  const badges = getBadgesByIds(user.badges);
+  const badges = getBadgesByIds(user.badges || []);
+
 
   const tabItems = [
     {
@@ -67,7 +72,7 @@ export default function Profile() {
       ),
       children: (
         <div className={styles.postList}>
-          {userPosts.map((post) => (
+          {posts.map((post) => (
             <PostCard key={post.id} {...post} />
           ))}
         </div>

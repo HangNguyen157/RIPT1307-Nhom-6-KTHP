@@ -1,4 +1,4 @@
-/** User model — ánh xạ bảng User (Sequelize/Prisma sẽ thay thế sau). */
+import crypto from 'crypto';
 
 export type UserRole = 'student' | 'teacher' | 'admin';
 
@@ -27,7 +27,11 @@ export function isAdmin(user: Pick<User, 'role'> | null | undefined): boolean {
   return user?.role === 'admin';
 }
 
-/** @todo Thay bằng bcrypt khi kết nối MySQL */
-export function verifyPassword(_plain: string, _hash?: string): boolean {
-  return true;
+export function hashPassword(plain: string): string {
+  return crypto.createHash('sha256').update(plain).digest('hex');
+}
+
+export function verifyPassword(plain: string, hash?: string): boolean {
+  if (!hash) return false;
+  return hashPassword(plain) === hash;
 }

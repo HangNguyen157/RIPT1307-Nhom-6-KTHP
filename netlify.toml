@@ -1,0 +1,15 @@
+[build]
+  publish = "dist"
+
+# 1. Định cấu hình Proxy cho API Routes đến backend Vercel (hoặc server độc lập)
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-vercel-backend.vercel.app/api/:splat"
+  status = 200
+  force = true
+
+# 2. Định cấu hình SPA Router Redirects để tránh lỗi 404 khi F5 tải lại trang
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

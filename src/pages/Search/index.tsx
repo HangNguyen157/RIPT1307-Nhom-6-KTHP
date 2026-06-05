@@ -1,6 +1,6 @@
-import { Empty, Input, Select, Row, Col, Button, Space } from 'antd';
-import { useSearchParams } from '@umijs/max';
-import { useState } from 'react';
+import { Empty, Input, Select, Row, Col, Spin } from 'antd';
+import { useSearchParams, request } from '@umijs/max';
+import { useState, useEffect } from 'react';
 import PostCard from '@/components/PostCard';
 import styles from './index.less';
 
@@ -13,48 +13,38 @@ export default function Search() {
     sortBy: 'relevant',
     filterBy: 'all',
   });
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Mock search results
-  const mockResults = [
-    {
-      id: '1',
-      title: 'Giải thích OOP trong Java: Class, Object, Inheritance',
-      excerpt:
-        'OOP là nền tảng của Java. Trong bài viết này, tôi sẽ giải thích chi tiết về các khái niệm cốt lõi...',
-      author: 'Nguyễn Văn A',
-      tags: ['Java', 'OOP', 'Lập Trình'],
-      votes: 45,
-      comments: 12,
-      views: 523,
-      timestamp: '2 giờ trước',
-      subject: 'Lập Trình Cơ Bản',
-    },
-    {
-      id: '2',
-      title: 'Java Exception Handling: Try, Catch, Finally',
-      excerpt:
-        'Exception handling là một phần quan trọng trong Java. Học cách xử lý lỗi một cách hiệu quả...',
-      author: 'Trần Văn B',
-      tags: ['Java', 'Exception', 'Error Handling'],
-      votes: 32,
-      comments: 8,
-      views: 412,
-      timestamp: '1 ngày trước',
-      subject: 'Lập Trình Cơ Bản',
-    },
-    {
-      id: '3',
-      title: 'Java Multithreading: Thread, Runnable, Synchronization',
-      excerpt: 'Multithreading là công cụ mạnh mẽ trong Java...',
-      author: 'Lê Thị C',
-      tags: ['Java', 'Multithreading', 'Concurrency'],
-      votes: 28,
-      comments: 5,
-      views: 234,
-      timestamp: '2 ngày trước',
-      subject: 'Lập Trình Cơ Bản',
-    },
-  ];
+  useEffect(() => {
+    const fetchResults = async () => {
+      setLoading(true);
+      try {
+        const apiSort = filters.sortBy === 'votes' ? 'votes' : filters.sortBy === 'newest' ? '' : 'views';
+        const res = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+          method: 'GET',
+          params: {
+            q: searchText,
+            sort: apiSort,
+          },
+        });
+        if (res && res.success) {
+          let list = res.data.list;
+          if (filters.filterBy === 'unanswered') {
+            list = list.filter((p: any) => !p.isSolved);
+          } else if (filters.filterBy === 'solved') {
+            list = list.filter((p: any) => p.isSolved);
+          }
+          setResults(list);
+        }
+      } catch (error) {
+        console.error('Lỗi tìm kiếm bài viết:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResults();
+  }, [searchText, filters.sortBy, filters.filterBy]);
 
   return (
     <div className={styles.searchPage}>
@@ -109,13 +99,17 @@ export default function Search() {
 
       {/* Results */}
       <div className={styles.results}>
-        {mockResults.length > 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '48px 0' }}>
+            <Spin size="large" tip="Đang tìm kiếm..." />
+          </div>
+        ) : results.length > 0 ? (
           <>
             <p className={styles.resultCount}>
-              Tìm thấy {mockResults.length} kết quả cho "{query}"
+              Tìm thấy {results.length} kết quả cho "{searchText}"
             </p>
             <div className={styles.resultsList}>
-              {mockResults.map((post) => (
+              {results.map((post) => (
                 <PostCard
                   key={post.id}
                   id={post.id}
@@ -128,6 +122,7 @@ export default function Search() {
                   views={post.views}
                   timestamp={post.timestamp}
                   subject={post.subject}
+                  isSolved={post.isSolved}
                 />
               ))}
             </div>
@@ -142,3 +137,4 @@ export default function Search() {
     </div>
   );
 }
+

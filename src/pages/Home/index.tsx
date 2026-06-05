@@ -15,12 +15,9 @@ import {
   FireOutlined,
   StarOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, request } from '@umijs/max';
 import PostCard from '@/components/PostCard';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import styles from './index.less';
-
-const mockPosts = MOCK_QUESTIONS.slice(0, 3);
 
 const stats = [
   { value: '10.000+', label: 'Câu Hỏi', icon: <QuestionCircleOutlined />, color: '#dc2626' },
@@ -52,15 +49,35 @@ const features = [
   },
 ];
 
-const topUsers = [
-  { name: 'PGS.TS Lê Minh Đức', role: 'Giảng viên', rep: 5430, id: '3' },
-  { name: 'Trần Thị Hương', role: 'Sinh viên CNTT', rep: 1250, id: '2' },
-  { name: 'Hoàng Văn Bình', role: 'Sinh viên KTPM', rep: 980, id: '4' },
-];
-
 export default function Home() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [topUsers, setTopUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [counters, setCounters] = useState([0, 0, 0, 0]);
   const targetValues = [10000, 2000, 500, 8000];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resPosts = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+          params: { sort: 'views' }
+        });
+        if (resPosts && resPosts.success) {
+          setPosts(resPosts.data.list.slice(0, 3));
+        }
+
+        const resLeaderboard = await request<{ success: boolean; data: { list: any[] } }>('/api/leaderboard');
+        if (resLeaderboard && resLeaderboard.success) {
+          setTopUsers(resLeaderboard.data.list.slice(0, 3));
+        }
+      } catch (error) {
+        console.error('Lỗi tải dữ liệu trang chủ:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const timers = targetValues.map((target, i) => {
@@ -78,6 +95,7 @@ export default function Home() {
     });
     return () => timers.forEach(clearInterval);
   }, []);
+
 
   const formatNumber = (n: number, i: number) => {
     if (i === 0) return n >= 10000 ? '10.000+' : n.toLocaleString('vi');
@@ -175,7 +193,7 @@ export default function Home() {
           </Button>
         </div>
         <div className={styles.postGrid}>
-          {mockPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <div key={post.id} className={styles.postItem} style={{ animationDelay: `${index * 0.1}s` }}>
               <PostCard
                 id={post.id}
@@ -229,9 +247,11 @@ export default function Home() {
               <div className={styles.contributorRank}>#{i + 1}</div>
               <div className={styles.contributorAvatar}>{user.name.charAt(0)}</div>
               <div className={styles.contributorName}>{user.name}</div>
-              <div className={styles.contributorRole}>{user.role}</div>
+              <div className={styles.contributorRole}>
+                {user.role === 'teacher' ? 'Giảng viên' : user.role === 'admin' ? 'Quản trị viên' : `Sinh viên ${user.department || ''}`}
+              </div>
               <div className={styles.contributorRep}>
-                {user.rep.toLocaleString('vi')} pts
+                {(user.reputation ?? 0).toLocaleString('vi')} pts
               </div>
             </div>
           ))}

@@ -9,33 +9,43 @@ import {
   UserOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, request, useSearchParams } from '@umijs/max';
 import PostCard from '@/components/PostCard';
 import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import styles from './index.less';
 
 const mockPosts = MOCK_QUESTIONS;
 
-const topContributors = [
-  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430 },
-  { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250 },
-  { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980 },
-  { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870 },
-  { id: '6', name: 'Lê Thị Lan', role: 'student', rep: 654 },
-];
-
-const trendingTags = [
-  { name: 'Java', count: 245, color: '#f97316' },
-  { name: 'React', count: 198, color: '#06b6d4' },
-  { name: 'Python', count: 176, color: '#3b82f6' },
-  { name: 'SQL', count: 154, color: '#8b5cf6' },
-  { name: 'JavaScript', count: 142, color: '#eab308' },
-  { name: 'AI/ML', count: 128, color: '#ec4899' },
-];
-
 export default function Forum() {
+  const [searchParams] = useSearchParams();
+  const tagParam = searchParams.get('tag') || '';
+  const queryParam = searchParams.get('q') || '';
+
   const [activeFilter, setActiveFilter] = useState('hot');
-  const [activePosts, setActivePosts] = useState(mockPosts);
+  const [activePosts, setActivePosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [topContributors, setTopContributors] = useState<any[]>([]);
+  const [trendingTags, setTrendingTags] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        const resContributors = await request<{ success: boolean; data: { list: any[] } }>('/api/leaderboard');
+        if (resContributors && resContributors.success) {
+          setTopContributors(resContributors.data.list.slice(0, 5));
+        }
+
+        const resTags = await request<{ success: boolean; data: { list: any[] } }>('/api/tags');
+        if (resTags && resTags.success) {
+          setTrendingTags(resTags.data.list.slice(0, 6));
+        }
+      } catch (error) {
+        console.error('Lỗi tải dữ liệu sidebar:', error);
+      }
+    };
+    fetchSidebarData();
+  }, []);
+
 
   const filterOptions = [
     { key: 'hot', label: 'Nóng', icon: <FireOutlined /> },
@@ -44,18 +54,39 @@ export default function Forum() {
     { key: 'unanswered', label: 'Chưa Trả Lời', icon: <QuestionCircleOutlined /> },
   ];
 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const apiSort = activeFilter === 'hot' ? 'views' : activeFilter === 'votes' ? 'votes' : '';
+        const res = await request<{ success: boolean; data: { list: any[] } }>('/api/posts', {
+          method: 'GET',
+          params: {
+            tag: tagParam,
+            q: queryParam,
+            sort: apiSort,
+          },
+        });
+        if (res && res.success) {
+          let list = res.data.list;
+          if (activeFilter === 'unanswered') {
+            list = list.filter((p: any) => !p.isSolved);
+          }
+          setActivePosts(list);
+        }
+      } catch (error) {
+        console.error('Lỗi tải danh sách bài viết từ database:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, [tagParam, queryParam, activeFilter]);
+
   const handleFilter = (key: string) => {
     setActiveFilter(key);
-    if (key === 'unanswered') {
-      setActivePosts(mockPosts.filter((p) => !p.isSolved));
-    } else if (key === 'votes') {
-      setActivePosts([...mockPosts].sort((a, b) => b.votes - a.votes));
-    } else if (key === 'newest') {
-      setActivePosts([...mockPosts].reverse());
-    } else {
-      setActivePosts(mockPosts);
-    }
   };
+
 
   return (
     <div className={styles.forumPage}>
@@ -145,7 +176,7 @@ export default function Forum() {
                     </div>
                   </div>
                   <div className={styles.contributorRep}>
-                    <span>{user.rep.toLocaleString()}</span>
+                    <span>{(user.reputation ?? user.rep ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
               ))}

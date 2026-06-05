@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
-import { Input, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Input, Button, Spin } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import { MOCK_TAGS, TAG_CATEGORIES } from '@/server/seed/tags';
+import { history, request } from '@umijs/max';
+import { TAG_CATEGORIES } from '@/server/seed/tags';
 import styles from './index.less';
 
-const ALL_TAGS = MOCK_TAGS;
 const CATEGORIES = TAG_CATEGORIES;
 
 export default function Tags() {
+  const [tags, setTags] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [followed, setFollowed] = useState<string[]>(['React', 'JavaScript']);
 
-  const filtered = ALL_TAGS.filter((tag) => {
-    const matchSearch = tag.name.toLowerCase().includes(search.toLowerCase()) || tag.desc.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    const fetchTags = async () => {
+      setLoading(true);
+      try {
+        const res = await request<{ success: boolean; data: { list: any[] } }>('/api/tags');
+        if (res && res.success) {
+          setTags(res.data.list);
+        }
+      } catch (error) {
+        console.error('Lỗi tải danh sách thẻ:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const filtered = tags.filter((tag) => {
+    const matchSearch = tag.name.toLowerCase().includes(search.toLowerCase()) || (tag.desc || '').toLowerCase().includes(search.toLowerCase());
     const matchCat = activeCategory === 'all' || tag.category === activeCategory;
     return matchSearch && matchCat;
   });
@@ -23,7 +41,16 @@ export default function Tags() {
     setFollowed((prev) => prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]);
   };
 
-  const totalQuestions = ALL_TAGS.reduce((sum, t) => sum + t.count, 0);
+  const totalQuestions = tags.reduce((sum, t) => sum + t.count, 0);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <Spin size="large" tip="Đang tải danh sách thẻ..." />
+      </div>
+    );
+  }
+
 
   return (
     <div className={styles.tagsPage}>
@@ -31,7 +58,7 @@ export default function Tags() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Tất Cả Thẻ</h1>
-          <p className={styles.pageSubtitle}>{ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
+          <p className={styles.pageSubtitle}>{tags.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
         </div>
         {followed.length > 0 && (
           <div className={styles.followedInfo}>

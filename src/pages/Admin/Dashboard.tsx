@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, Progress, Badge } from 'antd';
 import {
   TeamOutlined, FileTextOutlined, CommentOutlined,
   ArrowUpOutlined, FireOutlined, TrophyOutlined,
 } from '@ant-design/icons';
+import { request } from '@umijs/max';
 import styles from './index.less';
 
 const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -27,12 +28,34 @@ const recentActivity = [
 ];
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await request<{ success: boolean; data: any }>('/api/admin/dashboard', {
+          method: 'GET',
+        });
+        if (res && res.success) {
+          setStats(res.data);
+        }
+      } catch (err) {
+        console.error('Lỗi tải thống kê admin:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const keyStats = [
-    { title: 'Tổng Người Dùng', value: 1250, icon: <TeamOutlined />, color: '#3b82f6', trend: '+12%', up: true },
-    { title: 'Tổng Bài Viết', value: 485, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
-    { title: 'Bài Hôm Nay', value: 23, icon: <FireOutlined />, color: '#10b981', trend: '+5 so với hôm qua', up: true },
-    { title: 'Bình Luận Mới', value: 156, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
+    { title: 'Tổng Người Dùng', value: stats?.totalUsers ?? 0, icon: <TeamOutlined />, color: '#3b82f6', trend: '+12%', up: true },
+    { title: 'Tổng Bài Viết', value: stats?.totalPosts ?? 0, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
+    { title: 'Hoạt động (Active)', value: stats?.activeUsers ?? 0, icon: <FireOutlined />, color: '#10b981', trend: 'Tài khoản hoạt động', up: true },
+    { title: 'Tổng Bình Luận', value: stats?.totalComments ?? 0, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
   ];
+
 
   return (
     <div className={styles.adminDashboard}>

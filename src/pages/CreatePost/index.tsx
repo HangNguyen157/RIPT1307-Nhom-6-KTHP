@@ -18,8 +18,9 @@ import {
   LinkOutlined,
   SendOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, request } from '@umijs/max';
 import { useState } from 'react';
+import { authUtils } from '@/utils/auth';
 import styles from './index.less';
 
 export default function CreatePost() {
@@ -71,20 +72,41 @@ export default function CreatePost() {
       return;
     }
 
+    const currentUser = authUtils.getCurrentUser();
+    if (!currentUser) {
+      message.error('Vui lòng đăng nhập để đăng bài');
+      history.push('/login');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      message.success('Đăng bài thành công!');
-      setTimeout(() => {
-        history.push('/');
-      }, 1000);
-    } catch (error) {
-      message.error('Đã xảy ra lỗi, vui lòng thử lại');
+      const res = await request<{ success: boolean; message?: string }>('/api/posts', {
+        method: 'POST',
+        data: {
+          title: values.title,
+          content,
+          subject: values.subject,
+          tags,
+          authorId: currentUser.id,
+        },
+      });
+
+      if (res && res.success) {
+        message.success('Đăng bài thành công!');
+        setTimeout(() => {
+          history.push('/forum');
+        }, 1000);
+      } else {
+        message.error(res?.message || 'Đăng bài thất bại');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Đã xảy ra lỗi, vui lòng thử lại');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className={styles.createPostPage}>

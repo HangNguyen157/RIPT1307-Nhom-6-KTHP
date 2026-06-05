@@ -1,5 +1,3 @@
-/** Question model — bài viết / câu hỏi trên diễn đàn. */
-
 export interface Question {
   id: string;
   title: string;

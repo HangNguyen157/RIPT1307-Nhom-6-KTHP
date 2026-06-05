@@ -1,5 +1,3 @@
-/** Comment model — bình luận / câu trả lời (hỗ trợ lồng 2 cấp). */
-
 export interface CommentReply {
   id: string;
   author: string;
