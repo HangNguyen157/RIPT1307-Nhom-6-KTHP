@@ -1,9 +1,17 @@
 import PostCard from '@/components/PostCard';
+<<<<<<< HEAD
+=======
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
+>>>>>>> Phanh
 import {
   ClockCircleOutlined,
   FireOutlined,
   LikeOutlined,
   QuestionCircleOutlined,
+<<<<<<< HEAD
+=======
+  RightOutlined,
+>>>>>>> Phanh
   TrophyOutlined,
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
@@ -11,6 +19,7 @@ import { Button } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const mockPosts = [
   {
     id: '1',
@@ -96,6 +105,9 @@ const mockPosts = [
     isSolved: false,
   },
 ];
+=======
+const mockPosts = MOCK_QUESTIONS;
+>>>>>>> Phanh
 
 const topContributors = [
   {
@@ -153,9 +165,15 @@ export default function Forum() {
       {/* Page Header */}
       <div className={styles.pageHeader}>
         <div>
+<<<<<<< HEAD
           <h1 className={styles.pageTitle}>Diễn đàn hỏi đáp</h1>
           <p className={styles.pageSubtitle}>
             {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên
+=======
+          <h1 className={styles.pageTitle}>Diễn Đàn Hỏi Đáp</h1>
+          <p className={styles.pageSubtitle}>
+            Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên
+>>>>>>> Phanh
           </p>
         </div>
         <Button
@@ -252,7 +270,11 @@ export default function Forum() {
               className={styles.viewMoreBtn}
               onClick={() => history.push('/leaderboard')}
             >
+<<<<<<< HEAD
               Xem bảng xếp hạng
+=======
+              Xem Bảng Xếp Hạng <RightOutlined />
+>>>>>>> Phanh
             </button>
           </div>
 

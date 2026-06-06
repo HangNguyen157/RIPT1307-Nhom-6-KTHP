@@ -6,7 +6,10 @@ import {
   getReputationLevel,
 } from '@/utils/reputation';
 import {
+<<<<<<< HEAD
   BookmarkOutlined,
+=======
+>>>>>>> Phanh
   BookOutlined,
   CalendarOutlined,
   EditOutlined,
@@ -14,6 +17,10 @@ import {
   LikeOutlined,
   MailOutlined,
   MessageOutlined,
+<<<<<<< HEAD
+=======
+  StarOutlined,
+>>>>>>> Phanh
   TrophyOutlined,
 } from '@ant-design/icons';
 import { history, useParams } from '@umijs/max';
@@ -160,7 +167,11 @@ export default function Profile() {
       key: 'saved',
       label: (
         <span>
+<<<<<<< HEAD
           <BookmarkOutlined /> Đã Lưu
+=======
+          <StarOutlined /> Đã Lưu
+>>>>>>> Phanh
         </span>
       ),
       children: (

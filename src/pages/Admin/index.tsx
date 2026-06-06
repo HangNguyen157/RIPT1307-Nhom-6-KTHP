@@ -1,19 +1,40 @@
+<<<<<<< HEAD
+=======
+import { isAdmin } from '@/server/models/User';
+>>>>>>> Phanh
 import { authUtils } from '@/utils/auth';
 import {
   BarChartOutlined,
   FileTextOutlined,
   LogoutOutlined,
+<<<<<<< HEAD
   UsersOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import { Outlet, history, useLocation } from '@umijs/max';
 import { Button, Layout, Menu } from 'antd';
+=======
+  UserOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
+import { Outlet, history, useLocation } from '@umijs/max';
+import { Button, Layout, Menu, message } from 'antd';
+import { useEffect } from 'react';
+>>>>>>> Phanh
 import styles from './index.less';
 
 const { Sider, Content } = Layout;
 
 export default function Admin() {
   const location = useLocation();
+
+  useEffect(() => {
+    const user = authUtils.getCurrentUser();
+    if (!user || !isAdmin(user)) {
+      message.warning('Bạn không có quyền truy cập khu vực quản trị');
+      history.replace('/login');
+    }
+  }, []);
 
   const handleLogout = () => {
     authUtils.logout();
@@ -35,7 +56,11 @@ export default function Admin() {
     },
     {
       key: '/admin/users',
+<<<<<<< HEAD
       icon: <UsersOutlined />,
+=======
+      icon: <UserOutlined />,
+>>>>>>> Phanh
       label: 'Quản Lý Người Dùng',
       onClick: () => history.push('/admin/users'),
     },

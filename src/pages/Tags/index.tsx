@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+import { MOCK_TAGS, TAG_CATEGORIES } from '@/server/seed/tags';
+>>>>>>> Phanh
 import { SearchOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import { useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const ALL_TAGS = [
   {
     name: 'Java',
@@ -156,6 +161,10 @@ const CATEGORIES = [
   { key: 'tool', label: 'Công Cụ', emoji: '⚙️' },
   { key: 'concept', label: 'Khái Niệm', emoji: '💡' },
 ];
+=======
+const ALL_TAGS = MOCK_TAGS;
+const CATEGORIES = TAG_CATEGORIES;
+>>>>>>> Phanh
 
 export default function Tags() {
   const [search, setSearch] = useState('');
@@ -186,7 +195,11 @@ export default function Tags() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
+<<<<<<< HEAD
           <h1 className={styles.pageTitle}>Tất cả thẻ</h1>
+=======
+          <h1 className={styles.pageTitle}>🏷️ Tất Cả Thẻ</h1>
+>>>>>>> Phanh
           <p className={styles.pageSubtitle}>
             {ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu
             hỏi

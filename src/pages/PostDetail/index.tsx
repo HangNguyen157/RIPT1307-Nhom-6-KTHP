@@ -1,8 +1,18 @@
+<<<<<<< HEAD
 import { authUtils } from '@/utils/auth';
 import {
   ArrowLeftOutlined,
   BookmarkFilled,
   BookmarkOutlined,
+=======
+import {
+  getCommentsByQuestionId,
+  getQuestionById,
+} from '@/server/seed/questions';
+import { authUtils } from '@/utils/auth';
+import {
+  ArrowLeftOutlined,
+>>>>>>> Phanh
   CheckCircleFilled,
   CheckCircleOutlined,
   CopyOutlined,
@@ -11,12 +21,18 @@ import {
   LikeFilled,
   LikeOutlined,
   ShareAltOutlined,
+<<<<<<< HEAD
+=======
+  StarFilled,
+  StarOutlined,
+>>>>>>> Phanh
 } from '@ant-design/icons';
 import { history, useParams } from '@umijs/max';
 import { Avatar, Button, message } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const POST_DATA = {
   id: '1',
   title:
@@ -166,15 +182,38 @@ Encapsulation giúp bảo vệ dữ liệu và giảm sự phụ thuộc giữa 
     replies: [],
   },
 ];
+=======
+const DEFAULT_QUESTION_ID = '1';
+>>>>>>> Phanh
 
 export default function PostDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id: routeId } = useParams<{ id: string }>();
+  const questionId = routeId || DEFAULT_QUESTION_ID;
+  const question =
+    getQuestionById(questionId) ?? getQuestionById(DEFAULT_QUESTION_ID)!;
+  const initialComments = getCommentsByQuestionId(questionId);
+
+  const POST_DATA = {
+    id: question.id,
+    title: question.title,
+    content: question.content ?? question.excerpt,
+    author: question.author,
+    authorId: question.authorId ?? '2',
+    authorRole: question.authorRole ?? 'student',
+    authorRep: question.authorRep ?? 0,
+    timestamp: question.timestamp,
+    tags: question.tags,
+    subject: question.subject ?? '',
+    votes: question.votes,
+    views: question.views,
+  };
+
   const currentUser = authUtils.getCurrentUser();
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [votes, setVotes] = useState(POST_DATA.votes);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [answers, setAnswers] = useState(ANSWERS);
+  const [answers, setAnswers] = useState(initialComments);
   const [newAnswer, setNewAnswer] = useState('');
   const [isOwner] = useState(currentUser?.id === POST_DATA.authorId);
 
@@ -366,8 +405,13 @@ export default function PostDetail() {
             }`}
             onClick={() => setIsBookmarked(!isBookmarked)}
           >
+<<<<<<< HEAD
             {isBookmarked ? <BookmarkFilled /> : <BookmarkOutlined />}
             {isBookmarked ? 'Đã lưu' : 'Lưu bài'}
+=======
+            {isBookmarked ? <StarFilled /> : <StarOutlined />}
+            {isBookmarked ? 'Đã Lưu' : 'Lưu Bài'}
+>>>>>>> Phanh
           </button>
           <button
             className={styles.actionBtn}
@@ -570,7 +614,11 @@ export default function PostDetail() {
               disabled={!newAnswer.trim()}
               onClick={handleSubmitAnswer}
             >
+<<<<<<< HEAD
               Đăng câu trả lời
+=======
+              📤 Đăng Câu Trả Lời
+>>>>>>> Phanh
             </Button>
             <span className={styles.charCount}>{newAnswer.length} ký tự</span>
           </div>

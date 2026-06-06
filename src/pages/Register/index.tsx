@@ -1,3 +1,4 @@
+import { authUtils } from '@/utils/auth';
 import {
   IdcardOutlined,
   LockOutlined,
@@ -31,14 +32,26 @@ export default function Register() {
 
     setLoading(true);
     try {
+<<<<<<< HEAD
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       message.success(
         'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản',
       );
+=======
+      await authUtils.register({
+        name: values.fullName,
+        email: values.email,
+        password: values.password,
+        role: values.role,
+        department: values.department,
+        studentId: values.studentId,
+      });
+      message.success('Đăng ký thành công!');
+>>>>>>> Phanh
       setTimeout(() => {
-        history.push('/login');
-      }, 2000);
+        history.push('/home');
+      }, 800);
     } catch (error) {
       message.error('Đã xảy ra lỗi, vui lòng thử lại');
     } finally {
@@ -300,7 +313,11 @@ export default function Register() {
             <div className={styles.footer}>
               <span>Đã có tài khoản? </span>
               <Button type="link" danger onClick={() => history.push('/login')}>
+<<<<<<< HEAD
                 Đăng nhập
+=======
+                Đăng nhập ngay
+>>>>>>> Phanh
               </Button>
             </div>
           </div>

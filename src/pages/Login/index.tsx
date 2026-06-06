@@ -78,12 +78,25 @@ export default function Login() {
             <h2 className={styles.formTitle}>Đăng Nhập</h2>
             <p className={styles.formSubtitle}>Chào mừng bạn quay lại!</p>
 
+<<<<<<< HEAD
             <Form form={form} layout="vertical" onFinish={handleSubmit}>
+=======
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleSubmit}
+              autoComplete="off"
+            >
+>>>>>>> Phanh
               <Form.Item
                 name="email"
                 rules={[
                   { required: true, message: 'Vui lòng nhập email' },
+<<<<<<< HEAD
                   { type: 'email', message: 'Email không hợp lệ' },
+=======
+                  { type: 'email' },
+>>>>>>> Phanh
                 ]}
               >
                 <Input
@@ -125,7 +138,11 @@ export default function Login() {
                   htmlType="submit"
                   className={styles.submitBtn}
                 >
+<<<<<<< HEAD
                   Đăng Nhập
+=======
+                  🚀 Đăng Nhập
+>>>>>>> Phanh
                 </Button>
               </Form.Item>
             </Form>
@@ -137,7 +154,11 @@ export default function Login() {
                 danger
                 onClick={() => history.push('/register')}
               >
+<<<<<<< HEAD
                 Đăng ký ngay
+=======
+                Đăng ký ngay →
+>>>>>>> Phanh
               </Button>
             </div>
           </div>

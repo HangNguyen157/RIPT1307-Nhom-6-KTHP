@@ -1,9 +1,15 @@
 import PostCard from '@/components/PostCard';
+<<<<<<< HEAD
+=======
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { ArrowRightOutlined } from '@ant-design/icons';
+>>>>>>> Phanh
 import { history } from '@umijs/max';
 import { Button } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const mockPosts = [
   {
     id: '1',
@@ -48,6 +54,9 @@ const mockPosts = [
     isSolved: true,
   },
 ];
+=======
+const mockPosts = MOCK_QUESTIONS.slice(0, 3);
+>>>>>>> Phanh
 
 const stats = [
   { value: '10.000+', label: 'Câu Hỏi', icon: '❓', color: '#dc2626' },
@@ -145,8 +154,13 @@ export default function Home() {
             </span>
           </h1>
           <p className={styles.heroSubtitle}>
+<<<<<<< HEAD
             Nơi sinh viên và giảng viên PTIT cùng hỏi đáp, chia sẻ kiến thức và
             giải quyết bài tập.
+=======
+            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng
+            viên. Giống StackOverflow nhưng dành riêng cho bạn.
+>>>>>>> Phanh
           </p>
           <div className={styles.heroCta}>
             <Button
@@ -289,13 +303,21 @@ export default function Home() {
       {/* Top Contributors */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
+<<<<<<< HEAD
           <h2>Top đóng góp</h2>
+=======
+          <h2>🏆 Top Đóng Góp Viên</h2>
+>>>>>>> Phanh
           <Button
             type="link"
             danger
             onClick={() => history.push('/leaderboard')}
           >
+<<<<<<< HEAD
             Bảng xếp hạng
+=======
+            Xem Bảng Xếp Hạng <ArrowRightOutlined />
+>>>>>>> Phanh
           </Button>
         </div>
         <div className={styles.contributorsGrid}>
@@ -331,7 +353,11 @@ export default function Home() {
               className={styles.ctaBannerBtn}
               onClick={() => history.push('/register')}
             >
+<<<<<<< HEAD
               Đăng ký ngay
+=======
+              Đăng Ký Miễn Phí
+>>>>>>> Phanh
             </Button>
             <Button
               size="large"
@@ -339,7 +365,11 @@ export default function Home() {
               className={styles.ctaBannerGhost}
               onClick={() => history.push('/forum')}
             >
+<<<<<<< HEAD
               Vào diễn đàn
+=======
+              Khám Phá Ngay
+>>>>>>> Phanh
             </Button>
           </div>
         </div>

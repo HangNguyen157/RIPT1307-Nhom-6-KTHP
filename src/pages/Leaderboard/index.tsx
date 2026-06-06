@@ -154,7 +154,11 @@ export default function Leaderboard() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
+<<<<<<< HEAD
           <h1 className={styles.pageTitle}>Bảng xếp hạng</h1>
+=======
+          <h1 className={styles.pageTitle}>🏆 Bảng Xếp Hạng</h1>
+>>>>>>> Phanh
           <p className={styles.pageSubtitle}>
             Top người đóng góp của cộng đồng EduForum
           </p>

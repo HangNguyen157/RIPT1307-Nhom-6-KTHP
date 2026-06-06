@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { MOCK_ADMIN_USERS } from '@/server/seed/users';
+>>>>>>> Phanh
 import {
   EyeOutlined,
   LockOutlined,
@@ -19,6 +23,7 @@ import {
 import { useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const USERS = [
   {
     id: '1',
@@ -81,6 +86,18 @@ const USERS = [
     joinDate: '05/10/2024',
   },
 ];
+=======
+const USERS = MOCK_ADMIN_USERS.map((u) => ({
+  id: u.id,
+  name: u.name,
+  email: u.email,
+  role: u.role,
+  rep: u.reputation,
+  posts: u.posts,
+  status: u.status ?? 'active',
+  joinDate: u.joinDate,
+}));
+>>>>>>> Phanh
 
 const ROLE_COLORS: Record<string, string> = {
   student: 'blue',

@@ -40,7 +40,6 @@ export default function AppLayout() {
       className={`${styles.appWrapper} ${
         theme === 'dark' ? styles.darkMode : ''
       }`}
-      data-theme={theme}
     >
       {/* HEADER */}
       <Header onToggleTheme={toggleTheme} theme={theme} />

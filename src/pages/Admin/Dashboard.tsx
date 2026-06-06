@@ -3,7 +3,11 @@ import {
   CommentOutlined,
   FileTextOutlined,
   FireOutlined,
+<<<<<<< HEAD
   UsersOutlined,
+=======
+  UserOutlined,
+>>>>>>> Phanh
 } from '@ant-design/icons';
 import styles from './index.less';
 
@@ -57,7 +61,11 @@ export default function AdminDashboard() {
     {
       title: 'Tổng Người Dùng',
       value: 1250,
+<<<<<<< HEAD
       icon: <UsersOutlined />,
+=======
+      icon: <UserOutlined />,
+>>>>>>> Phanh
       color: '#3b82f6',
       trend: '+12%',
       up: true,

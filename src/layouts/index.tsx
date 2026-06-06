@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { MenuOutlined } from '@ant-design/icons';
 import { history, Outlet, useLocation } from '@umijs/max';
 import { Button, Drawer, Layout } from 'antd';
@@ -130,3 +131,7 @@ export default function MainLayout() {
     </div>
   );
 }
+=======
+/** Layout toàn cục — re-export từ pages/_layout.tsx */
+export { default } from '../pages/_layout';
+>>>>>>> Phanh

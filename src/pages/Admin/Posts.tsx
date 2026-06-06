@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
+>>>>>>> Phanh
 import { DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
 import {
@@ -14,6 +18,7 @@ import {
 import { useState } from 'react';
 import styles from './index.less';
 
+<<<<<<< HEAD
 const POSTS = [
   {
     id: '1',
@@ -71,6 +76,19 @@ const POSTS = [
     createdAt: '05/05/2026',
   },
 ];
+=======
+const POSTS = MOCK_QUESTIONS.map((q) => ({
+  id: q.id,
+  title: q.title,
+  author: q.author,
+  subject: q.subject ?? '',
+  votes: q.votes,
+  comments: q.comments,
+  status: q.status ?? 'active',
+  isSolved: q.isSolved ?? false,
+  createdAt: q.createdAt ?? '',
+}));
+>>>>>>> Phanh
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState(POSTS);
