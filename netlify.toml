@@ -1,10 +1,11 @@
 [build]
   publish = "dist"
 
-# 1. Định cấu hình Proxy cho API Routes đến backend Vercel (hoặc server độc lập)
+# 1. Định cấu hình Proxy cho API Routes đến backend Vercel
 [[redirects]]
   from = "/api/*"
-  to = "eduforum-three.vercel.app"
+  to = "https://eduforum-three.vercel.app/api/:splat"
+  status = 200
   force = true
 
 # 2. Định cấu hình SPA Router Redirects để tránh lỗi 404 khi F5 tải lại trang
