@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Space, Tag, Tabs } from 'antd';
+import PostCard from '@/components/PostCard';
+import { MOCK_QUESTIONS } from '@/server/seed/questions';
 import {
-  FireOutlined,
   ClockCircleOutlined,
+  FireOutlined,
   LikeOutlined,
   QuestionCircleOutlined,
   RightOutlined,
-  UserOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
-import PostCard from '@/components/PostCard';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { Button } from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 const mockPosts = MOCK_QUESTIONS;
 
 const topContributors = [
-  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430, emoji: '🏆' },
+  {
+    id: '3',
+    name: 'PGS.TS Lê Minh Đức',
+    role: 'teacher',
+    rep: 5430,
+    emoji: '🏆',
+  },
   { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250, emoji: '⭐' },
   { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980, emoji: '⭐' },
   { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870, emoji: '🤝' },
@@ -41,7 +46,11 @@ export default function Forum() {
     { key: 'hot', label: 'Nóng', icon: <FireOutlined /> },
     { key: 'newest', label: 'Mới Nhất', icon: <ClockCircleOutlined /> },
     { key: 'votes', label: 'Nhiều Vote', icon: <LikeOutlined /> },
-    { key: 'unanswered', label: 'Chưa Trả Lời', icon: <QuestionCircleOutlined /> },
+    {
+      key: 'unanswered',
+      label: 'Chưa Trả Lời',
+      icon: <QuestionCircleOutlined />,
+    },
   ];
 
   const handleFilter = (key: string) => {
@@ -63,7 +72,9 @@ export default function Forum() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Diễn Đàn Hỏi Đáp</h1>
-          <p className={styles.pageSubtitle}>Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên</p>
+          <p className={styles.pageSubtitle}>
+            Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên
+          </p>
         </div>
         <Button
           type="primary"
@@ -84,7 +95,9 @@ export default function Forum() {
             {filterOptions.map((opt) => (
               <button
                 key={opt.key}
-                className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
+                className={`${styles.filterBtn} ${
+                  activeFilter === opt.key ? styles.active : ''
+                }`}
                 onClick={() => handleFilter(opt.key)}
               >
                 {opt.icon}
@@ -141,7 +154,9 @@ export default function Forum() {
                   <div className={styles.contributorInfo}>
                     <div className={styles.contributorName}>{user.name}</div>
                     <div className={styles.contributorRole}>
-                      {user.role === 'teacher' ? '👨‍🏫 Giảng viên' : '👨‍🎓 Sinh viên'}
+                      {user.role === 'teacher'
+                        ? '👨‍🏫 Giảng viên'
+                        : '👨‍🎓 Sinh viên'}
                     </div>
                   </div>
                   <div className={styles.contributorRep}>
@@ -151,7 +166,10 @@ export default function Forum() {
                 </div>
               ))}
             </div>
-            <button className={styles.viewMoreBtn} onClick={() => history.push('/leaderboard')}>
+            <button
+              className={styles.viewMoreBtn}
+              onClick={() => history.push('/leaderboard')}
+            >
               Xem Bảng Xếp Hạng <RightOutlined />
             </button>
           </div>
@@ -164,8 +182,15 @@ export default function Forum() {
             </div>
             <div className={styles.trendingTags}>
               {trendingTags.map((tag) => (
-                <div key={tag.name} className={styles.trendingTag} onClick={() => history.push(`/tags`)}>
-                  <span className={styles.tagDot} style={{ background: tag.color }} />
+                <div
+                  key={tag.name}
+                  className={styles.trendingTag}
+                  onClick={() => history.push(`/tags`)}
+                >
+                  <span
+                    className={styles.tagDot}
+                    style={{ background: tag.color }}
+                  />
                   <span className={styles.tagName}>{tag.name}</span>
                   <span className={styles.tagCount}>{tag.count}</span>
                 </div>
@@ -181,10 +206,30 @@ export default function Forum() {
             </div>
             <div className={styles.activityList}>
               {[
-                { user: 'Nguyễn Văn A', action: 'đã đặt câu hỏi', time: '5 phút trước', emoji: '❓' },
-                { user: 'Trần Thị B', action: 'đã trả lời', time: '12 phút trước', emoji: '💬' },
-                { user: 'Lê Văn C', action: 'đã upvote', time: '20 phút trước', emoji: '👍' },
-                { user: 'PGS.TS Lê Minh Đức', action: 'đã chọn best answer', time: '1 giờ trước', emoji: '✅' },
+                {
+                  user: 'Nguyễn Văn A',
+                  action: 'đã đặt câu hỏi',
+                  time: '5 phút trước',
+                  emoji: '❓',
+                },
+                {
+                  user: 'Trần Thị B',
+                  action: 'đã trả lời',
+                  time: '12 phút trước',
+                  emoji: '💬',
+                },
+                {
+                  user: 'Lê Văn C',
+                  action: 'đã upvote',
+                  time: '20 phút trước',
+                  emoji: '👍',
+                },
+                {
+                  user: 'PGS.TS Lê Minh Đức',
+                  action: 'đã chọn best answer',
+                  time: '1 giờ trước',
+                  emoji: '✅',
+                },
               ].map((act, i) => (
                 <div key={i} className={styles.activityItem}>
                   <span className={styles.activityEmoji}>{act.emoji}</span>

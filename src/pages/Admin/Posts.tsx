@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import { Button, Select, Input, Table, Tag, Space, Badge, Popconfirm, message } from 'antd';
-import { SearchOutlined, DeleteOutlined, PushpinOutlined, EyeOutlined, CheckOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
 import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
+import {
+  Badge,
+  Button,
+  Input,
+  Popconfirm,
+  Select,
+  Space,
+  Table,
+  Tag,
+  message,
+} from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 const POSTS = MOCK_QUESTIONS.map((q) => ({
@@ -64,8 +74,20 @@ export default function AdminPosts() {
       render: (record: any) => (
         <Space direction="vertical" size={4}>
           <Badge
-            status={record.status === 'active' ? 'success' : record.status === 'reported' ? 'warning' : 'default'}
-            text={record.status === 'active' ? 'Đang Hoạt Động' : record.status === 'reported' ? '⚠️ Bị Báo Cáo' : 'Ẩn'}
+            status={
+              record.status === 'active'
+                ? 'success'
+                : record.status === 'reported'
+                ? 'warning'
+                : 'default'
+            }
+            text={
+              record.status === 'active'
+                ? 'Đang Hoạt Động'
+                : record.status === 'reported'
+                ? '⚠️ Bị Báo Cáo'
+                : 'Ẩn'
+            }
           />
           {record.isSolved && <Tag color="green">✅ Đã Giải Quyết</Tag>}
         </Space>
@@ -76,7 +98,11 @@ export default function AdminPosts() {
       key: 'actions',
       render: (record: any) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => history.push(`/post/${record.id}`)}>
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => history.push(`/post/${record.id}`)}
+          >
             Xem
           </Button>
           <Popconfirm
@@ -87,7 +113,9 @@ export default function AdminPosts() {
             cancelText="Hủy"
             okButtonProps={{ danger: true }}
           >
-            <Button size="small" danger icon={<DeleteOutlined />}>Xóa</Button>
+            <Button size="small" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -100,15 +128,37 @@ export default function AdminPosts() {
 
       <div className={styles.miniStats}>
         {[
-          { label: 'Tổng Bài Viết', value: posts.length, icon: '📝', color: '#3b82f6' },
-          { label: 'Đang Hoạt Động', value: posts.filter((p) => p.status === 'active').length, icon: '✅', color: '#10b981' },
-          { label: 'Bị Báo Cáo', value: posts.filter((p) => p.status === 'reported').length, icon: '⚠️', color: '#f59e0b' },
-          { label: 'Đã Giải Quyết', value: posts.filter((p) => p.isSolved).length, icon: '🏆', color: '#8b5cf6' },
+          {
+            label: 'Tổng Bài Viết',
+            value: posts.length,
+            icon: '📝',
+            color: '#3b82f6',
+          },
+          {
+            label: 'Đang Hoạt Động',
+            value: posts.filter((p) => p.status === 'active').length,
+            icon: '✅',
+            color: '#10b981',
+          },
+          {
+            label: 'Bị Báo Cáo',
+            value: posts.filter((p) => p.status === 'reported').length,
+            icon: '⚠️',
+            color: '#f59e0b',
+          },
+          {
+            label: 'Đã Giải Quyết',
+            value: posts.filter((p) => p.isSolved).length,
+            icon: '🏆',
+            color: '#8b5cf6',
+          },
         ].map((s, i) => (
           <div key={i} className={styles.miniStat}>
             <span className={styles.miniStatIcon}>{s.icon}</span>
             <div>
-              <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
+              <div className={styles.miniStatValue} style={{ color: s.color }}>
+                {s.value}
+              </div>
               <div className={styles.miniStatLabel}>{s.label}</div>
             </div>
           </div>
@@ -141,7 +191,9 @@ export default function AdminPosts() {
         rowKey="id"
         className={styles.adminTable}
         pagination={{ pageSize: 10 }}
-        rowClassName={(record) => record.status === 'reported' ? styles.reportedRow : ''}
+        rowClassName={(record) =>
+          record.status === 'reported' ? styles.reportedRow : ''
+        }
       />
     </div>
   );

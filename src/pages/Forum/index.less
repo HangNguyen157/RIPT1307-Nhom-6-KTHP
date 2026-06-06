@@ -18,9 +18,10 @@
   }
 
   .pageSubtitle {
-    color: var(--text-secondary);
+    color: var(--text-secondary) !important;
     margin: 0;
     font-size: 14px;
+    background: transparent !important;
   }
 
   .askBtn {
@@ -287,5 +288,19 @@
     font-size: 11px;
     color: var(--text-tertiary);
     margin-top: 2px;
+  }
+}
+// Fix dark mode cho toàn bộ Forum page
+[data-theme='dark'] {
+  .forumPage {
+    p {
+      color: var(--text-secondary);
+    }
+
+    .filterBtn {
+      color: var(--text-secondary);
+      appearance: none;
+      appearance: none;
+    }
   }
 }

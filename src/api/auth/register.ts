@@ -1,6 +1,6 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
-import { register } from '@/server/services/authService';
 import type { UserRole } from '@/server/models/User';
+import { register } from '@/server/services/authService';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method !== 'POST') {
@@ -9,7 +9,8 @@ export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   }
 
   try {
-    const { name, email, password, role, department, studentId } = req.body ?? {};
+    const { name, email, password, role, department, studentId } =
+      req.body ?? {};
     const result = register({
       name,
       email,

@@ -1,5 +1,5 @@
-import { authUtils } from '@/utils/auth';
 import type { User } from '@/server/models/User';
+import { authUtils } from '@/utils/auth';
 
 export async function getInitialState(): Promise<{
   name: string;

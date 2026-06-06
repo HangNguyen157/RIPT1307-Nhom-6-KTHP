@@ -1,5 +1,5 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method === 'GET') {
@@ -16,7 +16,9 @@ export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
     }
 
     if (typeof tag === 'string' && tag.trim()) {
-      list = list.filter((p) => p.tags.some((t) => t.toLowerCase() === tag.toLowerCase()));
+      list = list.filter((p) =>
+        p.tags.some((t) => t.toLowerCase() === tag.toLowerCase()),
+      );
     }
 
     res.status(200).json({ success: true, data: { list } });

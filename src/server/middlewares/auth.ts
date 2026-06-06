@@ -32,7 +32,9 @@ export function requireAuth(req: RequestLike): AuthContext | null {
   return parseToken(getTokenFromRequest(req));
 }
 
-export function requireAdmin(user: Pick<User, 'role'> | null | undefined): boolean {
+export function requireAdmin(
+  user: Pick<User, 'role'> | null | undefined,
+): boolean {
   return isAdmin(user);
 }
 

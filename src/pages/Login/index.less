@@ -26,7 +26,9 @@
   flex-direction: column;
   gap: 24px;
 
-  @media (max-width: 768px) { display: none; }
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .logo {
@@ -60,7 +62,9 @@
     gap: 10px;
     font-size: 14px;
 
-    span:first-child { font-size: 20px; }
+    span:first-child {
+      font-size: 20px;
+    }
   }
 }
 
@@ -74,7 +78,12 @@
     font-size: 13px;
     opacity: 0.85;
 
-    .statNum { font-size: 20px; font-weight: 900; opacity: 1; margin-bottom: 2px; }
+    .statNum {
+      font-size: 20px;
+      font-weight: 900;
+      opacity: 1;
+      margin-bottom: 2px;
+    }
   }
 }
 
@@ -85,42 +94,35 @@
   display: flex;
   align-items: center;
 
-  @media (max-width: 768px) { padding: 40px 24px; }
+  @media (max-width: 768px) {
+    padding: 40px 24px;
+  }
 }
 
 .formContainer {
   width: 100%;
 
-  .formTitle { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px; }
-  .formSubtitle { color: var(--text-secondary); margin: 0 0 20px; }
+  .formTitle {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+  }
+
+  .formSubtitle {
+    color: var(--text-secondary);
+    margin: 0 0 20px;
+  }
 }
 
-.demoSection { margin-bottom: 20px; }
-
-.demoLabel { font-size: 12px; color: var(--text-tertiary); margin-bottom: 8px; }
-
-.demoButtons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.input {
+  border-radius: 10px !important;
 }
 
-.demoBtn {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: all 0.15s;
-
-  &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.options {
+  width: 100%;
+  justify-content: space-between;
 }
-
-.input { border-radius: 10px !important; }
-
-.options { width: 100%; justify-content: space-between; }
 
 .submitBtn {
   border-radius: 10px !important;

@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-##  Các Lệnh Có Sẵn
+## Các Lệnh Có Sẵn
 
 ```bash
 # Cài đặt dependencies
@@ -119,7 +119,7 @@ RIPT1307-Nhom-6-KTHP/
 - Dừng các ứng dụng khác đang sử dụng port 8000
 - Hoặc chỉ định port khác: `PORT=3000 npm run dev`
 
-##  Cấu Hình TypeScript
+## Cấu Hình TypeScript
 
 TypeScript configuration được kế thừa từ `.umi` directory (auto-generated):
 
@@ -129,7 +129,7 @@ TypeScript configuration được kế thừa từ `.umi` directory (auto-genera
 }
 ```
 
-##  Ghi Chú Phát Triển
+## Ghi Chú Phát Triển
 
 ### Alias Imports
 

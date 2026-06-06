@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Space } from 'antd';
-import { ArrowRightOutlined, RightOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
 import PostCard from '@/components/PostCard';
 import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
+import { Button } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const mockPosts = MOCK_QUESTIONS.slice(0, 3);
@@ -39,9 +39,27 @@ const features = [
 ];
 
 const topUsers = [
-  { name: 'PGS.TS Lê Minh Đức', role: 'Giảng viên', rep: 5430, emoji: '🏆', id: '3' },
-  { name: 'Trần Thị Hương', role: 'Sinh viên CNTT', rep: 1250, emoji: '⭐', id: '2' },
-  { name: 'Hoàng Văn Bình', role: 'Sinh viên KTPM', rep: 980, emoji: '⭐', id: '4' },
+  {
+    name: 'PGS.TS Lê Minh Đức',
+    role: 'Giảng viên',
+    rep: 5430,
+    emoji: '🏆',
+    id: '3',
+  },
+  {
+    name: 'Trần Thị Hương',
+    role: 'Sinh viên CNTT',
+    rep: 1250,
+    emoji: '⭐',
+    id: '2',
+  },
+  {
+    name: 'Hoàng Văn Bình',
+    role: 'Sinh viên KTPM',
+    rep: 980,
+    emoji: '⭐',
+    id: '4',
+  },
 ];
 
 export default function Home() {
@@ -79,12 +97,15 @@ export default function Home() {
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>🎓 Nền tảng học thuật #1 PTIT</div>
           <h1 className={styles.heroTitle}>
-            Kết Nối<br />
-            <span className={styles.heroTitleHighlight}>Tri Thức Sinh Viên</span>
+            Kết Nối
+            <br />
+            <span className={styles.heroTitleHighlight}>
+              Tri Thức Sinh Viên
+            </span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng viên.
-            Giống StackOverflow nhưng dành riêng cho bạn.
+            Hỏi, trả lời và cùng nhau học tập với cộng đồng sinh viên và giảng
+            viên. Giống StackOverflow nhưng dành riêng cho bạn.
           </p>
           <div className={styles.heroCta}>
             <Button
@@ -107,8 +128,19 @@ export default function Home() {
 
           {/* Tags Showcase */}
           <div className={styles.tagCloud}>
-            {['Java', 'React', 'Python', 'SQL', 'AI/ML', 'Node.js', 'Git', 'CTDL'].map((tag) => (
-              <span key={tag} className={styles.tagPill}>{tag}</span>
+            {[
+              'Java',
+              'React',
+              'Python',
+              'SQL',
+              'AI/ML',
+              'Node.js',
+              'Git',
+              'CTDL',
+            ].map((tag) => (
+              <span key={tag} className={styles.tagPill}>
+                {tag}
+              </span>
             ))}
           </div>
         </div>
@@ -121,14 +153,20 @@ export default function Home() {
               <div className={styles.cardSub}>OOP trong Java</div>
             </div>
           </div>
-          <div className={styles.floatingCard} style={{ animationDelay: '0.4s' }}>
+          <div
+            className={styles.floatingCard}
+            style={{ animationDelay: '0.4s' }}
+          >
             <span>🏆</span>
             <div>
               <div className={styles.cardTitle}>Best Answer</div>
               <div className={styles.cardSub}>+25 điểm uy tín</div>
             </div>
           </div>
-          <div className={styles.floatingCard} style={{ animationDelay: '0.8s' }}>
+          <div
+            className={styles.floatingCard}
+            style={{ animationDelay: '0.8s' }}
+          >
             <span>👍</span>
             <div>
               <div className={styles.cardTitle}>+100 upvote</div>
@@ -143,7 +181,9 @@ export default function Home() {
       <section className={styles.statsSection}>
         {stats.map((stat, i) => (
           <div key={i} className={styles.statCard}>
-            <div className={styles.statIcon} style={{ color: stat.color }}>{stat.icon}</div>
+            <div className={styles.statIcon} style={{ color: stat.color }}>
+              {stat.icon}
+            </div>
             <div className={styles.statValue} style={{ color: stat.color }}>
               {formatNumber(counters[i], i)}
             </div>
@@ -162,7 +202,11 @@ export default function Home() {
         </div>
         <div className={styles.postGrid}>
           {mockPosts.map((post, index) => (
-            <div key={post.id} className={styles.postItem} style={{ animationDelay: `${index * 0.1}s` }}>
+            <div
+              key={post.id}
+              className={styles.postItem}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <PostCard
                 id={post.id}
                 title={post.title}
@@ -188,7 +232,11 @@ export default function Home() {
         </div>
         <div className={styles.featuresGrid}>
           {features.map((f, i) => (
-            <div key={i} className={styles.featureCard} style={{ animationDelay: `${i * 0.1}s` }}>
+            <div
+              key={i}
+              className={styles.featureCard}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
               <div className={styles.featureIcon}>{f.icon}</div>
               <h3 className={styles.featureTitle}>{f.title}</h3>
               <p className={styles.featureDesc}>{f.desc}</p>
@@ -201,7 +249,11 @@ export default function Home() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>🏆 Top Đóng Góp Viên</h2>
-          <Button type="link" danger onClick={() => history.push('/leaderboard')}>
+          <Button
+            type="link"
+            danger
+            onClick={() => history.push('/leaderboard')}
+          >
             Xem Bảng Xếp Hạng <ArrowRightOutlined />
           </Button>
         </div>
@@ -213,7 +265,9 @@ export default function Home() {
               onClick={() => history.push(`/profile/${user.id}`)}
             >
               <div className={styles.contributorRank}>#{i + 1}</div>
-              <div className={styles.contributorAvatar}>{user.name.charAt(0)}</div>
+              <div className={styles.contributorAvatar}>
+                {user.name.charAt(0)}
+              </div>
               <div className={styles.contributorName}>{user.name}</div>
               <div className={styles.contributorRole}>{user.role}</div>
               <div className={styles.contributorRep}>
@@ -230,12 +284,20 @@ export default function Home() {
           <h2>Sẵn sàng chia sẻ kiến thức?</h2>
           <p>Tham gia cùng hàng nghìn sinh viên và giảng viên ngay hôm nay</p>
           <div className={styles.ctaBannerActions}>
-            <Button size="large" type="primary" className={styles.ctaBannerBtn}
-              onClick={() => history.push('/register')}>
+            <Button
+              size="large"
+              type="primary"
+              className={styles.ctaBannerBtn}
+              onClick={() => history.push('/register')}
+            >
               Đăng Ký Miễn Phí
             </Button>
-            <Button size="large" ghost className={styles.ctaBannerGhost}
-              onClick={() => history.push('/forum')}>
+            <Button
+              size="large"
+              ghost
+              className={styles.ctaBannerGhost}
+              onClick={() => history.push('/forum')}
+            >
               Khám Phá Ngay
             </Button>
           </div>

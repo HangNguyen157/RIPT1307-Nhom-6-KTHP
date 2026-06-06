@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
-import { Outlet, history, useLocation } from '@umijs/max';
-import { Layout, Menu, Button, message } from 'antd';
-import {
-  HomeOutlined, FileTextOutlined, UsersOutlined,
-  BarChartOutlined, LogoutOutlined, WarningOutlined,
-} from '@ant-design/icons';
-import { authUtils } from '@/utils/auth';
 import { isAdmin } from '@/server/models/User';
+import { authUtils } from '@/utils/auth';
+import {
+  BarChartOutlined,
+  FileTextOutlined,
+  LogoutOutlined,
+  UserOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
+import { Outlet, history, useLocation } from '@umijs/max';
+import { Button, Layout, Menu, message } from 'antd';
+import { useEffect } from 'react';
 import styles from './index.less';
 
 const { Sider, Content } = Layout;
@@ -28,18 +31,52 @@ export default function Admin() {
   };
 
   const menuItems = [
-    { key: '/admin/dashboard', icon: <BarChartOutlined />, label: 'Dashboard', onClick: () => history.push('/admin/dashboard') },
-    { key: '/admin/posts', icon: <FileTextOutlined />, label: 'Quản Lý Bài Viết', onClick: () => history.push('/admin/posts') },
-    { key: '/admin/users', icon: <UsersOutlined />, label: 'Quản Lý Người Dùng', onClick: () => history.push('/admin/users') },
-    { key: '/admin/reports', icon: <WarningOutlined />, label: 'Báo Cáo Vi Phạm', onClick: () => history.push('/admin/reports') },
+    {
+      key: '/admin/dashboard',
+      icon: <BarChartOutlined />,
+      label: 'Dashboard',
+      onClick: () => history.push('/admin/dashboard'),
+    },
+    {
+      key: '/admin/posts',
+      icon: <FileTextOutlined />,
+      label: 'Quản Lý Bài Viết',
+      onClick: () => history.push('/admin/posts'),
+    },
+    {
+      key: '/admin/users',
+      icon: <UserOutlined />,
+      label: 'Quản Lý Người Dùng',
+      onClick: () => history.push('/admin/users'),
+    },
+    {
+      key: '/admin/reports',
+      icon: <WarningOutlined />,
+      label: 'Báo Cáo Vi Phạm',
+      onClick: () => history.push('/admin/reports'),
+    },
   ];
 
   return (
     <Layout className={styles.adminLayout}>
-      <Sider width={250} style={{ background: '#0f0606', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+      <Sider
+        width={250}
+        style={{
+          background: '#0f0606',
+          borderRight: '1px solid rgba(255,255,255,0.05)',
+        }}
+      >
         <div className={styles.logo}>
           <span>📚 EduForum</span>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>Admin Panel</div>
+          <div
+            style={{
+              fontSize: 11,
+              color: 'rgba(255,255,255,0.5)',
+              marginTop: 2,
+            }}
+          >
+            Admin Panel
+          </div>
         </div>
 
         <Menu
@@ -50,16 +87,27 @@ export default function Admin() {
           items={menuItems}
         />
 
-        <div style={{ padding: 16, position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+        <div
+          style={{
+            padding: 16,
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
           <Button
-            type="primary" danger block
+            type="primary"
+            danger
+            block
             icon={<LogoutOutlined />}
             onClick={handleLogout}
           >
             Thoát Admin
           </Button>
           <Button
-            block style={{ marginTop: 8 }}
+            block
+            style={{ marginTop: 8 }}
             onClick={() => history.push('/home')}
           >
             🏠 Về Trang Chủ

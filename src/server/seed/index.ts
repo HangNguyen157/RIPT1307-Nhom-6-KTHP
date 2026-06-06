@@ -1,8 +1,8 @@
-export { MOCK_USERS, MOCK_ADMIN_USERS } from './users';
 export {
-  MOCK_QUESTIONS,
   MOCK_COMMENTS_BY_QUESTION,
-  getQuestionById,
+  MOCK_QUESTIONS,
   getCommentsByQuestionId,
+  getQuestionById,
 } from './questions';
 export { MOCK_TAGS, TAG_CATEGORIES } from './tags';
+export { MOCK_ADMIN_USERS, MOCK_USERS } from './users';

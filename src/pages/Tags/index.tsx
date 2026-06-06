@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Input, Button } from 'antd';
+import { MOCK_TAGS, TAG_CATEGORIES } from '@/server/seed/tags';
 import { SearchOutlined } from '@ant-design/icons';
 import { history } from '@umijs/max';
-import { MOCK_TAGS, TAG_CATEGORIES } from '@/server/seed/tags';
+import { useState } from 'react';
 import styles from './index.less';
 
 const ALL_TAGS = MOCK_TAGS;
@@ -14,13 +13,20 @@ export default function Tags() {
   const [followed, setFollowed] = useState<string[]>(['React', 'JavaScript']);
 
   const filtered = ALL_TAGS.filter((tag) => {
-    const matchSearch = tag.name.toLowerCase().includes(search.toLowerCase()) || tag.desc.toLowerCase().includes(search.toLowerCase());
-    const matchCat = activeCategory === 'all' || tag.category === activeCategory;
+    const matchSearch =
+      tag.name.toLowerCase().includes(search.toLowerCase()) ||
+      tag.desc.toLowerCase().includes(search.toLowerCase());
+    const matchCat =
+      activeCategory === 'all' || tag.category === activeCategory;
     return matchSearch && matchCat;
   });
 
   const toggleFollow = (tagName: string) => {
-    setFollowed((prev) => prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]);
+    setFollowed((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName)
+        : [...prev, tagName],
+    );
   };
 
   const totalQuestions = ALL_TAGS.reduce((sum, t) => sum + t.count, 0);
@@ -31,7 +37,10 @@ export default function Tags() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>🏷️ Tất Cả Thẻ</h1>
-          <p className={styles.pageSubtitle}>{ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
+          <p className={styles.pageSubtitle}>
+            {ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu
+            hỏi
+          </p>
         </div>
         {followed.length > 0 && (
           <div className={styles.followedInfo}>
@@ -56,7 +65,9 @@ export default function Tags() {
         {CATEGORIES.map((cat) => (
           <button
             key={cat.key}
-            className={`${styles.catBtn} ${activeCategory === cat.key ? styles.active : ''}`}
+            className={`${styles.catBtn} ${
+              activeCategory === cat.key ? styles.active : ''
+            }`}
             onClick={() => setActiveCategory(cat.key)}
           >
             {cat.emoji} {cat.label}
@@ -67,9 +78,20 @@ export default function Tags() {
       {/* Tags Grid */}
       <div className={styles.tagsGrid}>
         {filtered.map((tag, i) => (
-          <div key={tag.name} className={styles.tagCard} style={{ animationDelay: `${i * 0.03}s` }}>
+          <div
+            key={tag.name}
+            className={styles.tagCard}
+            style={{ animationDelay: `${i * 0.03}s` }}
+          >
             <div className={styles.tagCardHeader}>
-              <div className={styles.tagPill} style={{ background: `${tag.color}18`, color: tag.color, borderColor: `${tag.color}40` }}>
+              <div
+                className={styles.tagPill}
+                style={{
+                  background: `${tag.color}18`,
+                  color: tag.color,
+                  borderColor: `${tag.color}40`,
+                }}
+              >
                 {tag.name}
               </div>
               <span className={styles.tagCount}>{tag.count}</span>
@@ -77,9 +99,15 @@ export default function Tags() {
             <p className={styles.tagDesc}>{tag.desc}</p>
             <div className={styles.tagCardFooter}>
               <button
-                className={`${styles.followBtn} ${followed.includes(tag.name) ? styles.following : ''}`}
+                className={`${styles.followBtn} ${
+                  followed.includes(tag.name) ? styles.following : ''
+                }`}
                 onClick={() => toggleFollow(tag.name)}
-                style={followed.includes(tag.name) ? { borderColor: tag.color, color: tag.color } : {}}
+                style={
+                  followed.includes(tag.name)
+                    ? { borderColor: tag.color, color: tag.color }
+                    : {}
+                }
               >
                 {followed.includes(tag.name) ? '✓ Đang Theo Dõi' : '+ Theo Dõi'}
               </button>

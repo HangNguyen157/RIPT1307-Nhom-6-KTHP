@@ -1,5 +1,5 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { MOCK_ADMIN_USERS } from '@/server/seed/users';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method === 'GET') {

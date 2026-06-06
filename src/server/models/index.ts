@@ -1,5 +1,5 @@
-export * from './User';
-export * from './Question';
 export * from './Comment';
+export * from './Question';
 export * from './Tag';
+export * from './User';
 export * from './Vote';

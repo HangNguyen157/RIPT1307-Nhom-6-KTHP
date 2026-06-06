@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Button, Collapse, Tooltip } from 'antd';
 import {
-  FireOutlined, BookOutlined, TeamOutlined, TagsOutlined,
-  CloseOutlined, FilterOutlined,
+  BookOutlined,
+  CloseOutlined,
+  FilterOutlined,
+  FireOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
+import { Collapse, Tooltip } from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 const popularTags = [
@@ -35,7 +38,10 @@ interface SidebarProps {
 
 export default function Sidebar({ onClose }: SidebarProps) {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [followedTags, setFollowedTags] = useState<string[]>(['React', 'JavaScript']);
+  const [followedTags, setFollowedTags] = useState<string[]>([
+    'React',
+    'JavaScript',
+  ]);
 
   const toggleFollow = (tag: string) => {
     setFollowedTags((prev) =>
@@ -56,11 +62,15 @@ export default function Sidebar({ onClose }: SidebarProps) {
           {popularTags.map((tag) => (
             <Tooltip
               key={tag.name}
-              title={followedTags.includes(tag.name) ? 'Bỏ theo dõi' : 'Theo dõi'}
+              title={
+                followedTags.includes(tag.name) ? 'Bỏ theo dõi' : 'Theo dõi'
+              }
               placement="right"
             >
               <div
-                className={`${styles.tagItem} ${followedTags.includes(tag.name) ? styles.followed : ''}`}
+                className={`${styles.tagItem} ${
+                  followedTags.includes(tag.name) ? styles.followed : ''
+                }`}
                 onClick={() => toggleFollow(tag.name)}
               >
                 <span
@@ -77,7 +87,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
               </div>
             </Tooltip>
           ))}
-          <button className={styles.viewAllBtn} onClick={() => history.push('/tags')}>
+          <button
+            className={styles.viewAllBtn}
+            onClick={() => history.push('/tags')}
+          >
             Xem Tất Cả Thẻ →
           </button>
         </div>
@@ -93,8 +106,11 @@ export default function Sidebar({ onClose }: SidebarProps) {
       children: (
         <div className={styles.subjectList}>
           {subjects.map((subject) => (
-            <div key={subject.name} className={styles.subjectItem}
-              onClick={() => history.push(`/forum?subject=${subject.name}`)}>
+            <div
+              key={subject.name}
+              className={styles.subjectItem}
+              onClick={() => history.push(`/forum?subject=${subject.name}`)}
+            >
               <span>{subject.name}</span>
               <span className={styles.count}>{subject.count}</span>
             </div>
@@ -112,8 +128,11 @@ export default function Sidebar({ onClose }: SidebarProps) {
       children: (
         <div className={styles.departmentList}>
           {departments.map((dept) => (
-            <button key={dept} className={styles.deptBtn}
-              onClick={() => history.push(`/forum?dept=${dept}`)}>
+            <button
+              key={dept}
+              className={styles.deptBtn}
+              onClick={() => history.push(`/forum?dept=${dept}`)}
+            >
               {dept}
             </button>
           ))}
@@ -135,7 +154,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {onClose && (
         <div className={styles.drawerHeader}>
           <span className={styles.drawerTitle}>📚 EduForum</span>
-          <button className={styles.closeBtn} onClick={onClose}><CloseOutlined /></button>
+          <button className={styles.closeBtn} onClick={onClose}>
+            <CloseOutlined />
+          </button>
         </div>
       )}
 
@@ -148,8 +169,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
             { label: '🏷️ Thẻ', path: '/tags' },
             { label: '🏆 Xếp Hạng', path: '/leaderboard' },
           ].map((item) => (
-            <button key={item.path} className={styles.quickNavBtn}
-              onClick={() => { history.push(item.path); onClose(); }}>
+            <button
+              key={item.path}
+              className={styles.quickNavBtn}
+              onClick={() => {
+                history.push(item.path);
+                onClose();
+              }}
+            >
               {item.label}
             </button>
           ))}
@@ -175,8 +202,12 @@ export default function Sidebar({ onClose }: SidebarProps) {
           {filterOptions.map((opt) => (
             <button
               key={opt.key}
-              className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
-              onClick={() => setActiveFilter(activeFilter === opt.key ? null : opt.key)}
+              className={`${styles.filterBtn} ${
+                activeFilter === opt.key ? styles.active : ''
+              }`}
+              onClick={() =>
+                setActiveFilter(activeFilter === opt.key ? null : opt.key)
+              }
             >
               {opt.label}
             </button>

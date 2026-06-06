@@ -1,26 +1,30 @@
-"use strict";
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
+'use strict';
+let __defProp = Object.defineProperty;
+let __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+let __getOwnPropNames = Object.getOwnPropertyNames;
+let __hasOwnProp = Object.prototype.hasOwnProperty;
+let __export = (target, all) => {
+  for (let name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
+let __copyProps = (to, from, except, desc) => {
+  if ((from && typeof from === 'object') || typeof from === 'function') {
     for (let key of __getOwnPropNames(from))
       if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        __defProp(to, key, {
+          get: () => from[key],
+          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+        });
   }
   return to;
 };
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+let __toCommonJS = (mod) =>
+  __copyProps(__defProp({}, '__esModule', { value: true }), mod);
 
 // src/.umi/api/_middlewares.ts
-var middlewares_exports = {};
+let middlewares_exports = {};
 __export(middlewares_exports, {
-  default: () => middlewares_default
+  default: () => middlewares_default,
 });
 module.exports = __toCommonJS(middlewares_exports);
 var middlewares_default = async (req, res, next) => {

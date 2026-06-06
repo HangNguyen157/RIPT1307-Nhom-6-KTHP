@@ -68,8 +68,12 @@
   color: var(--text-secondary);
   line-height: 1;
 
-  &.liked { color: var(--color-primary); }
-  &.disliked { color: #3b82f6; }
+  &.liked {
+    color: var(--color-primary);
+  }
+  &.disliked {
+    color: #3b82f6;
+  }
 }
 
 // Content
@@ -233,7 +237,29 @@
   align-items: center;
   transition: color 0.2s;
 
-  &:hover, &.bookmarked {
+  &:hover,
+  &.bookmarked {
     color: var(--color-primary);
   }
+}
+
+.postCard {
+  color: var(--text-primary);
+}
+
+.title {
+  color: var(--text-primary);
+}
+
+.excerpt {
+  color: var(--text-secondary);
+}
+
+.authorName {
+  color: var(--text-primary);
+}
+
+.timestamp,
+.stat {
+  color: var(--text-tertiary);
 }

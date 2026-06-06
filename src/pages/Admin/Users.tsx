@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
-import { Button, Select, Input, Table, Tag, Avatar, Space, Badge, Switch, message } from 'antd';
+import { MOCK_ADMIN_USERS } from '@/server/seed/users';
 import {
-  UsersOutlined, FileTextOutlined, CommentOutlined,
-  SearchOutlined, LockOutlined, UnlockOutlined, DeleteOutlined, CheckOutlined, EyeOutlined,
-  TrophyOutlined, FireOutlined,
+  EyeOutlined,
+  LockOutlined,
+  SearchOutlined,
+  UnlockOutlined,
 } from '@ant-design/icons';
 import { history } from '@umijs/max';
-import { MOCK_ADMIN_USERS } from '@/server/seed/users';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Input,
+  Select,
+  Space,
+  Table,
+  Tag,
+  message,
+} from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 const USERS = MOCK_ADMIN_USERS.map((u) => ({
@@ -21,11 +32,15 @@ const USERS = MOCK_ADMIN_USERS.map((u) => ({
 }));
 
 const ROLE_COLORS: Record<string, string> = {
-  student: 'blue', teacher: 'purple', admin: 'red',
+  student: 'blue',
+  teacher: 'purple',
+  admin: 'red',
 };
 
 const ROLE_LABELS: Record<string, string> = {
-  student: '👨‍🎓 Sinh viên', teacher: '👨‍🏫 Giảng viên', admin: '⚙️ Admin',
+  student: '👨‍🎓 Sinh viên',
+  teacher: '👨‍🏫 Giảng viên',
+  admin: '⚙️ Admin',
 };
 
 export default function AdminUsers() {
@@ -34,15 +49,27 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState('all');
 
   const filtered = users.filter((u) => {
-    const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === 'all' || u.role === roleFilter;
     return matchSearch && matchRole;
   });
 
   const toggleBan = (id: string) => {
-    setUsers(users.map((u) => u.id === id ? { ...u, status: u.status === 'active' ? 'banned' : 'active' } : u));
+    setUsers(
+      users.map((u) =>
+        u.id === id
+          ? { ...u, status: u.status === 'active' ? 'banned' : 'active' }
+          : u,
+      ),
+    );
     const user = users.find((u) => u.id === id);
-    message.success(user?.status === 'active' ? `Đã khóa tài khoản ${user.name}` : `Đã mở khóa tài khoản`);
+    message.success(
+      user?.status === 'active'
+        ? `Đã khóa tài khoản ${user.name}`
+        : `Đã mở khóa tài khoản`,
+    );
   };
 
   const columns = [
@@ -51,7 +78,13 @@ export default function AdminUsers() {
       key: 'user',
       render: (record: any) => (
         <div className={styles.userCell}>
-          <Avatar size={36} style={{ background: record.role === 'teacher' ? '#6366f1' : 'var(--color-primary)' }}>
+          <Avatar
+            size={36}
+            style={{
+              background:
+                record.role === 'teacher' ? '#6366f1' : 'var(--color-primary)',
+            }}
+          >
             {record.name.charAt(0)}
           </Avatar>
           <div>
@@ -65,14 +98,18 @@ export default function AdminUsers() {
       title: 'Vai Trò',
       dataIndex: 'role',
       key: 'role',
-      render: (role: string) => <Tag color={ROLE_COLORS[role]}>{ROLE_LABELS[role]}</Tag>,
+      render: (role: string) => (
+        <Tag color={ROLE_COLORS[role]}>{ROLE_LABELS[role]}</Tag>
+      ),
     },
     {
       title: 'Uy Tín',
       dataIndex: 'rep',
       key: 'rep',
       sorter: (a: any, b: any) => b.rep - a.rep,
-      render: (rep: number) => <span className={styles.repScore}>⭐ {rep.toLocaleString('vi')}</span>,
+      render: (rep: number) => (
+        <span className={styles.repScore}>⭐ {rep.toLocaleString('vi')}</span>
+      ),
     },
     {
       title: 'Bài Viết',
@@ -101,15 +138,20 @@ export default function AdminUsers() {
       key: 'actions',
       render: (record: any) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />}
-            onClick={() => history.push(`/profile/${record.id}`)}>
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => history.push(`/profile/${record.id}`)}
+          >
             Xem
           </Button>
           <Button
             size="small"
             danger={record.status === 'active'}
             type={record.status === 'active' ? 'default' : 'primary'}
-            icon={record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />}
+            icon={
+              record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />
+            }
             onClick={() => toggleBan(record.id)}
           >
             {record.status === 'active' ? 'Khóa' : 'Mở'}
@@ -120,10 +162,30 @@ export default function AdminUsers() {
   ];
 
   const stats = [
-    { label: 'Tổng Người Dùng', value: users.length, icon: '👥', color: '#3b82f6' },
-    { label: 'Sinh Viên', value: users.filter((u) => u.role === 'student').length, icon: '👨‍🎓', color: '#10b981' },
-    { label: 'Giảng Viên', value: users.filter((u) => u.role === 'teacher').length, icon: '👨‍🏫', color: '#8b5cf6' },
-    { label: 'Đã Khóa', value: users.filter((u) => u.status === 'banned').length, icon: '🔒', color: '#ef4444' },
+    {
+      label: 'Tổng Người Dùng',
+      value: users.length,
+      icon: '👥',
+      color: '#3b82f6',
+    },
+    {
+      label: 'Sinh Viên',
+      value: users.filter((u) => u.role === 'student').length,
+      icon: '👨‍🎓',
+      color: '#10b981',
+    },
+    {
+      label: 'Giảng Viên',
+      value: users.filter((u) => u.role === 'teacher').length,
+      icon: '👨‍🏫',
+      color: '#8b5cf6',
+    },
+    {
+      label: 'Đã Khóa',
+      value: users.filter((u) => u.status === 'banned').length,
+      icon: '🔒',
+      color: '#ef4444',
+    },
   ];
 
   return (
@@ -136,7 +198,9 @@ export default function AdminUsers() {
           <div key={i} className={styles.miniStat}>
             <span className={styles.miniStatIcon}>{s.icon}</span>
             <div>
-              <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
+              <div className={styles.miniStatValue} style={{ color: s.color }}>
+                {s.value}
+              </div>
               <div className={styles.miniStatLabel}>{s.label}</div>
             </div>
           </div>
@@ -173,7 +237,9 @@ export default function AdminUsers() {
         rowKey="id"
         className={styles.adminTable}
         pagination={{ pageSize: 10, showSizeChanger: false }}
-        rowClassName={(record) => record.status === 'banned' ? styles.bannedRow : ''}
+        rowClassName={(record) =>
+          record.status === 'banned' ? styles.bannedRow : ''
+        }
       />
     </div>
   );

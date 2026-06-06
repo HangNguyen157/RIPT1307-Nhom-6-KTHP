@@ -1,7 +1,7 @@
-import { Empty, Input, Select, Row, Col, Button, Space } from 'antd';
-import { useSearchParams } from '@umijs/max';
-import { useState } from 'react';
 import PostCard from '@/components/PostCard';
+import { useSearchParams } from '@umijs/max';
+import { Col, Empty, Input, Row, Select } from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 export default function Search() {
@@ -78,9 +78,7 @@ export default function Search() {
           <Col xs={24} sm={12}>
             <Select
               value={filters.sortBy}
-              onChange={(value) =>
-                setFilters({ ...filters, sortBy: value })
-              }
+              onChange={(value) => setFilters({ ...filters, sortBy: value })}
               options={[
                 { label: 'Liên quan nhất', value: 'relevant' },
                 { label: 'Mới nhất', value: 'newest' },
@@ -93,9 +91,7 @@ export default function Search() {
           <Col xs={24} sm={12}>
             <Select
               value={filters.filterBy}
-              onChange={(value) =>
-                setFilters({ ...filters, filterBy: value })
-              }
+              onChange={(value) => setFilters({ ...filters, filterBy: value })}
               options={[
                 { label: 'Tất cả', value: 'all' },
                 { label: 'Chưa có câu trả lời', value: 'unanswered' },

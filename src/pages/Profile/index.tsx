@@ -1,36 +1,72 @@
-import React, { useState } from 'react';
-import { Avatar, Button, Tabs, Tag, Progress, Tooltip } from 'antd';
-import {
-  EditOutlined, MailOutlined, TrophyOutlined,
-  FireOutlined, LikeOutlined, CalendarOutlined,
-  BookOutlined, MessageOutlined, BookmarkOutlined,
-} from '@ant-design/icons';
-import { useParams, history } from '@umijs/max';
-import { getReputationLevel, getNextLevel, getProgressToNextLevel, getBadgesByIds } from '@/utils/reputation';
 import PostCard from '@/components/PostCard';
+import {
+  getBadgesByIds,
+  getNextLevel,
+  getProgressToNextLevel,
+  getReputationLevel,
+} from '@/utils/reputation';
+import {
+  BookOutlined,
+  CalendarOutlined,
+  EditOutlined,
+  FireOutlined,
+  LikeOutlined,
+  MailOutlined,
+  MessageOutlined,
+  StarOutlined,
+  TrophyOutlined,
+} from '@ant-design/icons';
+import { history, useParams } from '@umijs/max';
+import { Avatar, Button, Progress, Tabs, Tooltip } from 'antd';
 import styles from './index.less';
 
 const MOCK_USER = {
-  id: '2', name: 'Trần Thị Hương', email: 'huong@student.ptit.edu.vn',
-  role: 'student', department: 'Công Nghệ Thông Tin', major: 'Lập Trình Web',
-  studentId: 'B21DCCN123', bio: 'Sinh viên năm 3 ngành CNTT, đam mê Web Development và AI. Yêu thích React, Node.js và Python.',
-  reputation: 1250, posts: 28, answers: 45, votes: 320, followers: 89, following: 34,
-  joinDate: '01/09/2024', badges: ['first-question', 'helpful', '100-votes'],
+  id: '2',
+  name: 'Trần Thị Hương',
+  email: 'huong@student.ptit.edu.vn',
+  role: 'student',
+  department: 'Công Nghệ Thông Tin',
+  major: 'Lập Trình Web',
+  studentId: 'B21DCCN123',
+  bio: 'Sinh viên năm 3 ngành CNTT, đam mê Web Development và AI. Yêu thích React, Node.js và Python.',
+  reputation: 1250,
+  posts: 28,
+  answers: 45,
+  votes: 320,
+  followers: 89,
+  following: 34,
+  joinDate: '01/09/2024',
+  badges: ['first-question', 'helpful', '100-votes'],
   topTags: ['React', 'JavaScript', 'Python', 'Java'],
 };
 
 const userPosts = [
   {
-    id: '1', title: 'Giải thích OOP trong Java: Class, Object, Inheritance',
-    excerpt: 'OOP là nền tảng của Java. Tôi sẽ giải thích chi tiết về các khái niệm cốt lõi...',
-    author: MOCK_USER.name, tags: ['Java', 'OOP', 'Lập Trình'],
-    votes: 45, comments: 12, views: 523, timestamp: '2 giờ trước', subject: 'Lập Trình Cơ Bản', isSolved: true,
+    id: '1',
+    title: 'Giải thích OOP trong Java: Class, Object, Inheritance',
+    excerpt:
+      'OOP là nền tảng của Java. Tôi sẽ giải thích chi tiết về các khái niệm cốt lõi...',
+    author: MOCK_USER.name,
+    tags: ['Java', 'OOP', 'Lập Trình'],
+    votes: 45,
+    comments: 12,
+    views: 523,
+    timestamp: '2 giờ trước',
+    subject: 'Lập Trình Cơ Bản',
+    isSolved: true,
   },
   {
-    id: '2', title: 'React Hooks: useState, useEffect, useContext',
+    id: '2',
+    title: 'React Hooks: useState, useEffect, useContext',
     excerpt: 'React Hooks là một cách mới để viết components trong React...',
-    author: MOCK_USER.name, tags: ['React', 'JavaScript', 'Web Development'],
-    votes: 67, comments: 23, views: 892, timestamp: '5 giờ trước', subject: 'Web Development', isSolved: false,
+    author: MOCK_USER.name,
+    tags: ['React', 'JavaScript', 'Web Development'],
+    votes: 67,
+    comments: 23,
+    views: 892,
+    timestamp: '5 giờ trước',
+    subject: 'Web Development',
+    isSolved: false,
   },
 ];
 
@@ -41,7 +77,9 @@ const generateHeatmap = () => {
     const week = [];
     for (let d = 0; d < 7; d++) {
       const rand = Math.random();
-      week.push(rand < 0.5 ? 0 : rand < 0.7 ? 1 : rand < 0.85 ? 2 : rand < 0.95 ? 3 : 4);
+      week.push(
+        rand < 0.5 ? 0 : rand < 0.7 ? 1 : rand < 0.85 ? 2 : rand < 0.95 ? 3 : 4,
+      );
     }
     data.push(week);
   }
@@ -63,7 +101,9 @@ export default function Profile() {
     {
       key: 'posts',
       label: (
-        <span><BookOutlined /> Câu Hỏi ({user.posts})</span>
+        <span>
+          <BookOutlined /> Câu Hỏi ({user.posts})
+        </span>
       ),
       children: (
         <div className={styles.postList}>
@@ -75,13 +115,32 @@ export default function Profile() {
     },
     {
       key: 'answers',
-      label: <span><MessageOutlined /> Câu Trả Lời ({user.answers})</span>,
+      label: (
+        <span>
+          <MessageOutlined /> Câu Trả Lời ({user.answers})
+        </span>
+      ),
       children: (
         <div className={styles.activityFeed}>
           {[
-            { icon: '💬', text: 'Đã trả lời "Cách dùng useEffect trong React"', time: '2 giờ trước', votes: 8 },
-            { icon: '✅', text: 'Câu trả lời về SQL JOIN được chọn hay nhất', time: '1 ngày trước', votes: 15 },
-            { icon: '💬', text: 'Đã trả lời "Phân biệt Stack và Queue"', time: '3 ngày trước', votes: 5 },
+            {
+              icon: '💬',
+              text: 'Đã trả lời "Cách dùng useEffect trong React"',
+              time: '2 giờ trước',
+              votes: 8,
+            },
+            {
+              icon: '✅',
+              text: 'Câu trả lời về SQL JOIN được chọn hay nhất',
+              time: '1 ngày trước',
+              votes: 15,
+            },
+            {
+              icon: '💬',
+              text: 'Đã trả lời "Phân biệt Stack và Queue"',
+              time: '3 ngày trước',
+              votes: 5,
+            },
           ].map((item, i) => (
             <div key={i} className={styles.activityItem}>
               <span className={styles.activityIcon}>{item.icon}</span>
@@ -99,13 +158,21 @@ export default function Profile() {
     },
     {
       key: 'saved',
-      label: <span><BookmarkOutlined /> Đã Lưu</span>,
+      label: (
+        <span>
+          <StarOutlined /> Đã Lưu
+        </span>
+      ),
       children: (
         <div className={styles.savedInfo}>
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>📌</div>
             <p>Chưa có bài viết được lưu</p>
-            <Button type="primary" danger onClick={() => history.push('/forum')}>
+            <Button
+              type="primary"
+              danger
+              onClick={() => history.push('/forum')}
+            >
               Khám Phá Diễn Đàn
             </Button>
           </div>
@@ -114,7 +181,11 @@ export default function Profile() {
     },
     {
       key: 'activity',
-      label: <span><CalendarOutlined /> Hoạt Động</span>,
+      label: (
+        <span>
+          <CalendarOutlined /> Hoạt Động
+        </span>
+      ),
       children: (
         <div>
           <div className={styles.heatmapSection}>
@@ -136,7 +207,11 @@ export default function Profile() {
             <div className={styles.heatmapLegend}>
               <span>Ít</span>
               {heatColors.map((c, i) => (
-                <div key={i} className={styles.legendCell} style={{ background: c }} />
+                <div
+                  key={i}
+                  className={styles.legendCell}
+                  style={{ background: c }}
+                />
               ))}
               <span>Nhiều</span>
             </div>
@@ -172,23 +247,34 @@ export default function Profile() {
             </div>
 
             <div className={styles.profileDetails}>
-              <span><MailOutlined /> {user.email}</span>
+              <span>
+                <MailOutlined /> {user.email}
+              </span>
               <span>🏛️ {user.department}</span>
               <span>📚 {user.major}</span>
               <span>🪪 {user.studentId}</span>
-              <span><CalendarOutlined /> Tham gia {user.joinDate}</span>
+              <span>
+                <CalendarOutlined /> Tham gia {user.joinDate}
+              </span>
             </div>
 
             <p className={styles.bio}>{user.bio}</p>
 
             <div className={styles.topTagsRow}>
               {user.topTags.map((tag) => (
-                <span key={tag} className={styles.topTag}>{tag}</span>
+                <span key={tag} className={styles.topTag}>
+                  {tag}
+                </span>
               ))}
             </div>
           </div>
 
-          <Button type="primary" danger icon={<EditOutlined />} className={styles.editBtn}>
+          <Button
+            type="primary"
+            danger
+            icon={<EditOutlined />}
+            className={styles.editBtn}
+          >
             Chỉnh Sửa
           </Button>
         </div>
@@ -196,15 +282,44 @@ export default function Profile() {
         {/* Stats Row */}
         <div className={styles.statsRow}>
           {[
-            { icon: <TrophyOutlined />, label: 'Điểm Uy Tín', value: user.reputation, color: '#dc2626' },
-            { icon: <BookOutlined />, label: 'Câu Hỏi', value: user.posts, color: '#3b82f6' },
-            { icon: <MessageOutlined />, label: 'Câu Trả Lời', value: user.answers, color: '#10b981' },
-            { icon: <LikeOutlined />, label: 'Tổng Vote', value: user.votes, color: '#f59e0b' },
-            { icon: <FireOutlined />, label: 'Người Theo Dõi', value: user.followers, color: '#8b5cf6' },
+            {
+              icon: <TrophyOutlined />,
+              label: 'Điểm Uy Tín',
+              value: user.reputation,
+              color: '#dc2626',
+            },
+            {
+              icon: <BookOutlined />,
+              label: 'Câu Hỏi',
+              value: user.posts,
+              color: '#3b82f6',
+            },
+            {
+              icon: <MessageOutlined />,
+              label: 'Câu Trả Lời',
+              value: user.answers,
+              color: '#10b981',
+            },
+            {
+              icon: <LikeOutlined />,
+              label: 'Tổng Vote',
+              value: user.votes,
+              color: '#f59e0b',
+            },
+            {
+              icon: <FireOutlined />,
+              label: 'Người Theo Dõi',
+              value: user.followers,
+              color: '#8b5cf6',
+            },
           ].map((stat, i) => (
             <div key={i} className={styles.statCard}>
-              <div className={styles.statIcon} style={{ color: stat.color }}>{stat.icon}</div>
-              <div className={styles.statValue} style={{ color: stat.color }}>{stat.value.toLocaleString('vi')}</div>
+              <div className={styles.statIcon} style={{ color: stat.color }}>
+                {stat.icon}
+              </div>
+              <div className={styles.statValue} style={{ color: stat.color }}>
+                {stat.value.toLocaleString('vi')}
+              </div>
               <div className={styles.statLabel}>{stat.label}</div>
             </div>
           ))}
@@ -214,12 +329,15 @@ export default function Profile() {
         <div className={styles.repSection}>
           <div className={styles.repHeader}>
             <div className={styles.repLevel}>
-              <span style={{ color: repLevel.color }}>{repLevel.emoji} {repLevel.name}</span>
+              <span style={{ color: repLevel.color }}>
+                {repLevel.emoji} {repLevel.name}
+              </span>
               <span className={styles.repPoints}>{user.reputation} pts</span>
             </div>
             {nextLevel && (
               <span className={styles.nextLevel}>
-                Cần <strong>{nextLevel.minPoints - user.reputation}</strong> pts để lên {nextLevel.emoji} {nextLevel.name}
+                Cần <strong>{nextLevel.minPoints - user.reputation}</strong> pts
+                để lên {nextLevel.emoji} {nextLevel.name}
               </span>
             )}
           </div>
@@ -239,9 +357,20 @@ export default function Profile() {
             <div className={styles.badgesList}>
               {badges.map((badge) => (
                 <Tooltip key={badge.id} title={badge.description}>
-                  <div className={styles.badge} style={{ borderColor: `${badge.color}40`, background: `${badge.color}10` }}>
+                  <div
+                    className={styles.badge}
+                    style={{
+                      borderColor: `${badge.color}40`,
+                      background: `${badge.color}10`,
+                    }}
+                  >
                     <span className={styles.badgeEmoji}>{badge.emoji}</span>
-                    <span className={styles.badgeName} style={{ color: badge.color }}>{badge.name}</span>
+                    <span
+                      className={styles.badgeName}
+                      style={{ color: badge.color }}
+                    >
+                      {badge.name}
+                    </span>
                   </div>
                 </Tooltip>
               ))}

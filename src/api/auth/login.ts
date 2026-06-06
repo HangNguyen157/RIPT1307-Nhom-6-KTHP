@@ -1,5 +1,5 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { login } from '@/server/services/authService';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method !== 'POST') {
@@ -12,7 +12,8 @@ export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
     const result = login({ email, password });
     res.status(200).json({ success: true, data: result });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Đăng nhập thất bại';
+    const message =
+      error instanceof Error ? error.message : 'Đăng nhập thất bại';
     res.status(401).json({ success: false, message });
   }
 }

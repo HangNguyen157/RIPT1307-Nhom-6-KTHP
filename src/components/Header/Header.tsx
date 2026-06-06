@@ -1,30 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
 import {
-  Badge,
-  Button,
-  Dropdown,
-  Space,
-  Avatar,
-  Tooltip,
-} from 'antd';
-import {
-  UserOutlined,
-  LogoutOutlined,
   EditOutlined,
-  SearchOutlined,
-  SunOutlined,
-  MoonOutlined,
-  SettingOutlined,
-  TrophyOutlined,
-  HomeOutlined,
   FireOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  MoonOutlined,
+  SearchOutlined,
+  SettingOutlined,
+  SunOutlined,
   TagsOutlined,
+  TrophyOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { history, useLocation } from '@umijs/max';
+import { Avatar, Button, Dropdown, Space, Tooltip } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 
+import NotificationDropdown from '@/components/NotificationDropdown';
 import { authUtils } from '@/utils/auth';
 import { getReputationLevel } from '@/utils/reputation';
-import NotificationDropdown from '@/components/NotificationDropdown';
 
 import styles from './index.less';
 
@@ -50,9 +43,7 @@ export default function Header({
 }: HeaderProps) {
   const location = useLocation();
 
-  const [currentUser, setCurrentUser] = useState(
-    authUtils.getCurrentUser(),
-  );
+  const [currentUser, setCurrentUser] = useState(authUtils.getCurrentUser());
 
   const [searchValue, setSearchValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -66,10 +57,7 @@ export default function Header({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(e.target as Node)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -77,10 +65,7 @@ export default function Header({
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        'mousedown',
-        handleClickOutside,
-      );
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -146,17 +131,13 @@ export default function Header({
           </Avatar>
 
           <div>
-            <div className={styles.userName}>
-              {currentUser.name}
-            </div>
+            <div className={styles.userName}>{currentUser.name}</div>
 
             {repLevel && (
               <div className={styles.userRep}>
                 <span>{repLevel.emoji}</span>
 
-                <span style={{ color: repLevel.color }}>
-                  {repLevel.name}
-                </span>
+                <span style={{ color: repLevel.color }}>{repLevel.name}</span>
 
                 <span className={styles.repPoints}>
                   {currentUser.reputation} pts
@@ -174,8 +155,7 @@ export default function Header({
       key: 'profile',
       icon: <UserOutlined />,
       label: 'Hồ Sơ Cá Nhân',
-      onClick: () =>
-        history.push(`/profile/${currentUser?.id || '1'}`),
+      onClick: () => history.push(`/profile/${currentUser?.id || '1'}`),
     },
 
     {
@@ -200,8 +180,7 @@ export default function Header({
             key: 'admin',
             icon: <SettingOutlined />,
             label: 'Quản Trị',
-            onClick: () =>
-              history.push('/admin/dashboard'),
+            onClick: () => history.push('/admin/dashboard'),
           },
         ]
       : []),
@@ -223,10 +202,7 @@ export default function Header({
       <div className={styles.topBar}>
         <div className={styles.container}>
           {/* LOGO */}
-          <div
-            className={styles.logo}
-            onClick={() => history.push('/')}
-          >
+          <div className={styles.logo} onClick={() => history.push('/')}>
             <span className={styles.logoIcon}>📚</span>
 
             <span className={styles.logoText}>
@@ -236,14 +212,9 @@ export default function Header({
           </div>
 
           {/* SEARCH */}
-          <div
-            className={styles.searchWrapper}
-            ref={searchRef}
-          >
+          <div className={styles.searchWrapper} ref={searchRef}>
             <div className={styles.searchBar}>
-              <SearchOutlined
-                className={styles.searchIcon}
-              />
+              <SearchOutlined className={styles.searchIcon} />
 
               <input
                 className={styles.searchInput}
@@ -251,9 +222,7 @@ export default function Header({
                 value={searchValue}
                 onChange={(e) => {
                   setSearchValue(e.target.value);
-                  setShowSuggestions(
-                    e.target.value.length > 0,
-                  );
+                  setShowSuggestions(e.target.value.length > 0);
                 }}
                 onFocus={() => {
                   if (searchValue.length > 0) {
@@ -281,52 +250,32 @@ export default function Header({
             </div>
 
             {/* SEARCH SUGGESTIONS */}
-            {showSuggestions &&
-              filteredSuggestions.length > 0 && (
-                <div
-                  className={styles.searchSuggestions}
-                >
-                  {filteredSuggestions.map((item) => (
-                    <div
-                      key={item}
-                      className={styles.suggestion}
-                      onClick={() => {
-                        setSearchValue(item);
-                        handleSearch(item);
-                      }}
-                    >
-                      <SearchOutlined
-                        className={
-                          styles.suggestionIcon
-                        }
-                      />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <div className={styles.searchSuggestions}>
+                {filteredSuggestions.map((item) => (
+                  <div
+                    key={item}
+                    className={styles.suggestion}
+                    onClick={() => {
+                      setSearchValue(item);
+                      handleSearch(item);
+                    }}
+                  >
+                    <SearchOutlined className={styles.suggestionIcon} />
 
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ACTIONS */}
           <div className={styles.actions}>
             {/* THEME */}
-            <Tooltip
-              title={
-                theme === 'dark'
-                  ? 'Chế độ sáng'
-                  : 'Chế độ tối'
-              }
-            >
-              <button
-                className={styles.themeToggle}
-                onClick={onToggleTheme}
-              >
-                {theme === 'dark' ? (
-                  <SunOutlined />
-                ) : (
-                  <MoonOutlined />
-                )}
+            <Tooltip title={theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}>
+              <button className={styles.themeToggle} onClick={onToggleTheme}>
+                {theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
               </button>
             </Tooltip>
 
@@ -344,9 +293,7 @@ export default function Header({
                   danger
                   size="small"
                   className={styles.askBtn}
-                  onClick={() =>
-                    history.push('/post/new')
-                  }
+                  onClick={() => history.push('/post/new')}
                 >
                   + Đặt Câu Hỏi
                 </Button>
@@ -361,8 +308,7 @@ export default function Header({
                     <Avatar
                       size={36}
                       style={{
-                        background:
-                          'var(--color-primary)',
+                        background: 'var(--color-primary)',
                         cursor: 'pointer',
                       }}
                     >
@@ -370,9 +316,7 @@ export default function Header({
                     </Avatar>
 
                     {repLevel && (
-                      <span
-                        className={styles.levelBadge}
-                      >
+                      <span className={styles.levelBadge}>
                         {repLevel.emoji}
                       </span>
                     )}
@@ -385,9 +329,7 @@ export default function Header({
                   type="primary"
                   danger
                   size="small"
-                  onClick={() =>
-                    history.push('/login')
-                  }
+                  onClick={() => history.push('/login')}
                 >
                   Đăng Nhập
                 </Button>
@@ -395,9 +337,7 @@ export default function Header({
                 <Button
                   size="small"
                   className={styles.registerBtn}
-                  onClick={() =>
-                    history.push('/register')
-                  }
+                  onClick={() => history.push('/register')}
                 >
                   Đăng Ký
                 </Button>
@@ -414,21 +354,15 @@ export default function Header({
             const isActive =
               link.path === '/'
                 ? location.pathname === '/'
-                : location.pathname.startsWith(
-                    link.path,
-                  );
+                : location.pathname.startsWith(link.path);
 
             return (
               <div
                 key={link.path}
                 className={`${styles.navLink} ${
-                  isActive
-                    ? styles.navLinkActive
-                    : ''
+                  isActive ? styles.navLinkActive : ''
                 }`}
-                onClick={() =>
-                  history.push(link.path)
-                }
+                onClick={() => history.push(link.path)}
               >
                 {link.icon}
 

@@ -1,10 +1,11 @@
-import type { Question } from '../models/Question';
 import type { Comment } from '../models/Comment';
+import type { Question } from '../models/Question';
 
 export const MOCK_QUESTIONS: Question[] = [
   {
     id: '1',
-    title: 'Giải thích OOP trong Java: Class, Object, Inheritance và Polymorphism',
+    title:
+      'Giải thích OOP trong Java: Class, Object, Inheritance và Polymorphism',
     excerpt:
       'OOP là nền tảng của Java. Trong bài viết này, tôi sẽ giải thích chi tiết về các khái niệm cốt lõi như Class, Object, Inheritance và cách sử dụng trong thực tế...',
     author: 'Nguyễn Văn A',
@@ -201,7 +202,8 @@ Về **Inheritance**, đây là cơ chế quan trọng nhất trong OOP. Con k�
           author: 'Trần Văn B',
           authorId: '4',
           timestamp: '45 phút trước',
-          content: 'Cảm ơn thầy! Phần về polymorphism thầy có thể giải thích thêm không ạ?',
+          content:
+            'Cảm ơn thầy! Phần về polymorphism thầy có thể giải thích thêm không ạ?',
           votes: 3,
         },
       ],

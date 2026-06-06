@@ -23,11 +23,6 @@ export default defineConfig({
     platform: 'vercel',
   },
 
-  // 2. Tắt cảnh báo Beta để sửa lỗi chặn Git Commit
-  stats: {
-    warnings: false,
-  },
-
   layout: false,
   routes: [
     {

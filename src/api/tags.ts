@@ -1,5 +1,5 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { MOCK_TAGS } from '@/server/seed/tags';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method === 'GET') {

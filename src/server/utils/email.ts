@@ -17,7 +17,10 @@ export async function sendEmail(_options: SendEmailOptions): Promise<void> {
   return Promise.resolve();
 }
 
-export async function notifyNewPost(_postId: string, _authorEmail: string): Promise<void> {
+export async function notifyNewPost(
+  _postId: string,
+  _authorEmail: string,
+): Promise<void> {
   return Promise.resolve();
 }
 
