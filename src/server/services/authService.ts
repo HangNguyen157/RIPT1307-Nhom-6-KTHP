@@ -46,15 +46,15 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 
   const found = await UserEntity.findOne({ where: { email } });
 
-  // 👇 BLOCK LOG DEBUG TỐI THƯỢNG TAO CHÈN VÀO ĐÂY:
+  //  BLOCK LOG DEBUG
   console.log('=========================================');
-  console.log('🔥 LOG DEBUG ĐĂNG NHẬP THỰC TẾ:');
+  console.log('LOG DEBUG ĐĂNG NHẬP :');
   console.log('--> Email client gửi lên:', `"${email}"`);
-  console.log('--> Mật khẩu thô client gửi lên:', `"${password}"`);
+  // console.log('--> Mật khẩu thô client gửi lên:', `"${password}"`);
   console.log('--> Tìm thấy User trong DB không?:', found ? 'CÓ' : 'KHÔNG');
 
   if (found) {
-    console.log('--> Chuỗi Hash mật khẩu lấy từ DB:', `"${found.password}"`);
+    //  console.log('--> Chuỗi Hash mật khẩu lấy từ DB:', `"${found.password}"`);
     const checkVerify = await verifyPassword(password, found.password);
     console.log('--> Kết quả hàm verifyPassword trả về:', checkVerify);
     console.log('=========================================');
@@ -88,9 +88,7 @@ export async function login(input: LoginInput): Promise<AuthResult> {
       return { user: userObj, token: createToken(found.id) };
     }
   } else {
-    console.log(
-      '❌ LỖI CHÍ MẠNG: KHÔNG TÌM THẤY USER NÀO CÓ EMAIL NÀY TRONG DB!',
-    );
+    console.log('KHÔNG TÌM THẤY USER NÀO CÓ EMAIL NÀY TRONG DB!');
     console.log('=========================================');
   }
 
