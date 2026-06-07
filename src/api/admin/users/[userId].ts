@@ -1,7 +1,7 @@
-import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 import { initDatabase } from '@/server/db';
 import { UserEntity } from '@/server/models/entities';
 import { hashPassword } from '@/server/models/User';
+import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   await initDatabase();
@@ -10,15 +10,23 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   if (req.method === 'GET') {
     try {
       const user = await UserEntity.findByPk(userId, {
-        attributes: { exclude: ['password'] }
+        attributes: { exclude: ['password'] },
       });
       if (!user) {
-        res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Người dùng không tồn tại' });
         return;
       }
       res.status(200).json({ success: true, data: user });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi lấy thông tin người dùng', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi lấy thông tin người dùng',
+          error: String(error),
+        });
     }
     return;
   }
@@ -27,20 +35,23 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     try {
       const user = await UserEntity.findByPk(userId);
       if (!user) {
-        res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Người dùng không tồn tại' });
         return;
       }
 
-      const { name, role, department, studentId, status, newPassword } = req.body ?? {};
+      const { name, role, department, studentId, status, newPassword } =
+        req.body ?? {};
 
       if (name !== undefined) user.name = name;
       if (role !== undefined) user.role = role;
       if (department !== undefined) user.department = department;
       if (studentId !== undefined) user.studentId = studentId;
       if (status !== undefined) user.status = status;
-      
+
       if (newPassword) {
-        user.password = hashPassword(newPassword);
+        user.password = await hashPassword(newPassword);
       }
 
       await user.save();
@@ -48,10 +59,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       res.status(200).json({
         success: true,
         message: 'Cập nhật thông tin thành công!',
-        data: user
+        data: user,
       });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi cập nhật người dùng', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi cập nhật người dùng',
+          error: String(error),
+        });
     }
     return;
   }
@@ -60,7 +77,9 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     try {
       const user = await UserEntity.findByPk(userId);
       if (!user) {
-        res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
+        res
+          .status(404)
+          .json({ success: false, message: 'Người dùng không tồn tại' });
         return;
       }
 
@@ -68,10 +87,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
       res.status(200).json({
         success: true,
-        message: `Đã xóa người dùng ${user.name} khỏi hệ thống.`
+        message: `Đã xóa người dùng ${user.name} khỏi hệ thống.`,
       });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Lỗi xóa người dùng', error: String(error) });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: 'Lỗi xóa người dùng',
+          error: String(error),
+        });
     }
     return;
   }
