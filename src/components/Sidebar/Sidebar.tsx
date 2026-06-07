@@ -1,46 +1,68 @@
-import React, { useState } from 'react';
-import { Button, Collapse, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Collapse, Tooltip, Skeleton, Empty } from 'antd';
 import {
   FireOutlined, BookOutlined, TeamOutlined, TagsOutlined,
   CloseOutlined, FilterOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, useSearchParams, request } from '@umijs/max';
 import styles from './index.less';
-
-const popularTags = [
-  { name: 'Java', count: 245, color: '#f97316' },
-  { name: 'JavaScript', count: 198, color: '#eab308' },
-  { name: 'React', count: 176, color: '#06b6d4' },
-  { name: 'Python', count: 154, color: '#3b82f6' },
-  { name: 'TypeScript', count: 142, color: '#2563eb' },
-  { name: 'Node.js', count: 128, color: '#10b981' },
-  { name: 'SQL', count: 112, color: '#8b5cf6' },
-  { name: 'AI/ML', count: 98, color: '#ec4899' },
-];
-
-const subjects = [
-  { name: 'Lập Trình Cơ Bản', count: 89 },
-  { name: 'Cấu Trúc Dữ Liệu', count: 76 },
-  { name: 'Mạng Máy Tính', count: 65 },
-  { name: 'Cơ Sở Dữ Liệu', count: 54 },
-  { name: 'Hệ Điều Hành', count: 43 },
-  { name: 'Web Development', count: 38 },
-];
-
-const departments = ['CNTT', 'HTTT', 'Kỹ Thuật Phần Mềm', 'An Toàn Thông Tin'];
 
 interface SidebarProps {
   onClose?: () => void;
 }
 
 export default function Sidebar({ onClose }: SidebarProps) {
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [followedTags, setFollowedTags] = useState<string[]>(['React', 'JavaScript']);
+  const [searchParams] = useSearchParams();
+  const activeSort = searchParams.get('sort') || 'hot';
+  const activeTag = searchParams.get('tag');
+  const activeSubject = searchParams.get('subject');
+  const activeDept = searchParams.get('dept');
 
-  const toggleFollow = (tag: string) => {
-    setFollowedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
+  const [popularTags, setPopularTags] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [resTags, resSubjects, resDepts] = await Promise.all([
+          request<{ success: boolean; data: { list: any[] } }>('/api/tags'),
+          request<{ success: boolean; data: { list: any[] } }>('/api/stats/subjects'),
+          request<{ success: boolean; data: { list: any[] } }>('/api/stats/depts')
+        ]);
+
+        if (resTags && resTags.success) {
+          setPopularTags(resTags.data.list.slice(0, 8));
+        }
+        if (resSubjects && resSubjects.success) {
+          setSubjects(resSubjects.data.list);
+        }
+        if (resDepts && resDepts.success) {
+          setDepartments(resDepts.data.list);
+        }
+      } catch (error) {
+        console.error('Lỗi tải dữ liệu sidebar:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleFilterClick = (type: 'tag' | 'subject' | 'dept', value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentValue = searchParams.get(type);
+
+    if (currentValue === value) {
+      params.delete(type); 
+    } else {
+      params.set(type, value);
+    }
+    
+    history.push(`/forum?${params.toString()}`);
+    if (onClose) onClose();
   };
 
   const collapseItems = [
@@ -53,30 +75,24 @@ export default function Sidebar({ onClose }: SidebarProps) {
       ),
       children: (
         <div className={styles.tagList}>
-          {popularTags.map((tag) => (
-            <Tooltip
-              key={tag.name}
-              title={followedTags.includes(tag.name) ? 'Bỏ theo dõi' : 'Theo dõi'}
-              placement="right"
-            >
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : popularTags.length > 0 ? (
+            popularTags.map((tag) => (
               <div
-                className={`${styles.tagItem} ${followedTags.includes(tag.name) ? styles.followed : ''}`}
-                onClick={() => toggleFollow(tag.name)}
+                key={tag.name}
+                className={`${styles.tagItem} ${activeTag === tag.name ? styles.active : ''}`}
+                onClick={() => handleFilterClick('tag', tag.name)}
               >
-                <span
-                  className={styles.tagDot}
-                  style={{ background: tag.color }}
-                />
-                <span className={styles.tagName} style={{ color: tag.color }}>
-                  {tag.name}
-                </span>
+                <span className={styles.tagDot} style={{ background: tag.color }} />
+                <span className={styles.tagName} style={{ color: tag.color }}>{tag.name}</span>
                 <span className={styles.tagCount}>{tag.count}</span>
-                {followedTags.includes(tag.name) && (
-                  <span className={styles.followedCheck}>✓</span>
-                )}
+                {activeTag === tag.name && <span className={styles.followedCheck}>✓</span>}
               </div>
-            </Tooltip>
-          ))}
+            ))
+          ) : (
+            <div style={{ padding: '8px', textAlign: 'center', fontSize: '12px', color: '#999' }}>Không có thẻ nào</div>
+          )}
           <button className={styles.viewAllBtn} onClick={() => history.push('/tags')}>
             Xem Tất Cả Thẻ →
           </button>
@@ -92,13 +108,24 @@ export default function Sidebar({ onClose }: SidebarProps) {
       ),
       children: (
         <div className={styles.subjectList}>
-          {subjects.map((subject) => (
-            <div key={subject.name} className={styles.subjectItem}
-              onClick={() => history.push(`/forum?subject=${subject.name}`)}>
-              <span>{subject.name}</span>
-              <span className={styles.count}>{subject.count}</span>
-            </div>
-          ))}
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 3 }} title={false} />
+          ) : subjects.length > 0 ? (
+            subjects.map((subject) => (
+              <div key={subject.subject} className={`${styles.subjectItem} ${activeSubject === subject.subject ? styles.active : ''}`}
+                onClick={() => handleFilterClick('subject', subject.subject)}>
+                <span>{subject.subject}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className={styles.count}>{subject.count}</span>
+                  {activeSubject === subject.subject && (
+                    <span className={styles.followedCheck} style={{ marginLeft: '4px' }}>✓</span>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+             <div style={{ padding: '8px', textAlign: 'center', fontSize: '12px', color: '#999' }}>Không có môn học nào</div>
+          )}
         </div>
       ),
     },
@@ -111,12 +138,26 @@ export default function Sidebar({ onClose }: SidebarProps) {
       ),
       children: (
         <div className={styles.departmentList}>
-          {departments.map((dept) => (
-            <button key={dept} className={styles.deptBtn}
-              onClick={() => history.push(`/forum?dept=${dept}`)}>
-              {dept}
-            </button>
-          ))}
+          {loading ? (
+             <Skeleton active paragraph={{ rows: 2 }} title={false} />
+          ) : departments.length > 0 ? (
+            departments.map((dept) => (
+              <button key={dept.name} className={`${styles.deptBtn} ${activeDept === dept.name ? styles.active : ''}`}
+                onClick={() => handleFilterClick('dept', dept.name)}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                  <span>{dept.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className={styles.tagCount} style={{ background: '#f5f5f5' }}>{dept.count}</span>
+                    {activeDept === dept.name && (
+                      <span className={styles.followedCheck}>✓</span>
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div style={{ padding: '8px', textAlign: 'center', fontSize: '12px', color: '#999' }}>Không có chuyên ngành nào</div>
+          )}
         </div>
       ),
     },
@@ -127,8 +168,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
     { key: 'votes', label: 'Nhiều Vote' },
     { key: 'hot', label: 'Đang Hot' },
     { key: 'unanswered', label: 'Chưa Trả Lời' },
-    { key: 'solved', label: 'Đã Giải Quyết' },
   ];
+
+  const handleSortClick = (key: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const newSort = activeSort === key ? 'hot' : key;
+    params.set('sort', newSort);
+    history.push(`/forum?${params.toString()}`);
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -149,7 +196,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
             { label: 'Xếp Hạng', path: '/leaderboard' },
           ].map((item) => (
             <button key={item.path} className={styles.quickNavBtn}
-              onClick={() => { history.push(item.path); onClose(); }}>
+              onClick={() => { history.push(item.path); if (onClose) onClose(); }}>
               {item.label}
             </button>
           ))}
@@ -160,7 +207,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
       <div className={styles.collapseWrapper}>
         <Collapse
           items={collapseItems}
-          defaultActiveKey={['1', '2']}
+          defaultActiveKey={['1', '2', '3']}
           className={styles.collapse}
           expandIconPosition="end"
         />
@@ -175,10 +222,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
           {filterOptions.map((opt) => (
             <button
               key={opt.key}
-              className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
-              onClick={() => setActiveFilter(activeFilter === opt.key ? null : opt.key)}
+              className={`${styles.filterBtn} ${activeSort === opt.key ? styles.active : ''}`}
+              onClick={() => handleSortClick(opt.key)}
             >
-              {opt.label}
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                <span>{opt.label}</span>
+                {activeSort === opt.key && activeSort !== 'hot' && (
+                  <span className={styles.followedCheck}>✓</span>
+                )}
+                {activeSort === 'hot' && opt.key === 'hot' && (
+                   <span className={styles.followedCheck}>✓</span>
+                )}
+              </div>
             </button>
           ))}
         </div>

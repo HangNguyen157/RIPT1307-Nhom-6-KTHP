@@ -1,0 +1,359 @@
+PhuongAnh
+
+1	1	netlify.toml
+PhuongAnh
+
+1	1	package.json
+PhuongAnh
+
+1	1	netlify.toml
+PhuongAnh
+
+6	0	tsconfig.json
+PhuongAnh
+
+12	4	vercel.json
+PhuongAnh
+
+0	15	now.json
+PhuongAnh
+
+1	1	netlify.toml
+PhuongAnh
+
+7	0	vercel.json
+PhuongAnh
+
+15	0	now.json
+0	8	vercel.json
+PhuongAnh
+
+0	1	package.json
+PhuongAnh
+
+3	2	vercel.json
+PhuongAnh
+
+4	3	netlify.toml
+PhuongAnh
+
+1	2	netlify.toml
+PhuongAnh
+
+1	1	api/admin/dashboard.js
+1	1	api/admin/users/[userId].js
+1	1	api/admin/users/index.js
+13	3	api/auth/login.js
+1	1	api/auth/register.js
+1	1	api/leaderboard.js
+1	1	api/posts/[id]/comments.js
+1	1	api/posts/[id]/index.js
+1	1	api/posts/[id]/vote.js
+1	1	api/posts/index.js
+1	1	api/tags.js
+198	0	src/api/admin/users/[userId].js
+160	0	src/api/admin/users/index.js
+23	4	src/api/auth/login.ts
+46	95	src/components/Header/Header.tsx
+198	58	src/pages/Admin/Users.tsx
+45	12	src/pages/Login/index.less
+5	1	src/pages/Login/index.tsx
+11	4	src/utils/auth.ts
+PhuongAnh
+
+1	1	api/admin/dashboard.js
+1	1	api/admin/users/[userId].js
+1	1	api/admin/users/index.js
+1	1	api/auth/login.js
+1	1	api/auth/register.js
+1	1	api/leaderboard.js
+1	1	api/posts/[id]/comments.js
+1	1	api/posts/[id]/index.js
+1	1	api/posts/[id]/vote.js
+1	1	api/posts/index.js
+1	1	api/tags.js
+145	37	src/pages/Admin/index.less
+63	17	src/pages/Admin/index.tsx
+PhuongAnh
+
+2	2	api/admin/dashboard.js
+2	2	api/admin/users/[userId].js
+2	2	api/admin/users/index.js
+2	2	api/auth/login.js
+2	2	api/auth/register.js
+2	2	api/leaderboard.js
+2	2	api/posts/[id]/comments.js
+13	37	api/posts/[id]/index.js
+44	3	api/posts/[id]/vote.js
+2	2	api/posts/index.js
+2	2	api/tags.js
+0	41	scratch_test_api.js
+0	21	scratch_test_ts.ts
+18	23	src/api/posts/[id]/index.ts
+49	1	src/api/posts/[id]/vote.ts
+138	20	src/pages/PostDetail/index.less
+396	158	src/pages/PostDetail/index.tsx
+3	1	src/server/middlewares/auth.ts
+1	1	src/server/seed/index.ts
+PhuongAnh
+
+1	1	api/admin/dashboard.js
+1	1	api/admin/users/[userId].js
+1	1	api/admin/users/index.js
+1	1	api/auth/login.js
+1	1	api/auth/register.js
+1	1	api/leaderboard.js
+6	2	api/posts/[id]/comments.js
+65	5	api/posts/[id]/index.js
+1	1	api/posts/[id]/vote.js
+1	1	api/posts/index.js
+1	1	api/tags.js
+9	1	src/api/posts/[id]/comments.ts
+77	16	src/api/posts/[id]/index.ts
+320	113	src/pages/PostDetail/index.tsx
+2	0	src/pages/post/[id].tsx
+35	0	test-debug.js
+PhuongAnh
+
+1	1	api/admin/dashboard.js
+1	1	api/admin/users/[userId].js
+1	1	api/admin/users/index.js
+1	1	api/auth/login.js
+1	1	api/auth/register.js
+1	1	api/leaderboard.js
+1	1	api/posts/[id]/comments.js
+1	1	api/posts/[id]/index.js
+1	1	api/posts/[id]/vote.js
+1	1	api/posts/index.js
+1	1	api/tags.js
+41	0	scratch_test_api.js
+21	0	scratch_test_ts.ts
+PhuongAnh
+
+0	150	PASSWORD_FIX_GUIDE.md
+2	6	api/auth/login.js
+19	27	src/api/posts/[id]/comments.ts
+1	1	src/pages/CreatePost/index.less
+25	30	src/pages/CreatePost/index.tsx
+120	41	src/pages/Home/index.tsx
+124	33	src/pages/Leaderboard/index.tsx
+hang123
+hang123
+
+2	7	.lintstagedrc
+0	5	.umirc.ts
+3	3	SETUP_GUIDE.md
+17	13	api/_middlewares.js
+466	292	api/admin/dashboard.js
+348	186	api/admin/users/[userId].js
+399	237	api/admin/users/index.js
+407	240	api/auth/login.js
+407	241	api/auth/register.js
+348	185	api/posts/[id]/comments.js
+455	272	api/posts/[id]/index.js
+347	185	api/posts/[id]/vote.js
+424	246	api/posts/index.js
+486	204	api/tags.js
+3	2	src/api/admin/dashboard.ts
+1	1	src/api/admin/users/index.ts
+3	2	src/api/auth/login.ts
+4	3	src/api/auth/register.ts
+11	5	src/api/posts/[id]/index.ts
+4	2	src/api/posts/index.ts
+1	1	src/api/tags.ts
+1	1	src/app.ts
+51	117	src/components/Header/Header.tsx
+12	12	src/components/Header/index.less
+47	16	src/components/NotificationDropdown/NotificationDropdown.tsx
+12	4	src/components/NotificationDropdown/index.less
+27	63	src/components/PostCard/PostCard.tsx
+29	3	src/components/PostCard/index.less
+48	17	src/components/Sidebar/Sidebar.tsx
+93	21	src/components/Sidebar/index.less
+5	5	src/layouts/index.less
+107	21	src/pages/Admin/Dashboard.tsx
+66	14	src/pages/Admin/Posts.tsx
+98	28	src/pages/Admin/Reports.tsx
+89	23	src/pages/Admin/Users.tsx
+146	36	src/pages/Admin/index.less
+64	16	src/pages/Admin/index.tsx
+15	13	src/pages/CreatePost/index.less
+18	26	src/pages/CreatePost/index.tsx
+16	1	src/pages/Forum/index.less
+63	18	src/pages/Forum/index.tsx
+94	39	src/pages/Home/index.less
+87	25	src/pages/Home/index.tsx
+82	20	src/pages/Leaderboard/index.less
+223	42	src/pages/Leaderboard/index.tsx
+31	29	src/pages/Login/index.less
+75	38	src/pages/Login/index.tsx
+67	20	src/pages/PostDetail/index.less
+216	60	src/pages/PostDetail/index.tsx
+70	19	src/pages/Profile/index.less
+175	46	src/pages/Profile/index.tsx
+155	99	src/pages/Register/index.less
+16	15	src/pages/Register/index.tsx
+2	2	src/pages/Search/index.less
+4	8	src/pages/Search/index.tsx
+58	13	src/pages/Tags/index.less
+40	12	src/pages/Tags/index.tsx
+5	11	src/pages/_layout.tsx
+3	1	src/server/middlewares/auth.ts
+2	2	src/server/models/index.ts
+3	3	src/server/seed/index.ts
+5	3	src/server/seed/questions.ts
+140	20	src/server/seed/tags.ts
+4	1	src/server/utils/email.ts
+321	16	src/styles/variables.less
+2	2	src/utils/auth.ts
+8	4	src/utils/reputation.ts
+1	1	vercel.json
+PhuongAnh
+
+5	7	src/server/services/authService.ts
+PhuongAnh
+
+1	64	api/admin/dashboard.js
+1	64	api/admin/users/[userId].js
+1	64	api/admin/users/index.js
+198	247	api/auth/login.js
+183	246	api/auth/register.js
+1	64	api/leaderboard.js
+1	64	api/posts/[id]/comments.js
+1	64	api/posts/[id]/index.js
+1	64	api/posts/[id]/vote.js
+1	64	api/posts/index.js
+1	64	api/tags.js
+59	59	src/server/models/entities.ts
+1	1	src/server/seed/index.ts
+25	6	src/server/services/authService.ts
+PhuongAnh
+
+150	0	PASSWORD_FIX_GUIDE.md
+773	0	PROJECT_REVIEW.md
+1	1	api/_middlewares.js
+54763	292	api/admin/dashboard.js
+54763	292	api/admin/users/[userId].js
+54764	293	api/admin/users/index.js
+58608	294	api/auth/login.js
+58624	295	api/auth/register.js
+54763	292	api/leaderboard.js
+66394	706	api/posts/[id]/comments.js
+54768	295	api/posts/[id]/index.js
+54763	292	api/posts/[id]/vote.js
+66426	680	api/posts/index.js
+54763	292	api/tags.js
+159	81	package-lock.json
+5	0	package.json
+7	30	scratch_db.js
+1	1	src/api/admin/users/index.ts
+10	1	src/api/auth/login.ts
+13	4	src/api/auth/register.ts
+93	33	src/api/posts/[id]/comments.ts
+77	24	src/api/posts/index.ts
+9	9	src/pages/Admin/Users.tsx
+18	4	src/pages/CreatePost/index.tsx
+40	4	src/pages/Forum/index.tsx
+1	1	src/pages/Home/index.tsx
+7	8	src/pages/Leaderboard/index.tsx
+89	27	src/pages/Login/index.tsx
+3	3	src/pages/PostDetail/index.tsx
+1	1	src/pages/Profile/index.tsx
+8	8	src/pages/Register/index.tsx
+1	1	src/server/middlewares/auth.ts
+1	1	src/server/models/Comment.ts
+1	1	src/server/models/Question.ts
+16	6	src/server/models/User.ts
+154	109	src/server/models/entities.ts
+15	8	src/server/seed/index.ts
+3	3	src/server/seed/questions.ts
+5	5	src/server/seed/users.ts
+19	4	src/server/services/authService.ts
+207	0	src/utils/validation.ts
+PhuongAnh
+
+14	0	.env
+1	1	api/_middlewares.js
+753	213	api/admin/dashboard.js
+790	14	api/admin/users/[userId].js
+782	116	api/admin/users/index.js
+771	141	api/auth/login.js
+768	116	api/auth/register.js
+1153	0	api/leaderboard.js
+979	10	api/posts/[id]/comments.js
+807	254	api/posts/[id]/index.js
+804	11	api/posts/[id]/vote.js
+941	115	api/posts/index.js
+744	30	api/tags.js
+15	0	netlify.toml
+32	0	scratch_db.js
+23	12	src/api/admin/dashboard.ts
+66	10	src/api/admin/users/[userId].ts
+55	8	src/api/admin/users/index.ts
+2	2	src/api/auth/login.ts
+2	2	src/api/auth/register.ts
+34	0	src/api/leaderboard.ts
+166	6	src/api/posts/[id]/comments.ts
+46	17	src/api/posts/[id]/index.ts
+91	7	src/api/posts/[id]/vote.ts
+147	22	src/api/posts/index.ts
+14	3	src/api/tags.ts
+28	5	src/pages/Admin/Dashboard.tsx
+42	22	src/pages/Admin/Posts.tsx
+207	25	src/pages/Admin/Users.tsx
+31	9	src/pages/CreatePost/index.tsx
+60	29	src/pages/Forum/index.tsx
+33	13	src/pages/Home/index.tsx
+32	16	src/pages/Leaderboard/index.tsx
+181	66	src/pages/PostDetail/index.tsx
+50	45	src/pages/Profile/index.tsx
+43	47	src/pages/Search/index.tsx
+36	9	src/pages/Tags/index.tsx
+44	10	src/server/db.ts
+0	2	src/server/models/Comment.ts
+0	2	src/server/models/Question.ts
+0	2	src/server/models/Tag.ts
+8	4	src/server/models/User.ts
+0	2	src/server/models/Vote.ts
+210	0	src/server/models/entities.ts
+2	0	src/server/models/index.ts
+130	6	src/server/seed/index.ts
+72	35	src/server/services/authService.ts
+68	14	src/server/utils/email.ts
+PhuongAnh
+
+0	13	.umirc.ts
+605	494	package-lock.json
+0	4	src/components/Guide/Guide.less
+0	23	src/components/Guide/Guide.tsx
+0	2	src/components/Guide/index.ts
+4	54	src/components/Header/Header.tsx
+10	43	src/components/Header/index.less
+4	4	src/components/NotificationDropdown/NotificationDropdown.tsx
+10	10	src/components/Sidebar/Sidebar.tsx
+2	134	src/layouts/index.less
+0	21	src/pages/Access/index.tsx
+17	18	src/pages/Admin/Dashboard.tsx
+14	15	src/pages/Admin/Posts.tsx
+12	14	src/pages/Admin/Reports.tsx
+9	10	src/pages/Admin/Users.tsx
+6	6	src/pages/Admin/index.tsx
+3	3	src/pages/CreatePost/index.tsx
+10	12	src/pages/Forum/index.tsx
+36	22	src/pages/Home/index.tsx
+19	28	src/pages/Leaderboard/index.tsx
+27	16	src/pages/Login/index.tsx
+9	9	src/pages/PostDetail/index.tsx
+16	17	src/pages/Profile/index.tsx
+7	25	src/pages/Register/index.tsx
+0	26	src/pages/Table/components/CreateForm.tsx
+0	138	src/pages/Table/components/UpdateForm.tsx
+0	268	src/pages/Table/index.tsx
+3	3	src/pages/Tags/index.tsx
+16	41	src/pages/_layout.tsx
+9	9	src/server/seed/tags.ts
+0	96	src/services/demo/UserController.ts
+0	7	src/services/demo/index.ts
+0	68	src/services/demo/typings.d.ts
+1	41	src/styles/variables.less
+0	15	src/utils/reputation.ts

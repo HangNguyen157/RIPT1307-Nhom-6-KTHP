@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Space, Tag, Tabs, Pagination } from 'antd';
+import { Button, Space, Tag, Tabs, Pagination, Empty, Skeleton } from 'antd';
 import {
   FireOutlined,
   ClockCircleOutlined,
@@ -27,8 +27,11 @@ export default function Forum() {
   const [searchParams] = useSearchParams();
   const tagParam = searchParams.get('tag') || '';
   const queryParam = searchParams.get('q') || '';
+  const subjectParam = searchParams.get('subject') || '';
+  const deptParam = searchParams.get('dept') || '';
+  const sortParam = searchParams.get('sort') || 'hot';
 
-  const [activeFilter, setActiveFilter] = useState('hot');
+  const [activeFilter, setActiveFilter] = useState(sortParam);
   const [activePosts, setActivePosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [topContributors, setTopContributors] = useState<any[]>([]);
@@ -39,6 +42,10 @@ export default function Forum() {
     total: 0,
     totalPages: 1,
   });
+
+  useEffect(() => {
+    setActiveFilter(sortParam);
+  }, [sortParam]);
 
   useEffect(() => {
     const fetchSidebarData = async () => {
@@ -71,12 +78,14 @@ export default function Forum() {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const apiSort = activeFilter === 'hot' ? 'views' : activeFilter === 'votes' ? 'votes' : '';
+        const apiSort = activeFilter;
         const res = await request<{ success: boolean; data: { list: any[]; pagination: PaginationInfo } }>('/api/posts', {
           method: 'GET',
           params: {
             tag: tagParam,
             q: queryParam,
+            subject: subjectParam,
+            dept: deptParam,
             sort: apiSort,
             page: pagination.page,
             limit: pagination.limit,
@@ -101,11 +110,30 @@ export default function Forum() {
       }
     };
     fetchPosts();
-  }, [tagParam, queryParam, activeFilter, pagination.page, pagination.limit]);
+  }, [tagParam, queryParam, subjectParam, deptParam, activeFilter, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    // Reset về trang 1 khi thay đổi các bộ lọc chính
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, [tagParam, queryParam, subjectParam, deptParam]);
 
   const handleFilter = (key: string) => {
     setActiveFilter(key);
+    // Also update URL to keep in sync
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', key);
+    history.push(`/forum?${params.toString()}`);
     setPagination({ ...pagination, page: 1 }); // Reset to first page when filter changes
+  };
+
+  const handleTagClick = (tagName: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.get('tag') === tagName) {
+      params.delete('tag');
+    } else {
+      params.set('tag', tagName);
+    }
+    history.push(`/forum?${params.toString()}`);
   };
 
   const handlePageChange = (page: number) => {
@@ -151,27 +179,39 @@ export default function Forum() {
 
           {/* Post List */}
           <div className={styles.postList}>
-            {activePosts.map((post, index) => (
-              <div
-                key={post.id}
-                style={{ animationDelay: `${index * 0.05}s` }}
-                className={styles.postItem}
-              >
-                <PostCard
-                  id={post.id}
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  author={post.author}
-                  tags={post.tags}
-                  votes={post.votes}
-                  comments={post.comments}
-                  views={post.views}
-                  timestamp={post.timestamp}
-                  subject={post.subject}
-                  isSolved={post.isSolved}
-                />
+            {loading ? (
+              Array(3).fill(0).map((_, i) => (
+                <div key={i} className={styles.postItem} style={{ background: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '16px' }}>
+                  <Skeleton active avatar paragraph={{ rows: 2 }} />
+                </div>
+              ))
+            ) : activePosts && activePosts.length > 0 ? (
+              activePosts.map((post, index) => (
+                <div
+                  key={post?.id || index}
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                  className={styles.postItem}
+                >
+                  <PostCard
+                    id={post?.id}
+                    title={post?.title}
+                    excerpt={post?.excerpt}
+                    author={post?.author}
+                    tags={post?.tags || []}
+                    votes={post?.votes || 0}
+                    comments={post?.comments || 0}
+                    views={post?.views || 0}
+                    timestamp={post?.timestamp}
+                    subject={post?.subject}
+                    isSolved={post?.isSolved}
+                  />
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '40px', textAlign: 'center', background: '#fff', borderRadius: '12px' }}>
+                <Empty description="Không tìm thấy bài viết nào phù hợp" />
               </div>
-            ))}
+            )}
           </div>
 
           {/* Pagination */}
@@ -230,8 +270,17 @@ export default function Forum() {
             </div>
             <div className={styles.trendingTags}>
               {trendingTags.map((tag) => (
-                <div key={tag.name} className={styles.trendingTag} onClick={() => history.push(`/tags`)}>
-                  <span className={styles.tagDot} style={{ background: tag.color }} />
+                <div
+                  key={tag.name}
+                  className={`${styles.trendingTag} ${
+                    tagParam === tag.name ? styles.active : ''
+                  }`}
+                  onClick={() => handleTagClick(tag.name)}
+                >
+                  <span
+                    className={styles.tagDot}
+                    style={{ background: tag.color }}
+                  />
                   <span className={styles.tagName}>{tag.name}</span>
                   <span className={styles.tagCount}>{tag.count}</span>
                 </div>

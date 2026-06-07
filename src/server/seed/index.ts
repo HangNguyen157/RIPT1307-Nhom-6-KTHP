@@ -50,20 +50,22 @@ export async function seedDatabase() {
     }
 
     // 3. Seed Tags
-    const tagCount = await TagEntity.count();
-    if (tagCount === 0) {
-      console.log('[Database] Bảng Tags trống, bắt đầu seed...');
-      for (const t of MOCK_TAGS) {
-        await TagEntity.create({
-          name: t.name,
+    console.log('[Database] Đang kiểm tra dữ liệu Tags...');
+    for (const t of MOCK_TAGS) {
+      const [tag, created] = await TagEntity.findOrCreate({
+        where: { name: t.name },
+        defaults: {
           count: t.count,
           color: t.color,
           category: t.category,
           desc: t.desc,
-        });
+        },
+      });
+      if (created) {
+        console.log(`[Database] Đã tạo tag mới: ${t.name}`);
       }
-      console.log('[Database] Seed bảng Tags thành công.');
     }
+    console.log('[Database] Hoàn tất seed bảng Tags.');
 
     // 4. Seed Questions
     const questionCount = await QuestionEntity.count();

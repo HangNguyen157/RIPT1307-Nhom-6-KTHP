@@ -2,9 +2,9 @@ import { Sequelize } from 'sequelize';
 
 const dbName = process.env.DB_NAME || 'edu_forum';
 const dbUser = process.env.DB_USER || 'root';
-const dbPassword = process.env.DB_PASSWORD || '2542006';
-const dbHost = process.env.DB_HOST || 'localhost';
-const dbPort = parseInt(process.env.DB_PORT || '3307', 10);
+const dbPassword = process.env.DB_PASSWORD || '';
+const dbHost = process.env.DB_HOST || '127.0.0.1';
+const dbPort = parseInt(process.env.DB_PORT || '3306');
 
 console.log(
   `[Database] Đang kết nối tới MySQL: host=${dbHost}, port=${dbPort}, database=${dbName}, user=${dbUser}`,

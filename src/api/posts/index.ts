@@ -24,89 +24,129 @@ export function formatTime(date: Date) {
 }
 
 export function formatQuestion(q: any) {
+  // Handle Sequelize model instance
+  const data = typeof q.get === 'function' ? q.get({ plain: true }) : q;
+  
   return {
-    id: q.id,
-    title: q.title,
-    excerpt: q.excerpt,
-    content: q.content,
-    author: q.author ? q.author.name : 'Unknown',
-    authorId: q.authorId,
-    authorRole: q.author ? q.author.role : 'sinhvien',
-    authorRep: q.author ? q.author.reputation : 0,
-    tags: q.questionTags ? q.questionTags.map((t: any) => t.name) : [],
-    votes: q.votes,
-    comments: q.commentsCount,
-    views: q.views,
-    timestamp: formatTime(q.createdAt),
-    subject: q.subject,
-    isSolved: q.isSolved,
-    status: q.status,
-    createdAt: q.createdAt,
+    id: data.id,
+    title: data.title,
+    excerpt: data.excerpt,
+    content: data.content,
+    author: data.author ? data.author.name : 'Unknown',
+    authorId: data.authorId,
+    authorRole: data.author ? data.author.role : 'sinhvien',
+    authorRep: data.author ? data.author.reputation : 0,
+    tags: data.questionTags ? data.questionTags.map((t: any) => t.name) : (data.Tags ? data.Tags.map((t: any) => t.name) : []),
+    votes: data.votes,
+    comments: data.commentsCount,
+    views: data.views,
+    timestamp: formatTime(data.createdAt),
+    subject: data.subject,
+    isSolved: !!data.isSolved,
+    status: data.status,
+    createdAt: data.createdAt,
   };
 }
+
+// Helper to clean filter values
+const cleanFilter = (val: any) => {
+  if (Array.isArray(val)) val = val[0];
+  if (!val || typeof val !== 'string') return undefined;
+  const trimmed = val.trim();
+  if (!trimmed || trimmed === 'undefined' || trimmed === 'null' || trimmed === 'all' || trimmed === '') return undefined;
+  return trimmed;
+};
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   await initDatabase();
 
   if (req.method === 'GET') {
     try {
-      const { tag, q, sort, authorId, page, limit } = req.query ?? {};
+      const queryParams = req.query || {};
+      const { tag, q, sort, authorId, page, limit, subject, dept } = queryParams;
 
       // Pagination
       const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
       const pageSize = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 10));
       const offset = (pageNum - 1) * pageSize;
 
-      const whereClause: any = { status: { [Op.ne]: 'hidden' } };
+      const whereClause: any = { 
+        status: { [Op.ne]: 'hidden' } 
+      };
 
-      if (authorId) {
-        whereClause.authorId = authorId;
+      const authorIdVal = cleanFilter(authorId);
+      if (authorIdVal) {
+        whereClause.authorId = authorIdVal;
       }
 
-      if (typeof q === 'string' && q.trim()) {
-        const keyword = `%${q.trim()}%`;
-        whereClause[Op.or] = [
-          { title: { [Op.like]: keyword } },
-          { content: { [Op.like]: keyword } },
-        ];
+      // Cleaned filter values
+      const subjectVal = cleanFilter(subject);
+      const tagVal = cleanFilter(tag);
+      const deptVal = cleanFilter(dept);
+      const queryVal = cleanFilter(q);
+
+      if (subjectVal) {
+        whereClause.subject = { [Op.like]: `%${subjectVal}%` };
+      }
+
+      if (queryVal) {
+        const searchTerms = queryVal.split(/\s+/).filter(Boolean);
+        if (searchTerms.length > 0) {
+          const conditions = searchTerms.map(term => ({
+            [Op.or]: [
+              { title: { [Op.like]: `%${term}%` } },
+              { content: { [Op.like]: `%${term}%` } },
+            ]
+          }));
+          whereClause[Op.and] = conditions;
+        }
       }
 
       let orderClause: any = [['createdAt', 'DESC']];
       if (sort === 'votes') {
         orderClause = [['votes', 'DESC']];
-      } else if (sort === 'views') {
+      } else if (sort === 'views' || sort === 'hot') {
         orderClause = [['views', 'DESC']];
+      }
+
+      const authorInclude: any = {
+        model: UserEntity,
+        as: 'author',
+        attributes: ['name', 'role', 'reputation', 'department'],
+        required: false,
+      };
+
+      if (deptVal) {
+        authorInclude.where = { department: { [Op.like]: `%${deptVal}%` } };
+        authorInclude.required = true;
       }
 
       const tagInclude: any = {
         model: TagEntity,
         as: 'questionTags',
         through: { attributes: [] },
+        required: false,
       };
 
-      if (typeof tag === 'string' && tag.trim()) {
-        tagInclude.where = { name: tag.trim() };
+      if (tagVal) {
+        tagInclude.where = { name: { [Op.like]: tagVal } };
+        tagInclude.required = true;
       }
 
       const { count, rows } = await QuestionEntity.findAndCountAll({
         where: whereClause,
         include: [
-          {
-            model: UserEntity,
-            as: 'author',
-            attributes: ['name', 'role', 'reputation'],
-          },
+          authorInclude,
           tagInclude,
         ],
         order: orderClause,
         limit: pageSize,
         offset,
+        distinct: true,
       });
 
       const list = rows.map(formatQuestion);
-      const total = count;
-      const totalPages = Math.ceil(total / pageSize);
-
+      
       res.status(200).json({
         success: true,
         data: {
@@ -114,12 +154,13 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
           pagination: {
             page: pageNum,
             limit: pageSize,
-            total,
-            totalPages,
+            total: count,
+            totalPages: Math.ceil(count / pageSize),
           },
         },
       });
     } catch (error) {
+      console.error('[API Posts] Error:', error);
       res.status(500).json({
         success: false,
         message: 'Lỗi lấy danh sách bài viết',
@@ -133,7 +174,6 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     try {
       const { title, content, subject, tags, authorId } = req.body ?? {};
 
-      // Validate input
       const validation = validateCreatePostInput({ title, content, tags });
       if (!validation.isValid) {
         res.status(400).json({
