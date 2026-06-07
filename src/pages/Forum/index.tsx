@@ -1,5 +1,6 @@
 import PostCard from '@/components/PostCard';
 import {
+  CheckCircleOutlined,
   ClockCircleOutlined,
   FireOutlined,
   LikeOutlined,
@@ -23,8 +24,11 @@ export default function Forum() {
   const [searchParams] = useSearchParams();
   const tagParam = searchParams.get('tag') || '';
   const queryParam = searchParams.get('q') || '';
+  const subjectParam = searchParams.get('subject') || '';
+  const deptParam = searchParams.get('dept') || '';
+  const filterParam = searchParams.get('filter') || '';
 
-  const [activeFilter, setActiveFilter] = useState('hot');
+  const [activeFilter, setActiveFilter] = useState(filterParam || 'hot');
   const [activePosts, setActivePosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [topContributors, setTopContributors] = useState<any[]>([]);
@@ -70,7 +74,14 @@ export default function Forum() {
       label: 'Chưa Trả Lời',
       icon: <QuestionCircleOutlined />,
     },
+    { key: 'solved', label: 'Đã Giải Quyết', icon: <CheckCircleOutlined /> },
   ];
+
+  // Đồng bộ filter từ URL (khi click ở Sidebar) và reset trang khi đổi bộ lọc
+  useEffect(() => {
+    setActiveFilter(filterParam || 'hot');
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, [filterParam, subjectParam, deptParam, tagParam]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -90,9 +101,12 @@ export default function Forum() {
           params: {
             tag: tagParam,
             q: queryParam,
+            subject: subjectParam,
+            dept: deptParam,
             sort: apiSort,
-            // Lọc "chưa trả lời" ở backend để phân trang đúng
+            // Lọc ở backend để phân trang đúng
             unanswered: activeFilter === 'unanswered' ? 1 : undefined,
+            solved: activeFilter === 'solved' ? 1 : undefined,
             page: pagination.page,
             limit: pagination.limit,
           },
@@ -112,7 +126,15 @@ export default function Forum() {
       }
     };
     fetchPosts();
-  }, [tagParam, queryParam, activeFilter, pagination.page, pagination.limit]);
+  }, [
+    tagParam,
+    queryParam,
+    subjectParam,
+    deptParam,
+    activeFilter,
+    pagination.page,
+    pagination.limit,
+  ]);
 
   const handleFilter = (key: string) => {
     setActiveFilter(key);

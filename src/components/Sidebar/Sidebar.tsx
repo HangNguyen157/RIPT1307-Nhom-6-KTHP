@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Button, Collapse, Tooltip } from 'antd';
 import {
-  FireOutlined, BookOutlined, TeamOutlined, TagsOutlined,
-  CloseOutlined, FilterOutlined,
+  BookOutlined,
+  CloseOutlined,
+  FilterOutlined,
+  FireOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, useSearchParams } from '@umijs/max';
+import { Collapse, Tooltip } from 'antd';
 import styles from './index.less';
 
 const popularTags = [
@@ -27,20 +29,30 @@ const subjects = [
   { name: 'Web Development', count: 38 },
 ];
 
-const departments = ['CNTT', 'HTTT', 'Kỹ Thuật Phần Mềm', 'An Toàn Thông Tin'];
+// Khớp với giá trị department thực tế trong dữ liệu user
+const departments = [
+  'Công Nghệ Thông Tin',
+  'Khoa CNTT',
+  'Kỹ Thuật Phần Mềm',
+  'An Toàn Thông Tin',
+];
 
 interface SidebarProps {
   onClose?: () => void;
 }
 
 export default function Sidebar({ onClose }: SidebarProps) {
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [followedTags, setFollowedTags] = useState<string[]>(['React', 'JavaScript']);
+  // Trạng thái lọc lấy từ URL — luôn đồng bộ với trang Forum
+  const [searchParams] = useSearchParams();
+  const activeFilter = searchParams.get('filter') || '';
+  const activeTag = searchParams.get('tag') || '';
+  const activeSubject = searchParams.get('subject') || '';
+  const activeDept = searchParams.get('dept') || '';
 
-  const toggleFollow = (tag: string) => {
-    setFollowedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
+  // Điều hướng tới Forum với query lọc, đóng drawer mobile nếu có
+  const goFilter = (query: string) => {
+    history.push(`/forum${query}`);
+    onClose?.();
   };
 
   const collapseItems = [
@@ -56,12 +68,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
           {popularTags.map((tag) => (
             <Tooltip
               key={tag.name}
-              title={followedTags.includes(tag.name) ? 'Bỏ theo dõi' : 'Theo dõi'}
+              title={`Lọc bài viết theo thẻ ${tag.name}`}
               placement="right"
             >
               <div
-                className={`${styles.tagItem} ${followedTags.includes(tag.name) ? styles.followed : ''}`}
-                onClick={() => toggleFollow(tag.name)}
+                className={`${styles.tagItem} ${
+                  activeTag === tag.name ? styles.followed : ''
+                }`}
+                onClick={() =>
+                  activeTag === tag.name
+                    ? goFilter('')
+                    : goFilter(`?tag=${encodeURIComponent(tag.name)}`)
+                }
               >
                 <span
                   className={styles.tagDot}
@@ -71,13 +89,17 @@ export default function Sidebar({ onClose }: SidebarProps) {
                   {tag.name}
                 </span>
                 <span className={styles.tagCount}>{tag.count}</span>
-                {followedTags.includes(tag.name) && (
+                {activeTag === tag.name && (
                   <span className={styles.followedCheck}>✓</span>
                 )}
               </div>
             </Tooltip>
           ))}
-          <button className={styles.viewAllBtn} onClick={() => history.push('/tags')}>
+          <button
+            type="button"
+            className={styles.viewAllBtn}
+            onClick={() => history.push('/tags')}
+          >
             Xem Tất Cả Thẻ →
           </button>
         </div>
@@ -93,8 +115,17 @@ export default function Sidebar({ onClose }: SidebarProps) {
       children: (
         <div className={styles.subjectList}>
           {subjects.map((subject) => (
-            <div key={subject.name} className={styles.subjectItem}
-              onClick={() => history.push(`/forum?subject=${subject.name}`)}>
+            <div
+              key={subject.name}
+              className={`${styles.subjectItem} ${
+                activeSubject === subject.name ? styles.followed : ''
+              }`}
+              onClick={() =>
+                activeSubject === subject.name
+                  ? goFilter('')
+                  : goFilter(`?subject=${encodeURIComponent(subject.name)}`)
+              }
+            >
               <span>{subject.name}</span>
               <span className={styles.count}>{subject.count}</span>
             </div>
@@ -112,8 +143,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
       children: (
         <div className={styles.departmentList}>
           {departments.map((dept) => (
-            <button key={dept} className={styles.deptBtn}
-              onClick={() => history.push(`/forum?dept=${dept}`)}>
+            <button
+              type="button"
+              key={dept}
+              className={`${styles.deptBtn} ${
+                activeDept === dept ? styles.active : ''
+              }`}
+              onClick={() =>
+                activeDept === dept
+                  ? goFilter('')
+                  : goFilter(`?dept=${encodeURIComponent(dept)}`)
+              }
+            >
               {dept}
             </button>
           ))}
@@ -135,7 +176,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {onClose && (
         <div className={styles.drawerHeader}>
           <span className={styles.drawerTitle}>EduForum</span>
-          <button className={styles.closeBtn} onClick={onClose}><CloseOutlined /></button>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
+            <CloseOutlined />
+          </button>
         </div>
       )}
 
@@ -148,8 +191,15 @@ export default function Sidebar({ onClose }: SidebarProps) {
             { label: 'Thẻ', path: '/tags' },
             { label: 'Xếp Hạng', path: '/leaderboard' },
           ].map((item) => (
-            <button key={item.path} className={styles.quickNavBtn}
-              onClick={() => { history.push(item.path); onClose(); }}>
+            <button
+              type="button"
+              key={item.path}
+              className={styles.quickNavBtn}
+              onClick={() => {
+                history.push(item.path);
+                onClose();
+              }}
+            >
               {item.label}
             </button>
           ))}
@@ -174,9 +224,16 @@ export default function Sidebar({ onClose }: SidebarProps) {
         <div className={styles.filterList}>
           {filterOptions.map((opt) => (
             <button
+              type="button"
               key={opt.key}
-              className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
-              onClick={() => setActiveFilter(activeFilter === opt.key ? null : opt.key)}
+              className={`${styles.filterBtn} ${
+                activeFilter === opt.key ? styles.active : ''
+              }`}
+              onClick={() =>
+                activeFilter === opt.key
+                  ? goFilter('')
+                  : goFilter(`?filter=${opt.key}`)
+              }
             >
               {opt.label}
             </button>

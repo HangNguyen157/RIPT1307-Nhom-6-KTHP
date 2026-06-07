@@ -51,7 +51,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'GET') {
     try {
-      const { tag, q, sort, authorId, page, limit, unanswered } = req.query ?? {};
+      // Lưu ý: umi apiRoute KHÔNG tự URL-decode query param
+      // (vd nhận "Web%20Development" thay vì "Web Development")
+      const dec = (v: unknown) =>
+        typeof v === 'string' ? decodeURIComponent(v.replace(/\+/g, ' ')) : '';
+
+      const { sort, authorId, page, limit, unanswered, solved } = req.query ?? {};
+      const tag = dec(req.query?.tag);
+      const q = dec(req.query?.q);
+      const subject = dec(req.query?.subject);
+      const dept = dec(req.query?.dept);
 
       // Pagination
       const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
@@ -69,7 +78,17 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         whereClause.isSolved = false;
       }
 
-      if (typeof q === 'string' && q.trim()) {
+      // Lọc bài đã giải quyết
+      if (solved === '1' || solved === 'true') {
+        whereClause.isSolved = true;
+      }
+
+      // Lọc theo môn học
+      if (subject.trim()) {
+        whereClause.subject = subject.trim();
+      }
+
+      if (q.trim()) {
         const keyword = `%${q.trim()}%`;
         whereClause[Op.or] = [
           { title: { [Op.like]: keyword } },
@@ -90,23 +109,29 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         through: { attributes: [] },
       };
 
-      if (typeof tag === 'string' && tag.trim()) {
+      if (tag.trim()) {
         tagInclude.where = { name: tag.trim() };
+      }
+
+      const authorInclude: any = {
+        model: UserEntity,
+        as: 'author',
+        attributes: ['name', 'role', 'reputation'],
+      };
+
+      // Lọc theo chuyên ngành (khoa) của tác giả
+      if (dept.trim()) {
+        authorInclude.where = { department: { [Op.like]: `%${dept.trim()}%` } };
+        authorInclude.required = true;
       }
 
       const { count, rows } = await QuestionEntity.findAndCountAll({
         where: whereClause,
-        include: [
-          {
-            model: UserEntity,
-            as: 'author',
-            attributes: ['name', 'role', 'reputation'],
-          },
-          tagInclude,
-        ],
+        include: [authorInclude, tagInclude],
         order: orderClause,
         limit: pageSize,
         offset,
+        distinct: true,
       });
 
       const list = rows.map(formatQuestion);
