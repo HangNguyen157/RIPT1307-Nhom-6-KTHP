@@ -1,81 +1,92 @@
-import type { User, UserRole } from '../models/User';
-import { verifyPassword } from '../models/User';
-import { MOCK_USERS } from '../seed/users';
-
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
-export interface RegisterInput {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  department?: string;
-  studentId?: string;
-}
+/**
+ * @deprecated Dùng src/api/auth/login.ts và src/api/auth/register.ts trực tiếp.
+ * File này giữ lại để tương thích import cũ — không dùng mock data.
+ */
+import { initDb } from '../db';
+import { initModels, User } from '../models';
+import type { User as UserType } from '../models/User';
+import bcrypt from 'bcryptjs';
 
 export interface AuthResult {
-  user: User;
+  user: UserType;
   token: string;
 }
 
-function createToken(userId: string): string {
-  return `mock_token_${userId}`;
-}
-
-function stripPasswordFields(user: User): User {
-  return user;
-}
-
-export function login(input: LoginInput): AuthResult {
-  const { email, password } = input;
-  const found = MOCK_USERS.find((u) => u.email === email);
-
-  if (found && verifyPassword(password)) {
-    return { user: stripPasswordFields(found), token: createToken(found.id) };
-  }
-
-  if (email && password.length >= 6) {
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: email.split('@')[0],
-      email,
-      role: 'student',
-      reputation: 10,
-      posts: 0,
-      answers: 0,
-      votes: 0,
-      followers: 0,
-      following: 0,
-      joinDate: new Date().toISOString().split('T')[0],
-      badges: [],
-      status: 'active',
-    };
-    return { user: newUser, token: createToken(newUser.id) };
-  }
-
-  throw new Error('Email hoặc mật khẩu không chính xác');
-}
-
-export function register(input: RegisterInput): AuthResult {
-  const newUser: User = {
-    id: Date.now().toString(),
-    name: input.name,
-    email: input.email,
-    role: input.role,
-    department: input.department,
-    studentId: input.studentId,
-    reputation: 10,
-    posts: 0,
-    answers: 0,
-    votes: 0,
-    followers: 0,
-    following: 0,
-    joinDate: new Date().toISOString().split('T')[0],
-    badges: ['newcomer'],
-    status: 'active',
+function stripPasswordFields(user: any): UserType {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    department: user.department,
+    major: user.major,
+    studentId: user.student_id ?? user.studentId,
+    avatar: user.avatar,
+    bio: user.bio,
+    reputation: user.reputation ?? 0,
+    posts: user.posts_count ?? user.posts ?? 0,
+    answers: user.answers_count ?? user.answers ?? 0,
+    votes: user.votes_count ?? user.votes ?? 0,
+    followers: user.followers_count ?? user.followers ?? 0,
+    following: user.following_count ?? user.following ?? 0,
+    joinDate: user.created_at ?? user.joinDate ?? '',
+    badges: Array.isArray(user.badges) ? user.badges : [],
+    status: user.status,
   };
-  return { user: newUser, token: createToken(newUser.id) };
+}
+
+function createToken(userId: string): string {
+  return `db_token_${userId}`;
+}
+
+export async function login(
+  email: string,
+  password: string,
+): Promise<AuthResult | null> {
+  await initDb();
+  initModels();
+
+  const found = await User.findOne({ where: { email } });
+  if (!found) return null;
+
+  const hash = (found.get('password_hash') as string) || '';
+  const ok = hash ? bcrypt.compareSync(password, hash) : false;
+  if (!ok) return null;
+
+  return {
+    user: stripPasswordFields(found.get({ plain: true })),
+    token: createToken(found.get('id') as string),
+  };
+}
+
+export async function register(data: {
+  name: string;
+  email: string;
+  password: string;
+  role?: string;
+  department?: string;
+  studentId?: string;
+}): Promise<AuthResult | null> {
+  await initDb();
+  initModels();
+
+  const exists = await User.findOne({ where: { email: data.email } });
+  if (exists) return null;
+
+  const { randomUUID } = await import('crypto');
+  const hashed = bcrypt.hashSync(data.password, 10);
+  const newUser = await User.create({
+    id: randomUUID(),
+    name: data.name,
+    email: data.email,
+    password_hash: hashed,
+    role: data.role || 'student',
+    department: data.department || null,
+    student_id: data.studentId || null,
+  } as any);
+
+  return {
+    user: stripPasswordFields(newUser.get({ plain: true })),
+    token: createToken(newUser.get('id') as string),
+  };
 }

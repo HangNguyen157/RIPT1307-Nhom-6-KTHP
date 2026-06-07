@@ -1,26 +1,51 @@
-import React, { useState } from 'react';
-import { Button, Select, Input, Table, Tag, Space, Badge, Popconfirm, message } from 'antd';
-import { SearchOutlined, DeleteOutlined, PushpinOutlined, EyeOutlined, CheckOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
-import styles from './index.less';
-
-const POSTS = MOCK_QUESTIONS.map((q) => ({
-  id: q.id,
-  title: q.title,
-  author: q.author,
-  subject: q.subject ?? '',
-  votes: q.votes,
-  comments: q.comments,
-  status: q.status ?? 'active',
-  isSolved: q.isSolved ?? false,
-  createdAt: q.createdAt ?? '',
-}));
+import { authUtils } from '@/utils/auth';
+import { request } from '@umijs/max';
+import { message } from 'antd';
+import { useEffect, useState } from 'react';
 
 export default function AdminPosts() {
-  const [posts, setPosts] = useState(POSTS);
+  const [posts, setPosts] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [loading, setLoading] = useState(false);
+
+  const getAuthHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {};
+    const token = authUtils.getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  };
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const res = await request('/api/posts', { method: 'GET' });
+        if (res?.success && Array.isArray(res.data.list)) {
+          setPosts(
+            res.data.list.map((q: any) => ({
+              id: q.id,
+              title: q.title,
+              author: q.author?.name || 'Ẩn danh',
+              subject: q.subject || '',
+              votes: 0,
+              comments: 0,
+              status: q.status || 'active',
+              isSolved: q.is_solved === 1,
+              createdAt: q.created_at
+                ? new Date(q.created_at).toLocaleDateString('vi-VN')
+                : '',
+            })),
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   const filtered = posts.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
@@ -28,121 +53,25 @@ export default function AdminPosts() {
     return matchSearch && matchStatus;
   });
 
-  const deletePost = (id: string) => {
-    setPosts(posts.filter((p) => p.id !== id));
-    message.success('Đã xóa bài viết');
+  const deletePost = async (id: string) => {
+    try {
+      const res = await request(`/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      // Thường API trả về response trực tiếp, nếu bọc trong res.data thì bạn sửa thành res?.data?.success
+      if (res?.success || res?.data?.success) {
+        setPosts(posts.filter((p) => p.id !== id));
+        message.success('Đã xóa bài viết thành công');
+      } else {
+        message.error(res?.message || 'Lỗi khi xóa bài viết');
+      }
+    } catch (err: any) {
+      // Lấy message từ server trả về nếu có trong err.response
+      const errorMsg =
+        err?.response?.data?.message || err?.message || 'Lỗi khi xóa bài viết';
+      message.error(errorMsg);
+    }
   };
-
-  const columns = [
-    {
-      title: 'Tiêu Đề',
-      key: 'title',
-      render: (record: any) => (
-        <div className={styles.postCell}>
-          <div className={styles.postTitle}>{record.title}</div>
-          <div className={styles.postMeta}>
-            <span>👤 {record.author}</span>
-            <span>📚 {record.subject}</span>
-            <span>📅 {record.createdAt}</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Vote / Bình Luận',
-      key: 'stats',
-      render: (record: any) => (
-        <Space direction="vertical" size={2}>
-          <span>👍 {record.votes} vote</span>
-          <span>💬 {record.comments} bình luận</span>
-        </Space>
-      ),
-    },
-    {
-      title: 'Trạng Thái',
-      key: 'status',
-      render: (record: any) => (
-        <Space direction="vertical" size={4}>
-          <Badge
-            status={record.status === 'active' ? 'success' : record.status === 'reported' ? 'warning' : 'default'}
-            text={record.status === 'active' ? 'Đang Hoạt Động' : record.status === 'reported' ? '⚠️ Bị Báo Cáo' : 'Ẩn'}
-          />
-          {record.isSolved && <Tag color="green">✅ Đã Giải Quyết</Tag>}
-        </Space>
-      ),
-    },
-    {
-      title: 'Thao Tác',
-      key: 'actions',
-      render: (record: any) => (
-        <Space>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => history.push(`/post/${record.id}`)}>
-            Xem
-          </Button>
-          <Popconfirm
-            title="Xóa bài viết này?"
-            description="Hành động này không thể hoàn tác."
-            onConfirm={() => deletePost(record.id)}
-            okText="Xóa"
-            cancelText="Hủy"
-            okButtonProps={{ danger: true }}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />}>Xóa</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
-
-  return (
-    <div className={styles.adminSection}>
-      <h2 className={styles.sectionTitle}>📝 Quản Lý Bài Viết</h2>
-
-      <div className={styles.miniStats}>
-        {[
-          { label: 'Tổng Bài Viết', value: posts.length, icon: '📝', color: '#3b82f6' },
-          { label: 'Đang Hoạt Động', value: posts.filter((p) => p.status === 'active').length, icon: '✅', color: '#10b981' },
-          { label: 'Bị Báo Cáo', value: posts.filter((p) => p.status === 'reported').length, icon: '⚠️', color: '#f59e0b' },
-          { label: 'Đã Giải Quyết', value: posts.filter((p) => p.isSolved).length, icon: '🏆', color: '#8b5cf6' },
-        ].map((s, i) => (
-          <div key={i} className={styles.miniStat}>
-            <span className={styles.miniStatIcon}>{s.icon}</span>
-            <div>
-              <div className={styles.miniStatValue} style={{ color: s.color }}>{s.value}</div>
-              <div className={styles.miniStatLabel}>{s.label}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className={styles.filterRow}>
-        <Input
-          prefix={<SearchOutlined />}
-          placeholder="Tìm kiếm bài viết..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ maxWidth: 320 }}
-        />
-        <Select
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={[
-            { label: 'Tất Cả', value: 'all' },
-            { label: '✅ Đang Hoạt Động', value: 'active' },
-            { label: '⚠️ Bị Báo Cáo', value: 'reported' },
-          ]}
-          style={{ width: 180 }}
-        />
-      </div>
-
-      <Table
-        dataSource={filtered}
-        columns={columns}
-        rowKey="id"
-        className={styles.adminTable}
-        pagination={{ pageSize: 10 }}
-        rowClassName={(record) => record.status === 'reported' ? styles.reportedRow : ''}
-      />
-    </div>
-  );
 }

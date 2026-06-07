@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Card, Avatar, Tooltip, Skeleton } from 'antd';
 import {
-  LikeOutlined,
-  LikeFilled,
-  DislikeOutlined,
-  DislikeFilled,
-  MessageOutlined,
-  EyeOutlined,
-  BookOutlined,
   BookFilled,
+  BookOutlined,
   CheckCircleFilled,
+  DislikeFilled,
+  DislikeOutlined,
+  EyeOutlined,
   FireOutlined,
+  LikeFilled,
+  LikeOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
+import { Avatar, Card, Skeleton, Tooltip } from 'antd';
+import React, { useState } from 'react';
 
 import { history } from '@umijs/max';
 import styles from './index.less';
@@ -38,7 +38,7 @@ interface PostCardProps {
   excerpt: string;
   author: string;
   authorAvatar?: string;
-  tags: string[];
+  tags: { id: number; name: string; color?: string; slug?: string }[];
   votes: number;
   comments: number;
   views: number;
@@ -71,10 +71,7 @@ export default function PostCard({
 
   if (isLoading) {
     return (
-      <Card
-        className={styles.postCard}
-        styles={{ body: { padding: '16px' } }}
-      >
+      <Card className={styles.postCard} styles={{ body: { padding: '16px' } }}>
         <Skeleton active avatar paragraph={{ rows: 3 }} />
       </Card>
     );
@@ -112,48 +109,38 @@ export default function PostCard({
     }
   };
 
-  const getTagColor = (tag: string) =>
-    TAG_COLORS[tag] || TAG_COLORS.Default;
+  const getTagColor = (tag: any) =>
+    TAG_COLORS[tag?.name] || tag?.color || TAG_COLORS.Default;
 
   const isHot = votes > 50;
 
   return (
     <div
-      className={`${styles.postCard} ${
-        isSolved ? styles.solved : ''
-      }`}
+      className={`${styles.postCard} ${isSolved ? styles.solved : ''}`}
       onClick={() => history.push(`/post/${id}`)}
     >
       {/* Vote Column */}
       <div className={styles.voteCol}>
         <button
-          className={`${styles.voteBtn} ${
-            isLiked ? styles.active : ''
-          }`}
+          className={`${styles.voteBtn} ${isLiked ? styles.active : ''}`}
           onClick={handleLike}
         >
           {isLiked ? <LikeFilled /> : <LikeOutlined />}
         </button>
 
         <span
-          className={`${styles.voteNum} ${
-            isLiked ? styles.liked : ''
-          } ${isDisliked ? styles.disliked : ''}`}
+          className={`${styles.voteNum} ${isLiked ? styles.liked : ''} ${
+            isDisliked ? styles.disliked : ''
+          }`}
         >
           {voteCount}
         </span>
 
         <button
-          className={`${styles.voteBtn} ${
-            isDisliked ? styles.activeDown : ''
-          }`}
+          className={`${styles.voteBtn} ${isDisliked ? styles.activeDown : ''}`}
           onClick={handleDislike}
         >
-          {isDisliked ? (
-            <DislikeFilled />
-          ) : (
-            <DislikeOutlined />
-          )}
+          {isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
         </button>
       </div>
 
@@ -173,16 +160,10 @@ export default function PostCard({
           )}
 
           {!isSolved && !isHot && (
-            <span className={styles.unansweredBadge}>
-              Chưa Giải Quyết
-            </span>
+            <span className={styles.unansweredBadge}>Chưa Giải Quyết</span>
           )}
 
-          {subject && (
-            <span className={styles.subjectTag}>
-              {subject}
-            </span>
-          )}
+          {subject && <span className={styles.subjectTag}>{subject}</span>}
         </div>
 
         <h3 className={styles.title}>{title}</h3>
@@ -191,9 +172,9 @@ export default function PostCard({
 
         {/* Tags */}
         <div className={styles.tags}>
-          {tags.map((tag) => (
+          {tags?.map((tag: any) => (
             <span
-              key={tag}
+              key={tag.id || tag.name}
               className={styles.tag}
               style={{
                 background: `${getTagColor(tag)}18`,
@@ -205,7 +186,7 @@ export default function PostCard({
                 history.push('/tags');
               }}
             >
-              {tag}
+              {tag.name}
             </span>
           ))}
         </div>
@@ -226,15 +207,11 @@ export default function PostCard({
             </Avatar>
 
             <div>
-              <span className={styles.authorName}>
-                {author}
-              </span>
+              <span className={styles.authorName}>{author}</span>
 
               <span className={styles.dot}>·</span>
 
-              <span className={styles.timestamp}>
-                {timestamp}
-              </span>
+              <span className={styles.timestamp}>{timestamp}</span>
             </div>
           </div>
 
@@ -248,33 +225,21 @@ export default function PostCard({
             <Tooltip title="Lượt xem">
               <span className={styles.stat}>
                 <EyeOutlined />{' '}
-                {views >= 1000
-                  ? `${(views / 1000).toFixed(1)}k`
-                  : views}
+                {views >= 1000 ? `${(views / 1000).toFixed(1)}k` : views}
               </span>
             </Tooltip>
 
-            <Tooltip
-              title={
-                isBookmarked ? 'Bỏ lưu' : 'Lưu bài'
-              }
-            >
+            <Tooltip title={isBookmarked ? 'Bỏ lưu' : 'Lưu bài'}>
               <button
                 className={`${styles.bookmarkBtn} ${
-                  isBookmarked
-                    ? styles.bookmarked
-                    : ''
+                  isBookmarked ? styles.bookmarked : ''
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsBookmarked(!isBookmarked);
                 }}
               >
-                {isBookmarked ? (
-                  <BookFilled />
-                ) : (
-                  <BookOutlined />
-                )}
+                {isBookmarked ? <BookFilled /> : <BookOutlined />}
               </button>
             </Tooltip>
           </div>

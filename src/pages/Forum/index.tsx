@@ -1,59 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Space, Tag, Tabs } from 'antd';
+import PostCard from '@/components/PostCard';
 import {
-  FireOutlined,
   ClockCircleOutlined,
-  LikeOutlined,
-  QuestionCircleOutlined,
+  FireOutlined,
   RightOutlined,
-  UserOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import PostCard from '@/components/PostCard';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { history, request } from '@umijs/max';
+import { Button, Empty, Skeleton } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
-
-const mockPosts = MOCK_QUESTIONS;
-
-const topContributors = [
-  { id: '3', name: 'PGS.TS Lê Minh Đức', role: 'teacher', rep: 5430, emoji: '🏆' },
-  { id: '2', name: 'Trần Thị Hương', role: 'student', rep: 1250, emoji: '⭐' },
-  { id: '4', name: 'Hoàng Văn Bình', role: 'student', rep: 980, emoji: '⭐' },
-  { id: '5', name: 'Nguyễn Minh Châu', role: 'teacher', rep: 870, emoji: '🤝' },
-  { id: '6', name: 'Lê Thị Lan', role: 'student', rep: 654, emoji: '🤝' },
-];
 
 const trendingTags = [
   { name: 'Java', count: 245, color: '#f97316' },
   { name: 'React', count: 198, color: '#06b6d4' },
   { name: 'Python', count: 176, color: '#3b82f6' },
   { name: 'SQL', count: 154, color: '#8b5cf6' },
-  { name: 'JavaScript', count: 142, color: '#eab308' },
-  { name: 'AI/ML', count: 128, color: '#ec4899' },
 ];
 
 export default function Forum() {
   const [activeFilter, setActiveFilter] = useState('hot');
-  const [activePosts, setActivePosts] = useState(mockPosts);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+  const [topContributors, setTopContributors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [postsRes, leaderboardRes] = await Promise.all([
+          request('/api/posts', { method: 'GET' }),
+          request('/api/leaderboard', { method: 'GET' }),
+        ]);
+        if (postsRes?.success && Array.isArray(postsRes.data.list)) {
+          setPosts(postsRes.data.list);
+          setFilteredPosts(postsRes.data.list);
+        }
+        if (
+          leaderboardRes?.success &&
+          Array.isArray(leaderboardRes.data?.list)
+        ) {
+          setTopContributors(
+            leaderboardRes.data.list.slice(0, 3).map((u: any) => ({
+              id: u.id,
+              name: u.name,
+              role: u.role,
+              rep: u.rep ?? 0,
+              emoji: (u.rep ?? 0) >= 2000 ? '🏆' : '⭐',
+            })),
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching forum data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filterOptions = [
     { key: 'hot', label: 'Nóng', icon: <FireOutlined /> },
     { key: 'newest', label: 'Mới Nhất', icon: <ClockCircleOutlined /> },
-    { key: 'votes', label: 'Nhiều Vote', icon: <LikeOutlined /> },
-    { key: 'unanswered', label: 'Chưa Trả Lời', icon: <QuestionCircleOutlined /> },
   ];
 
   const handleFilter = (key: string) => {
     setActiveFilter(key);
-    if (key === 'unanswered') {
-      setActivePosts(mockPosts.filter((p) => !p.isSolved));
-    } else if (key === 'votes') {
-      setActivePosts([...mockPosts].sort((a, b) => b.votes - a.votes));
-    } else if (key === 'newest') {
-      setActivePosts([...mockPosts].reverse());
+    if (key === 'newest') {
+      setFilteredPosts([...posts].reverse());
     } else {
-      setActivePosts(mockPosts);
+      setFilteredPosts(posts);
     }
   };
 
@@ -63,7 +79,9 @@ export default function Forum() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Diễn Đàn Hỏi Đáp</h1>
-          <p className={styles.pageSubtitle}>Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên</p>
+          <p className={styles.pageSubtitle}>
+            Khám phá {posts.length}+ câu hỏi từ cộng đồng sinh viên
+          </p>
         </div>
         <Button
           type="primary"
@@ -84,7 +102,9 @@ export default function Forum() {
             {filterOptions.map((opt) => (
               <button
                 key={opt.key}
-                className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
+                className={`${styles.filterBtn} ${
+                  activeFilter === opt.key ? styles.active : ''
+                }`}
                 onClick={() => handleFilter(opt.key)}
               >
                 {opt.icon}
@@ -95,27 +115,33 @@ export default function Forum() {
 
           {/* Post List */}
           <div className={styles.postList}>
-            {activePosts.map((post, index) => (
-              <div
-                key={post.id}
-                style={{ animationDelay: `${index * 0.05}s` }}
-                className={styles.postItem}
-              >
-                <PostCard
-                  id={post.id}
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  author={post.author}
-                  tags={post.tags}
-                  votes={post.votes}
-                  comments={post.comments}
-                  views={post.views}
-                  timestamp={post.timestamp}
-                  subject={post.subject}
-                  isSolved={post.isSolved}
-                />
-              </div>
-            ))}
+            {loading ? (
+              <Skeleton active />
+            ) : filteredPosts.length > 0 ? (
+              filteredPosts.map((post, index) => (
+                <div
+                  key={post.id}
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                  className={styles.postItem}
+                >
+                  <PostCard
+                    id={post.id}
+                    title={post.title}
+                    excerpt={post.excerpt}
+                    author={post.author?.name || 'Ẩn danh'}
+                    tags={post.tags || []}
+                    votes={post.votes ?? 0}
+                    comments={post.comments ?? 0}
+                    views={post.views ?? 0}
+                    timestamp={post.timestamp ?? 'Mới'}
+                    subject={post.subject}
+                    isSolved={post.isSolved}
+                  />
+                </div>
+              ))
+            ) : (
+              <Empty description="Chưa có câu hỏi" />
+            )}
           </div>
         </div>
 
@@ -141,7 +167,9 @@ export default function Forum() {
                   <div className={styles.contributorInfo}>
                     <div className={styles.contributorName}>{user.name}</div>
                     <div className={styles.contributorRole}>
-                      {user.role === 'teacher' ? '👨‍🏫 Giảng viên' : '👨‍🎓 Sinh viên'}
+                      {user.role === 'teacher'
+                        ? '👨‍🏫 Giảng viên'
+                        : '👨‍🎓 Sinh viên'}
                     </div>
                   </div>
                   <div className={styles.contributorRep}>
@@ -151,7 +179,10 @@ export default function Forum() {
                 </div>
               ))}
             </div>
-            <button className={styles.viewMoreBtn} onClick={() => history.push('/leaderboard')}>
+            <button
+              className={styles.viewMoreBtn}
+              onClick={() => history.push('/leaderboard')}
+            >
               Xem Bảng Xếp Hạng <RightOutlined />
             </button>
           </div>
@@ -164,8 +195,15 @@ export default function Forum() {
             </div>
             <div className={styles.trendingTags}>
               {trendingTags.map((tag) => (
-                <div key={tag.name} className={styles.trendingTag} onClick={() => history.push(`/tags`)}>
-                  <span className={styles.tagDot} style={{ background: tag.color }} />
+                <div
+                  key={tag.name}
+                  className={styles.trendingTag}
+                  onClick={() => history.push(`/tags`)}
+                >
+                  <span
+                    className={styles.tagDot}
+                    style={{ background: tag.color }}
+                  />
                   <span className={styles.tagName}>{tag.name}</span>
                   <span className={styles.tagCount}>{tag.count}</span>
                 </div>
@@ -181,10 +219,30 @@ export default function Forum() {
             </div>
             <div className={styles.activityList}>
               {[
-                { user: 'Nguyễn Văn A', action: 'đã đặt câu hỏi', time: '5 phút trước', emoji: '❓' },
-                { user: 'Trần Thị B', action: 'đã trả lời', time: '12 phút trước', emoji: '💬' },
-                { user: 'Lê Văn C', action: 'đã upvote', time: '20 phút trước', emoji: '👍' },
-                { user: 'PGS.TS Lê Minh Đức', action: 'đã chọn best answer', time: '1 giờ trước', emoji: '✅' },
+                {
+                  user: 'Nguyễn Văn A',
+                  action: 'đã đặt câu hỏi',
+                  time: '5 phút trước',
+                  emoji: '❓',
+                },
+                {
+                  user: 'Trần Thị B',
+                  action: 'đã trả lời',
+                  time: '12 phút trước',
+                  emoji: '💬',
+                },
+                {
+                  user: 'Lê Văn C',
+                  action: 'đã upvote',
+                  time: '20 phút trước',
+                  emoji: '👍',
+                },
+                {
+                  user: 'PGS.TS Lê Minh Đức',
+                  action: 'đã chọn best answer',
+                  time: '1 giờ trước',
+                  emoji: '✅',
+                },
               ].map((act, i) => (
                 <div key={i} className={styles.activityItem}>
                   <span className={styles.activityEmoji}>{act.emoji}</span>

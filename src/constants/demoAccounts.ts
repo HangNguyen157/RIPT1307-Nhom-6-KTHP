@@ -1,9 +1,8 @@
-import { MOCK_USERS } from '@/server/seed/users';
-
-export function getDemoCredentials() {
-  return MOCK_USERS.map((u) => ({
-    email: u.email,
-    role: u.role,
-    name: u.name,
-  }));
+/** Demo credentials — lấy từ database qua API login, không dùng mock data. */
+export function getDemoCredentials(): Array<{
+  email: string;
+  role: string;
+  name: string;
+}> {
+  return [];
 }

@@ -1,29 +1,72 @@
-import React, { useState } from 'react';
-import { Input, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import { MOCK_TAGS, TAG_CATEGORIES } from '@/server/seed/tags';
+import { history, request } from '@umijs/max';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
-const ALL_TAGS = MOCK_TAGS;
-const CATEGORIES = TAG_CATEGORIES;
+const TAG_CATEGORIES = [
+  { id: 'all', name: 'Tất Cả' },
+  { id: 'web', name: 'Web Development' },
+  { id: 'backend', name: 'Backend' },
+  { id: 'database', name: 'Database' },
+  { id: 'other', name: 'Khác' },
+];
+
+const CATEGORY_FILTER_MAP: Record<string, string[]> = {
+  all: [],
+  web: ['language', 'framework', 'tool'],
+  backend: ['subject', 'concept'],
+  database: ['database'],
+  other: ['field'],
+};
 
 export default function Tags() {
+  const [tags, setTags] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [followed, setFollowed] = useState<string[]>(['React', 'JavaScript']);
+  const [followed, setFollowed] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = ALL_TAGS.filter((tag) => {
-    const matchSearch = tag.name.toLowerCase().includes(search.toLowerCase()) || tag.desc.toLowerCase().includes(search.toLowerCase());
-    const matchCat = activeCategory === 'all' || tag.category === activeCategory;
-    return matchSearch && matchCat;
+  // Fetch tags from API
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        setLoading(true);
+        const res = await request('/api/tags', { method: 'GET' }).catch(
+          () => null,
+        );
+        if (res?.success && Array.isArray(res.data?.list)) {
+          setTags(res.data.list);
+        } else if (Array.isArray(res?.data)) {
+          setTags(res.data);
+        }
+      } catch (err) {
+        console.error('Error fetching tags:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const filtered = tags.filter((tag) => {
+    const matchSearch = String(tag.name || '')
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const categoryList = CATEGORY_FILTER_MAP[activeCategory] || [];
+    const matchCategory =
+      activeCategory === 'all' ||
+      (tag.category && categoryList.includes(tag.category));
+
+    return matchSearch && matchCategory;
   });
 
   const toggleFollow = (tagName: string) => {
-    setFollowed((prev) => prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]);
+    setFollowed((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName)
+        : [...prev, tagName],
+    );
   };
-
-  const totalQuestions = ALL_TAGS.reduce((sum, t) => sum + t.count, 0);
 
   return (
     <div className={styles.tagsPage}>
@@ -31,7 +74,7 @@ export default function Tags() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>🏷️ Tất Cả Thẻ</h1>
-          <p className={styles.pageSubtitle}>{ALL_TAGS.length} thẻ · {totalQuestions.toLocaleString('vi')} câu hỏi</p>
+          <p className={styles.pageSubtitle}>{tags.length} thẻ</p>
         </div>
         {followed.length > 0 && (
           <div className={styles.followedInfo}>
@@ -53,48 +96,78 @@ export default function Tags() {
 
       {/* Category Filter */}
       <div className={styles.categoryFilter}>
-        {CATEGORIES.map((cat) => (
+        {TAG_CATEGORIES.map((cat) => (
           <button
-            key={cat.key}
-            className={`${styles.catBtn} ${activeCategory === cat.key ? styles.active : ''}`}
-            onClick={() => setActiveCategory(cat.key)}
+            key={cat.id}
+            className={`${styles.catBtn} ${
+              activeCategory === cat.id ? styles.active : ''
+            }`}
+            onClick={() => setActiveCategory(cat.id)}
           >
-            {cat.emoji} {cat.label}
+            {cat.name}
           </button>
         ))}
       </div>
 
       {/* Tags Grid */}
-      <div className={styles.tagsGrid}>
-        {filtered.map((tag, i) => (
-          <div key={tag.name} className={styles.tagCard} style={{ animationDelay: `${i * 0.03}s` }}>
-            <div className={styles.tagCardHeader}>
-              <div className={styles.tagPill} style={{ background: `${tag.color}18`, color: tag.color, borderColor: `${tag.color}40` }}>
-                {tag.name}
+      {loading ? (
+        <div className={styles.loadingState}>Đang tải thẻ...</div>
+      ) : filtered.length > 0 ? (
+        <div className={styles.tagsGrid}>
+          {filtered.map((tag, i) => {
+            const tagName = String(tag.name || 'Không tên');
+            return (
+              <div
+                key={tag.id || tagName || i}
+                className={styles.tagCard}
+                style={{ animationDelay: `${i * 0.03}s` }}
+              >
+                <div className={styles.tagCardHeader}>
+                  <div
+                    className={styles.tagPill}
+                    style={{
+                      background: `${tag.color || '#999'}18`,
+                      color: tag.color || '#333',
+                      borderColor: `${tag.color || '#999'}40`,
+                    }}
+                  >
+                    {tagName}
+                  </div>
+                  <span className={styles.tagCount}>{tag.count ?? 0}</span>
+                </div>
+                <p className={styles.tagDesc}>
+                  {tag.description || 'Chưa có mô tả'}
+                </p>
+                <div className={styles.tagCardFooter}>
+                  <button
+                    className={`${styles.followBtn} ${
+                      followed.includes(tagName) ? styles.following : ''
+                    }`}
+                    onClick={() => toggleFollow(tagName)}
+                    style={
+                      followed.includes(tagName)
+                        ? { borderColor: tag.color, color: tag.color }
+                        : {}
+                    }
+                  >
+                    {followed.includes(tagName)
+                      ? '✓ Đang Theo Dõi'
+                      : '+ Theo Dõi'}
+                  </button>
+                  <button
+                    className={styles.exploreBtn}
+                    onClick={() =>
+                      history.push(`/forum?tag=${encodeURIComponent(tagName)}`)
+                    }
+                  >
+                    {tag.count ?? 0} câu hỏi →
+                  </button>
+                </div>
               </div>
-              <span className={styles.tagCount}>{tag.count}</span>
-            </div>
-            <p className={styles.tagDesc}>{tag.desc}</p>
-            <div className={styles.tagCardFooter}>
-              <button
-                className={`${styles.followBtn} ${followed.includes(tag.name) ? styles.following : ''}`}
-                onClick={() => toggleFollow(tag.name)}
-                style={followed.includes(tag.name) ? { borderColor: tag.color, color: tag.color } : {}}
-              >
-                {followed.includes(tag.name) ? '✓ Đang Theo Dõi' : '+ Theo Dõi'}
-              </button>
-              <button
-                className={styles.exploreBtn}
-                onClick={() => history.push(`/forum?tag=${tag.name}`)}
-              >
-                {tag.count} câu hỏi →
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {filtered.length === 0 && (
+            );
+          })}
+        </div>
+      ) : (
         <div className={styles.emptyState}>
           <div>🔍</div>
           <p>Không tìm thấy thẻ nào</p>

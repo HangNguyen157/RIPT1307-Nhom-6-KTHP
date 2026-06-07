@@ -24,9 +24,9 @@ export default defineConfig({
   },
 
   // 2. Tắt cảnh báo Beta để sửa lỗi chặn Git Commit
-  stats: {
-    warnings: false,
-  },
+  // stats: {
+  //   warnings: false,
+  // },
 
   layout: false,
   routes: [

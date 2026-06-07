@@ -174,8 +174,13 @@ export default function Header({
       key: 'profile',
       icon: <UserOutlined />,
       label: 'Hồ Sơ Cá Nhân',
-      onClick: () =>
-        history.push(`/profile/${currentUser?.id || '1'}`),
+      onClick: () => {
+        if (currentUser?.id) {
+          history.push(`/profile/${currentUser.id}`);
+        } else {
+          history.push('/login');
+        }
+      },
     },
 
     {
