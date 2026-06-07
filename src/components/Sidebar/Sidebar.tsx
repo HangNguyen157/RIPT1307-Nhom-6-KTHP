@@ -5,29 +5,12 @@ import {
   FireOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import { history, useSearchParams } from '@umijs/max';
+import { history, request, useSearchParams } from '@umijs/max';
 import { Collapse, Tooltip } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
-const popularTags = [
-  { name: 'Java', count: 245, color: '#f97316' },
-  { name: 'JavaScript', count: 198, color: '#eab308' },
-  { name: 'React', count: 176, color: '#06b6d4' },
-  { name: 'Python', count: 154, color: '#3b82f6' },
-  { name: 'TypeScript', count: 142, color: '#2563eb' },
-  { name: 'Node.js', count: 128, color: '#10b981' },
-  { name: 'SQL', count: 112, color: '#8b5cf6' },
-  { name: 'AI/ML', count: 98, color: '#ec4899' },
-];
-
-const subjects = [
-  { name: 'Lập Trình Cơ Bản', count: 89 },
-  { name: 'Cấu Trúc Dữ Liệu', count: 76 },
-  { name: 'Mạng Máy Tính', count: 65 },
-  { name: 'Cơ Sở Dữ Liệu', count: 54 },
-  { name: 'Hệ Điều Hành', count: 43 },
-  { name: 'Web Development', count: 38 },
-];
+const TAG_FALLBACK_COLOR = '#dc2626';
 
 // Khớp với giá trị department thực tế trong dữ liệu user
 const departments = [
@@ -48,6 +31,45 @@ export default function Sidebar({ onClose }: SidebarProps) {
   const activeTag = searchParams.get('tag') || '';
   const activeSubject = searchParams.get('subject') || '';
   const activeDept = searchParams.get('dept') || '';
+
+  // Dữ liệu thật từ DB (thay cho số liệu hard-code)
+  const [popularTags, setPopularTags] = useState<
+    { name: string; count: number; color: string }[]
+  >([]);
+  const [subjects, setSubjects] = useState<{ name: string; count: number }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        const resTags = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/tags');
+        if (resTags?.success) {
+          setPopularTags(
+            resTags.data.list.slice(0, 8).map((t: any) => ({
+              name: t.name,
+              count: t.count,
+              color: t.color || TAG_FALLBACK_COLOR,
+            })),
+          );
+        }
+
+        const resSubjects = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/subjects');
+        if (resSubjects?.success) {
+          setSubjects(resSubjects.data.list);
+        }
+      } catch (error) {
+        console.error('Lỗi tải dữ liệu sidebar:', error);
+      }
+    };
+    fetchSidebarData();
+  }, []);
 
   // Điều hướng tới Forum với query lọc, đóng drawer mobile nếu có
   const goFilter = (query: string) => {
