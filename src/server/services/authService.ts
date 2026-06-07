@@ -23,6 +23,16 @@ export interface AuthResult {
   token: string;
 }
 
+/** Lỗi nghiệp vụ auth kèm HTTP status — tránh phải so chuỗi message ở API layer */
+export class AuthError extends Error {
+  status: number;
+  constructor(message: string, status = 401) {
+    super(message);
+    this.name = 'AuthError';
+    this.status = status;
+  }
+}
+
 const JWT_SECRET =
   process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
 const JWT_EXPIRATION = '7d';
@@ -46,21 +56,14 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 
   const found = await UserEntity.findOne({ where: { email } });
 
-  //  BLOCK LOG DEBUG
-  console.log('=========================================');
-  console.log('LOG DEBUG ĐĂNG NHẬP :');
-  console.log('--> Email client gửi lên:', `"${email}"`);
-  // console.log('--> Mật khẩu thô client gửi lên:', `"${password}"`);
-  console.log('--> Tìm thấy User trong DB không?:', found ? 'CÓ' : 'KHÔNG');
-
   if (found) {
-    //  console.log('--> Chuỗi Hash mật khẩu lấy từ DB:', `"${found.password}"`);
     const checkVerify = await verifyPassword(password, found.password);
-    console.log('--> Kết quả hàm verifyPassword trả về:', checkVerify);
-    console.log('=========================================');
 
     if (found.status === 'banned') {
-      throw new Error('Tài khoản của bạn đã bị khóa bởi quản trị viên');
+      throw new AuthError(
+        'Tài khoản của bạn đã bị khóa bởi quản trị viên',
+        403,
+      );
     }
 
     if (checkVerify) {
@@ -87,12 +90,9 @@ export async function login(input: LoginInput): Promise<AuthResult> {
       };
       return { user: userObj, token: createToken(found.id) };
     }
-  } else {
-    console.log('KHÔNG TÌM THẤY USER NÀO CÓ EMAIL NÀY TRONG DB!');
-    console.log('=========================================');
   }
 
-  throw new Error('Email hoặc mật khẩu không chính xác');
+  throw new AuthError('Email hoặc mật khẩu không chính xác', 401);
 }
 
 export async function register(input: RegisterInput): Promise<AuthResult> {
@@ -101,13 +101,13 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
   // Kiểm tra email tồn tại
   const exist = await UserEntity.findOne({ where: { email: input.email } });
   if (exist) {
-    throw new Error('Email này đã được đăng ký sử dụng');
+    throw new AuthError('Email này đã được đăng ký sử dụng', 409);
   }
 
   const hashedPassword = await hashPassword(input.password);
 
   const newUser = await UserEntity.create({
-    id: Date.now().toString(),
+    id: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
     name: input.name,
     email: input.email,
     password: hashedPassword,

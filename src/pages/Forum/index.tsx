@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Space, Tag, Tabs, Pagination } from 'antd';
+import PostCard from '@/components/PostCard';
 import {
-  FireOutlined,
   ClockCircleOutlined,
+  FireOutlined,
   LikeOutlined,
   QuestionCircleOutlined,
   RightOutlined,
-  UserOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
 import { history, request, useSearchParams } from '@umijs/max';
-import PostCard from '@/components/PostCard';
-import { MOCK_QUESTIONS } from '@/server/seed/questions';
+import { Button, Pagination } from 'antd';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
-
-const mockPosts = MOCK_QUESTIONS;
 
 interface PaginationInfo {
   page: number;
@@ -43,12 +39,18 @@ export default function Forum() {
   useEffect(() => {
     const fetchSidebarData = async () => {
       try {
-        const resContributors = await request<{ success: boolean; data: { list: any[] } }>('/api/leaderboard');
+        const resContributors = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/leaderboard');
         if (resContributors && resContributors.success) {
           setTopContributors(resContributors.data.list.slice(0, 5));
         }
 
-        const resTags = await request<{ success: boolean; data: { list: any[] } }>('/api/tags');
+        const resTags = await request<{
+          success: boolean;
+          data: { list: any[] };
+        }>('/api/tags');
         if (resTags && resTags.success) {
           setTrendingTags(resTags.data.list.slice(0, 6));
         }
@@ -59,36 +61,45 @@ export default function Forum() {
     fetchSidebarData();
   }, []);
 
-
   const filterOptions = [
     { key: 'hot', label: 'Nóng', icon: <FireOutlined /> },
     { key: 'newest', label: 'Mới Nhất', icon: <ClockCircleOutlined /> },
     { key: 'votes', label: 'Nhiều Vote', icon: <LikeOutlined /> },
-    { key: 'unanswered', label: 'Chưa Trả Lời', icon: <QuestionCircleOutlined /> },
+    {
+      key: 'unanswered',
+      label: 'Chưa Trả Lời',
+      icon: <QuestionCircleOutlined />,
+    },
   ];
 
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const apiSort = activeFilter === 'hot' ? 'views' : activeFilter === 'votes' ? 'votes' : '';
-        const res = await request<{ success: boolean; data: { list: any[]; pagination: PaginationInfo } }>('/api/posts', {
+        const apiSort =
+          activeFilter === 'hot'
+            ? 'views'
+            : activeFilter === 'votes'
+            ? 'votes'
+            : '';
+        const res = await request<{
+          success: boolean;
+          data: { list: any[]; pagination: PaginationInfo };
+        }>('/api/posts', {
           method: 'GET',
           params: {
             tag: tagParam,
             q: queryParam,
             sort: apiSort,
+            // Lọc "chưa trả lời" ở backend để phân trang đúng
+            unanswered: activeFilter === 'unanswered' ? 1 : undefined,
             page: pagination.page,
             limit: pagination.limit,
           },
         });
         if (res && res.success) {
-          let list = res.data.list;
-          if (activeFilter === 'unanswered') {
-            list = list.filter((p: any) => !p.isSolved);
-          }
-          setActivePosts(list);
-          
+          setActivePosts(res.data.list);
+
           // Update pagination info from response
           if (res.data.pagination) {
             setPagination(res.data.pagination);
@@ -105,13 +116,12 @@ export default function Forum() {
 
   const handleFilter = (key: string) => {
     setActiveFilter(key);
-    setPagination({ ...pagination, page: 1 }); // Reset to first page when filter changes
+    setPagination((prev) => ({ ...prev, page: 1 })); // Reset to first page when filter changes
   };
 
   const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, page });
+    setPagination((prev) => ({ ...prev, page }));
   };
-
 
   return (
     <div className={styles.forumPage}>
@@ -119,7 +129,10 @@ export default function Forum() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Diễn Đàn Hỏi Đáp</h1>
-          <p className={styles.pageSubtitle}>Khám phá {mockPosts.length * 100}+ câu hỏi từ cộng đồng sinh viên</p>
+          <p className={styles.pageSubtitle}>
+            Khám phá {pagination.total.toLocaleString('vi')} câu hỏi từ cộng
+            đồng sinh viên
+          </p>
         </div>
         <Button
           type="primary"
@@ -139,8 +152,11 @@ export default function Forum() {
           <div className={styles.filterBar}>
             {filterOptions.map((opt) => (
               <button
+                type="button"
                 key={opt.key}
-                className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.active : ''}`}
+                className={`${styles.filterBtn} ${
+                  activeFilter === opt.key ? styles.active : ''
+                }`}
                 onClick={() => handleFilter(opt.key)}
               >
                 {opt.icon}
@@ -175,7 +191,13 @@ export default function Forum() {
           </div>
 
           {/* Pagination */}
-          <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'center' }}>
+          <div
+            style={{
+              marginTop: '32px',
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Pagination
               current={pagination.page}
               pageSize={pagination.limit}
@@ -212,12 +234,18 @@ export default function Forum() {
                     </div>
                   </div>
                   <div className={styles.contributorRep}>
-                    <span>{(user.reputation ?? user.rep ?? 0).toLocaleString()}</span>
+                    <span>
+                      {(user.reputation ?? user.rep ?? 0).toLocaleString()}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-            <button className={styles.viewMoreBtn} onClick={() => history.push('/leaderboard')}>
+            <button
+              type="button"
+              className={styles.viewMoreBtn}
+              onClick={() => history.push('/leaderboard')}
+            >
               Xem Bảng Xếp Hạng <RightOutlined />
             </button>
           </div>
@@ -230,8 +258,15 @@ export default function Forum() {
             </div>
             <div className={styles.trendingTags}>
               {trendingTags.map((tag) => (
-                <div key={tag.name} className={styles.trendingTag} onClick={() => history.push(`/tags`)}>
-                  <span className={styles.tagDot} style={{ background: tag.color }} />
+                <div
+                  key={tag.name}
+                  className={styles.trendingTag}
+                  onClick={() => history.push(`/tags`)}
+                >
+                  <span
+                    className={styles.tagDot}
+                    style={{ background: tag.color }}
+                  />
                   <span className={styles.tagName}>{tag.name}</span>
                   <span className={styles.tagCount}>{tag.count}</span>
                 </div>
@@ -247,10 +282,26 @@ export default function Forum() {
             </div>
             <div className={styles.activityList}>
               {[
-                { user: 'Nguyễn Văn A', action: 'đã đặt câu hỏi', time: '5 phút trước' },
-                { user: 'Trần Thị B', action: 'đã trả lời', time: '12 phút trước' },
-                { user: 'Lê Văn C', action: 'đã upvote', time: '20 phút trước' },
-                { user: 'PGS.TS Lê Minh Đức', action: 'đã chọn best answer', time: '1 giờ trước' },
+                {
+                  user: 'Nguyễn Văn A',
+                  action: 'đã đặt câu hỏi',
+                  time: '5 phút trước',
+                },
+                {
+                  user: 'Trần Thị B',
+                  action: 'đã trả lời',
+                  time: '12 phút trước',
+                },
+                {
+                  user: 'Lê Văn C',
+                  action: 'đã upvote',
+                  time: '20 phút trước',
+                },
+                {
+                  user: 'PGS.TS Lê Minh Đức',
+                  action: 'đã chọn best answer',
+                  time: '1 giờ trước',
+                },
               ].map((act, i) => (
                 <div key={i} className={styles.activityItem}>
                   <div>

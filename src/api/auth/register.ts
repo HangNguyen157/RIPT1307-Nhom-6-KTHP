@@ -1,5 +1,5 @@
 import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
-import { register } from '@/server/services/authService';
+import { AuthError, register } from '@/server/services/authService';
 import { validateRegisterInput } from '@/utils/validation';
 import type { UserRole } from '@/server/models/User';
 
@@ -30,6 +30,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     res.status(201).json({ success: true, data: result });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Đăng ký thất bại';
-    res.status(400).json({ success: false, message });
+    const statusCode = error instanceof AuthError ? error.status : 400;
+    res.status(statusCode).json({ success: false, message });
   }
 }

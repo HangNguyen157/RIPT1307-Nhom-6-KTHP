@@ -1,6 +1,15 @@
 import type { UmiApiRequest, UmiApiResponse } from '@umijs/max';
+import { Op } from 'sequelize';
 import { initDatabase } from '@/server/db';
+import { requireAuth } from '@/server/middlewares/auth';
 import { VoteEntity, QuestionEntity, CommentEntity, UserEntity } from '@/server/models/entities';
+
+/** Cộng/trừ reputation, không cho âm. Không cộng khi tự vote bài của mình. */
+async function addReputation(author: any, voterId: string, delta: number) {
+  if (!author || author.id === voterId) return;
+  const newRep = Math.max(0, (author.reputation || 0) + delta);
+  await author.update({ reputation: newRep });
+}
 
 export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
   await initDatabase();
@@ -14,26 +23,24 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'GET') {
     try {
-      // Get all votes for this post and its comments
-      const votes = await VoteEntity.findAll({
-        where: {
-          $or: [
-            { targetId: id }, // votes for the post
-            { targetType: 'comment' } // all comment votes (we'll filter by parent later)
-          ]
-        } as any,
-      });
-
-      // Also get comment IDs for this post
+      // Lấy danh sách comment của bài để lọc vote ngay trong query
       const comments = await CommentEntity.findAll({
-        where: { questionId: id }
+        where: { questionId: id },
+        attributes: ['id'],
       });
       const commentIds = comments.map((c) => c.id);
 
-      // Filter votes to only include those for comments of this post
-      const postVotes = votes.filter(
-        (v) => v.targetId === id || (v.targetType === 'comment' && commentIds.includes(v.targetId))
-      );
+      // Vote của chính bài viết + vote của các comment thuộc bài viết
+      const postVotes = await VoteEntity.findAll({
+        where: {
+          [Op.or]: [
+            { targetId: id, targetType: 'question' },
+            ...(commentIds.length
+              ? [{ targetType: 'comment', targetId: { [Op.in]: commentIds } }]
+              : []),
+          ],
+        },
+      });
 
       res.status(200).json({
         success: true,
@@ -56,20 +63,34 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'POST') {
     try {
-      const { targetType, targetId, userId, value } = req.body ?? {};
+      const { targetType, targetId, value } = req.body ?? {};
 
-      if (!targetType || !userId || !value) {
-        res.status(400).json({ success: false, message: 'Thiếu thông tin targetType, userId hoặc value' });
+      // Danh tính người vote lấy từ JWT, không tin vào body
+      const auth = await requireAuth(req);
+      if (!auth) {
+        res.status(401).json({ success: false, message: 'Vui lòng đăng nhập để vote' });
+        return;
+      }
+      const userId = auth.userId;
+
+      if (!['question', 'comment'].includes(targetType)) {
+        res.status(400).json({ success: false, message: 'targetType phải là question hoặc comment' });
+        return;
+      }
+
+      const parsedValue = parseInt(value, 10);
+      if (parsedValue !== 1 && parsedValue !== -1) {
+        res.status(400).json({ success: false, message: 'value phải là 1 hoặc -1' });
         return;
       }
 
       const voteTargetId = targetId || id;
-      const voteValue = parseInt(value, 10) === 1 ? 1 : -1;
+      const voteValue = parsedValue;
 
       let targetInstance: any = null;
       if (targetType === 'question') {
         targetInstance = await QuestionEntity.findByPk(voteTargetId);
-      } else if (targetType === 'comment') {
+      } else {
         targetInstance = await CommentEntity.findByPk(voteTargetId);
       }
 
@@ -84,58 +105,37 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         where: { userId, targetId: voteTargetId, targetType }
       });
 
-      let finalVoteValue = targetInstance.votes;
-
       if (!existingVote) {
+        // Vote mới
         await VoteEntity.create({
-          id: Date.now().toString(),
+          id: `${Date.now()}_${userId}`,
           userId,
           targetId: voteTargetId,
           targetType,
           value: voteValue
         });
-
-        targetInstance.votes += voteValue;
-        await targetInstance.save();
-
-        if (author) {
-          author.reputation += voteValue * 10;
-          await author.save();
-        }
-
-        finalVoteValue = targetInstance.votes;
+        await targetInstance.increment('votes', { by: voteValue });
+        await addReputation(author, userId, voteValue * 10);
       } else if (existingVote.value === voteValue) {
+        // Vote lại cùng chiều → hủy vote
         await existingVote.destroy();
-
-        targetInstance.votes -= voteValue;
-        await targetInstance.save();
-
-        if (author) {
-          author.reputation -= voteValue * 10;
-          await author.save();
-        }
-
-        finalVoteValue = targetInstance.votes;
+        await targetInstance.increment('votes', { by: -voteValue });
+        await addReputation(author, userId, -voteValue * 10);
       } else {
+        // Đổi chiều vote
         existingVote.value = voteValue;
         await existingVote.save();
-
         const diff = voteValue * 2;
-        targetInstance.votes += diff;
-        await targetInstance.save();
-
-        if (author) {
-          author.reputation += diff * 10;
-          await author.save();
-        }
-
-        finalVoteValue = targetInstance.votes;
+        await targetInstance.increment('votes', { by: diff });
+        await addReputation(author, userId, diff * 10);
       }
+
+      await targetInstance.reload();
 
       res.status(200).json({
         success: true,
         message: 'Cập nhật vote thành công',
-        data: { votes: finalVoteValue }
+        data: { votes: targetInstance.votes }
       });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Lỗi xử lý vote', error: String(error) });

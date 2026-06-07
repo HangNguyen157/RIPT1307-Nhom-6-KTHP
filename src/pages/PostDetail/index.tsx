@@ -19,6 +19,19 @@ import styles from './index.less';
 
 const DEFAULT_QUESTION_ID = '1';
 
+// Escape HTML để chống XSS trước khi render nội dung người dùng nhập
+const escapeHtml = (s: string) =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+// Chỉ cho phép cú pháp **đậm**, mọi HTML khác đều bị escape
+const renderInline = (block: string) =>
+  escapeHtml(block).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
 // Helper: get vote state (up/down/none)
 const getVoteState = (userId: string, allVotes: any[], targetId: string) => {
   const vote = allVotes.find(
@@ -390,7 +403,11 @@ export default function PostDetail() {
 
   return (
     <div className={styles.postDetail}>
-      <button className={styles.backBtn} onClick={() => history.push('/forum')}>
+      <button
+        type="button"
+        className={styles.backBtn}
+        onClick={() => history.push('/forum')}
+      >
         <ArrowLeftOutlined /> Quay Lại Diễn Đàn
       </button>
 
@@ -444,6 +461,7 @@ export default function PostDetail() {
                       <div className={styles.codeHeader}>
                         <span>Code</span>
                         <button
+                          type="button"
                           className={styles.copyBtn}
                           onClick={() => {
                             navigator.clipboard.writeText(code);
@@ -471,10 +489,7 @@ export default function PostDetail() {
                     key={i}
                     className={styles.contentP}
                     dangerouslySetInnerHTML={{
-                      __html: block.replace(
-                        /\*\*(.*?)\*\*/g,
-                        '<strong>$1</strong>',
-                      ),
+                      __html: renderInline(block),
                     }}
                   />
                 );
@@ -496,6 +511,7 @@ export default function PostDetail() {
         <div className={styles.questionActions}>
           <div className={styles.voteGroup}>
             <button
+              type="button"
               className={`${styles.voteBtn} ${
                 postVoteState === 'up' ? styles.active : ''
               }`}
@@ -506,6 +522,7 @@ export default function PostDetail() {
             </button>
             <span className={styles.voteCount}>{votes}</span>
             <button
+              type="button"
               className={`${styles.voteBtn} ${
                 postVoteState === 'down' ? styles.activeDown : ''
               }`}
@@ -520,6 +537,7 @@ export default function PostDetail() {
             </button>
           </div>
           <button
+            type="button"
             className={`${styles.actionBtn} ${
               isBookmarked ? styles.bookmarked : ''
             }`}
@@ -529,6 +547,7 @@ export default function PostDetail() {
             {isBookmarked ? 'Đã Lưu' : 'Lưu Bài'}
           </button>
           <button
+            type="button"
             className={styles.actionBtn}
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
@@ -539,6 +558,7 @@ export default function PostDetail() {
           </button>
           {(isOwner || currentUser?.role === 'admin') && (
             <button
+              type="button"
               className={`${styles.actionBtn} ${styles.deleteBtn}`}
               onClick={handleDelete}
             >
@@ -580,6 +600,7 @@ export default function PostDetail() {
               <div className={styles.answerLayout}>
                 <div className={styles.answerVoteCol}>
                   <button
+                    type="button"
                     className={`${styles.smallVoteBtn} ${
                       commentVoteState === 'up' ? styles.activeSmall : ''
                     }`}
@@ -594,6 +615,7 @@ export default function PostDetail() {
                   </button>
                   <span className={styles.smallVoteNum}>{answer.votes}</span>
                   <button
+                    type="button"
                     className={`${styles.smallVoteBtn} ${
                       commentVoteState === 'down' ? styles.activeSmall : ''
                     }`}
@@ -656,6 +678,7 @@ export default function PostDetail() {
                                 <div className={styles.codeHeader}>
                                   <span>Code</span>
                                   <button
+                                    type="button"
                                     className={styles.copyBtn}
                                     onClick={() => {
                                       navigator.clipboard.writeText(code);
@@ -676,10 +699,7 @@ export default function PostDetail() {
                               key={i}
                               className={styles.contentP}
                               dangerouslySetInnerHTML={{
-                                __html: block.replace(
-                                  /\*\*(.*?)\*\*/g,
-                                  '<strong>$1</strong>',
-                                ),
+                                __html: renderInline(block),
                               }}
                             />
                           );
@@ -688,6 +708,7 @@ export default function PostDetail() {
 
                   <div className={styles.answerActions}>
                     <button
+                      type="button"
                       className={styles.replyBtn}
                       onClick={() => setReplyingTo(answer.id)}
                     >
@@ -695,6 +716,7 @@ export default function PostDetail() {
                     </button>
                     {isOwner && !answer.isBest && (
                       <button
+                        type="button"
                         className={styles.selectBestBtn}
                         onClick={() => handleSelectBest(answer.id)}
                       >
@@ -765,6 +787,7 @@ export default function PostDetail() {
                               </span>
                               <div className={styles.replyVotes}>
                                 <button
+                                  type="button"
                                   className={`${styles.replyVoteBtn} ${
                                     replyVoteState === 'up' ? styles.active : ''
                                   }`}
@@ -783,6 +806,7 @@ export default function PostDetail() {
                                   {reply.votes}
                                 </span>
                                 <button
+                                  type="button"
                                   className={`${styles.replyVoteBtn} ${
                                     replyVoteState === 'down'
                                       ? styles.active
@@ -830,7 +854,7 @@ export default function PostDetail() {
           )}
           <div className={styles.editorToolbar}>
             {['B', 'I', 'Code', 'Link', 'Img'].map((tool) => (
-              <button key={tool} className={styles.toolBtn}>
+              <button type="button" key={tool} className={styles.toolBtn}>
                 {tool}
               </button>
             ))}

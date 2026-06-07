@@ -1,16 +1,17 @@
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  message,
-  Checkbox,
-} from 'antd';
-import { BookOutlined, RocketOutlined, RiseOutlined, TrophyOutlined } from '@ant-design/icons';
-import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
-import { history } from '@umijs/max';
-import { useState } from 'react';
 import { authUtils } from '@/utils/auth';
+import {
+  BookOutlined,
+  IdcardOutlined,
+  LockOutlined,
+  MailOutlined,
+  RiseOutlined,
+  RocketOutlined,
+  TrophyOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { history } from '@umijs/max';
+import { Button, Checkbox, Form, Input, Select, message } from 'antd';
+import { useState } from 'react';
 import styles from './index.less';
 
 export default function Register() {
@@ -50,7 +51,9 @@ export default function Register() {
       <div className={styles.container}>
         {/* Left Side - Info */}
         <div className={styles.leftSide}>
-          <div className={styles.logo}><BookOutlined /> EduForum</div>
+          <div className={styles.logo}>
+            <BookOutlined /> EduForum
+          </div>
           <h1 className={styles.title}>Gia Nhập Cộng Đồng</h1>
           <p className={styles.subtitle}>
             Bắt đầu hành trình học tập của bạn ngay hôm nay
@@ -111,10 +114,6 @@ export default function Register() {
                   {
                     type: 'email',
                     message: 'Email không hợp lệ',
-                  },
-                  {
-                    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Email phải là email sinh viên (.edu, .ac.vn)',
                   },
                 ]}
               >
@@ -201,7 +200,8 @@ export default function Register() {
                   },
                   {
                     pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-                    message: 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số',
+                    message:
+                      'Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số',
                   },
                 ]}
               >
@@ -227,7 +227,7 @@ export default function Register() {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error('Mật khẩu xác nhận không khớp')
+                        new Error('Mật khẩu xác nhận không khớp'),
                       );
                     },
                   }),
@@ -256,8 +256,8 @@ export default function Register() {
                   Tôi đồng ý với{' '}
                   <Button type="link" danger size="small">
                     Điều khoản dịch vụ
-                  </Button>
-                  {' '}và{' '}
+                  </Button>{' '}
+                  và{' '}
                   <Button type="link" danger size="small">
                     Chính sách bảo mật
                   </Button>
@@ -281,11 +281,7 @@ export default function Register() {
 
             <div className={styles.footer}>
               <span>Đã có tài khoản? </span>
-              <Button
-                type="link"
-                danger
-                onClick={() => history.push('/login')}
-              >
+              <Button type="link" danger onClick={() => history.push('/login')}>
                 Đăng nhập ngay
               </Button>
             </div>

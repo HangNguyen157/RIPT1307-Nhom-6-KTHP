@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { Card, Avatar, Tooltip, Skeleton } from 'antd';
+import { authUtils } from '@/utils/auth';
 import {
-  LikeOutlined,
-  LikeFilled,
-  DislikeOutlined,
-  DislikeFilled,
-  MessageOutlined,
-  EyeOutlined,
-  BookOutlined,
   BookFilled,
+  BookOutlined,
   CheckCircleFilled,
+  DislikeFilled,
+  DislikeOutlined,
+  EyeOutlined,
   FireOutlined,
+  LikeFilled,
+  LikeOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
+import { Avatar, Card, Skeleton, Tooltip, message } from 'antd';
+import React, { useState } from 'react';
 
-import { history } from '@umijs/max';
+import { history, request } from '@umijs/max';
 import styles from './index.less';
 
 const TAG_COLORS: Record<string, string> = {
@@ -71,89 +72,80 @@ export default function PostCard({
 
   if (isLoading) {
     return (
-      <Card
-        className={styles.postCard}
-        styles={{ body: { padding: '16px' } }}
-      >
+      <Card className={styles.postCard} styles={{ body: { padding: '16px' } }}>
         <Skeleton active avatar paragraph={{ rows: 3 }} />
       </Card>
     );
   }
 
-  const handleLike = (e: React.MouseEvent) => {
+  // Gọi API vote thật — server tự xử lý toggle/đổi chiều và trả về số vote mới
+  const sendVote = async (value: 1 | -1, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (!isLiked) {
-      setVoteCount(voteCount + (isDisliked ? 2 : 1));
-      setIsLiked(true);
+    if (!authUtils.isLoggedIn()) {
+      message.warning('Vui lòng đăng nhập để vote');
+      return;
+    }
 
-      if (isDisliked) {
-        setIsDisliked(false);
+    try {
+      const res = await request<{ success: boolean; data: { votes: number } }>(
+        `/api/posts/${id}/vote`,
+        {
+          method: 'POST',
+          data: { targetType: 'question', targetId: id, value },
+        },
+      );
+      if (res?.success) {
+        setVoteCount(res.data.votes);
+        if (value === 1) {
+          setIsLiked(!isLiked);
+          setIsDisliked(false);
+        } else {
+          setIsDisliked(!isDisliked);
+          setIsLiked(false);
+        }
       }
-    } else {
-      setVoteCount(voteCount - 1);
-      setIsLiked(false);
+    } catch {
+      message.error('Không thể vote, vui lòng thử lại');
     }
   };
 
-  const handleDislike = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleLike = (e: React.MouseEvent) => sendVote(1, e);
+  const handleDislike = (e: React.MouseEvent) => sendVote(-1, e);
 
-    if (!isDisliked) {
-      setVoteCount(voteCount - (isLiked ? 2 : 1));
-      setIsDisliked(true);
-
-      if (isLiked) {
-        setIsLiked(false);
-      }
-    } else {
-      setVoteCount(voteCount + 1);
-      setIsDisliked(false);
-    }
-  };
-
-  const getTagColor = (tag: string) =>
-    TAG_COLORS[tag] || TAG_COLORS.Default;
+  const getTagColor = (tag: string) => TAG_COLORS[tag] || TAG_COLORS.Default;
 
   const isHot = votes > 50;
 
   return (
     <div
-      className={`${styles.postCard} ${
-        isSolved ? styles.solved : ''
-      }`}
+      className={`${styles.postCard} ${isSolved ? styles.solved : ''}`}
       onClick={() => history.push(`/post/${id}`)}
     >
       {/* Vote Column */}
       <div className={styles.voteCol}>
         <button
-          className={`${styles.voteBtn} ${
-            isLiked ? styles.active : ''
-          }`}
+          type="button"
+          className={`${styles.voteBtn} ${isLiked ? styles.active : ''}`}
           onClick={handleLike}
         >
           {isLiked ? <LikeFilled /> : <LikeOutlined />}
         </button>
 
         <span
-          className={`${styles.voteNum} ${
-            isLiked ? styles.liked : ''
-          } ${isDisliked ? styles.disliked : ''}`}
+          className={`${styles.voteNum} ${isLiked ? styles.liked : ''} ${
+            isDisliked ? styles.disliked : ''
+          }`}
         >
           {voteCount}
         </span>
 
         <button
-          className={`${styles.voteBtn} ${
-            isDisliked ? styles.activeDown : ''
-          }`}
+          type="button"
+          className={`${styles.voteBtn} ${isDisliked ? styles.activeDown : ''}`}
           onClick={handleDislike}
         >
-          {isDisliked ? (
-            <DislikeFilled />
-          ) : (
-            <DislikeOutlined />
-          )}
+          {isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
         </button>
       </div>
 
@@ -173,16 +165,10 @@ export default function PostCard({
           )}
 
           {!isSolved && !isHot && (
-            <span className={styles.unansweredBadge}>
-              Chưa Giải Quyết
-            </span>
+            <span className={styles.unansweredBadge}>Chưa Giải Quyết</span>
           )}
 
-          {subject && (
-            <span className={styles.subjectTag}>
-              {subject}
-            </span>
-          )}
+          {subject && <span className={styles.subjectTag}>{subject}</span>}
         </div>
 
         <h3 className={styles.title}>{title}</h3>
@@ -191,7 +177,7 @@ export default function PostCard({
 
         {/* Tags */}
         <div className={styles.tags}>
-          {tags.map((tag) => (
+          {(tags || []).map((tag) => (
             <span
               key={tag}
               className={styles.tag}
@@ -226,15 +212,11 @@ export default function PostCard({
             </Avatar>
 
             <div>
-              <span className={styles.authorName}>
-                {author}
-              </span>
+              <span className={styles.authorName}>{author}</span>
 
               <span className={styles.dot}>·</span>
 
-              <span className={styles.timestamp}>
-                {timestamp}
-              </span>
+              <span className={styles.timestamp}>{timestamp}</span>
             </div>
           </div>
 
@@ -248,33 +230,22 @@ export default function PostCard({
             <Tooltip title="Lượt xem">
               <span className={styles.stat}>
                 <EyeOutlined />{' '}
-                {views >= 1000
-                  ? `${(views / 1000).toFixed(1)}k`
-                  : views}
+                {views >= 1000 ? `${(views / 1000).toFixed(1)}k` : views}
               </span>
             </Tooltip>
 
-            <Tooltip
-              title={
-                isBookmarked ? 'Bỏ lưu' : 'Lưu bài'
-              }
-            >
+            <Tooltip title={isBookmarked ? 'Bỏ lưu' : 'Lưu bài'}>
               <button
+                type="button"
                 className={`${styles.bookmarkBtn} ${
-                  isBookmarked
-                    ? styles.bookmarked
-                    : ''
+                  isBookmarked ? styles.bookmarked : ''
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsBookmarked(!isBookmarked);
                 }}
               >
-                {isBookmarked ? (
-                  <BookFilled />
-                ) : (
-                  <BookOutlined />
-                )}
+                {isBookmarked ? <BookFilled /> : <BookOutlined />}
               </button>
             </Tooltip>
           </div>

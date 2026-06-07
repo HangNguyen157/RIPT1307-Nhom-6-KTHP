@@ -38,7 +38,7 @@ export default function Leaderboard() {
       setLoading(true);
       try {
         const res = await request<{ success: boolean; data: { list: any[] } }>(
-          '', ///api/leaderboard
+          '/api/leaderboard',
         );
         if (res && res.success) {
           setUsers(res.data.list);
@@ -57,7 +57,6 @@ export default function Leaderboard() {
   );
 
   const top3 = filtered.slice(0, 3);
-  const rest = filtered.slice(3);
 
   if (loading) {
     return (
@@ -84,6 +83,7 @@ export default function Leaderboard() {
         <div className={styles.periodFilter}>
           {PERIOD_OPTIONS.map((opt) => (
             <button
+              type="button"
               key={opt.key}
               className={`${styles.filterBtn} ${
                 period === opt.key ? styles.active : ''
@@ -101,6 +101,7 @@ export default function Leaderboard() {
             { key: 'giangvien', label: 'Giảng Viên' },
           ].map((opt) => (
             <button
+              type="button"
               key={opt.key}
               className={`${styles.filterBtn} ${
                 roleFilter === opt.key ? styles.active : ''
@@ -139,7 +140,7 @@ export default function Leaderboard() {
               {top3[1].dept}
             </div>
             <div className={styles.podiumRep} style={{ color: '#94a3b8' }}>
-              {top3[1].rep.toLocaleString('vi')} pts
+              {(top3[1].reputation || 0).toLocaleString('vi')} pts
             </div>
             <div
               className={styles.podiumBase}
@@ -177,7 +178,7 @@ export default function Leaderboard() {
               {top3[0].dept}
             </div>
             <div className={styles.podiumRep} style={{ color: '#f59e0b' }}>
-              {top3[0].rep.toLocaleString('vi')} pts
+              {(top3[0].reputation || 0).toLocaleString('vi')} pts
             </div>
             <div
               className={styles.podiumBase}
@@ -210,7 +211,7 @@ export default function Leaderboard() {
               {top3[2].dept}
             </div>
             <div className={styles.podiumRep} style={{ color: '#d97706' }}>
-              {top3[2].rep.toLocaleString('vi')} pts
+              {(top3[2].reputation || 0).toLocaleString('vi')} pts
             </div>
             <div
               className={styles.podiumBase}
@@ -271,7 +272,7 @@ export default function Leaderboard() {
 
             <div className={styles.rankRep}>
               <span className={styles.repValue}>
-                {user.rep.toLocaleString('vi')}
+                {(user.reputation || 0).toLocaleString('vi')}
               </span>
               <span className={styles.repLabel}>pts</span>
             </div>

@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   await initDatabase();
 
   // Check auth & role
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth) {
     return res.status(401).json({
       success: false,
@@ -85,7 +85,8 @@ async function handleGetUsers(req, res) {
 
 async function handleCreateUser(req, res) {
   try {
-    const { name, email, password, role } = req.body ?? {};
+    const { name, email, password, role, department, studentId } =
+      req.body ?? {};
 
     // Validate input
     if (!name || !email || !password || !role) {
@@ -120,11 +121,13 @@ async function handleCreateUser(req, res) {
 
     // Create new user
     const newUser = await UserEntity.create({
-      id: Date.now().toString(),
+      id: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
       name: name.trim(),
       email: email.toLowerCase().trim(),
       password: hashedPassword,
       role,
+      department: department || 'CNTT',
+      studentId: studentId || '',
       status: 'active',
       reputation: 10,
       posts: 0,

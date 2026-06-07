@@ -17,13 +17,21 @@ const { Sider, Content } = Layout;
 export default function Admin() {
   const location = useLocation();
 
+  // Kiểm tra quyền ngay khi render — user thường sẽ không thấy
+  // bất kỳ nội dung admin nào (kể cả chớp màn hình)
+  const user = authUtils.getCurrentUser();
+  const allowed = !!user && isAdmin(user);
+
   useEffect(() => {
-    const user = authUtils.getCurrentUser();
-    if (!user || !isAdmin(user)) {
+    if (!allowed) {
       message.warning('Bạn không có quyền truy cập khu vực quản trị');
       history.replace('/login');
     }
-  }, []);
+  }, [allowed]);
+
+  if (!allowed) {
+    return null;
+  }
 
   const handleLogout = () => {
     authUtils.logout();

@@ -72,7 +72,7 @@ const features = [
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
   const [topUsers, setTopUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [counters, setCounters] = useState([0, 0, 0, 0]);
   const targetValues = [10000, 2000, 500, 8000];
 
@@ -108,14 +108,18 @@ export default function Home() {
   useEffect(() => {
     const timers = targetValues.map((target, i) => {
       const step = Math.ceil(target / 60);
+      let current = 0;
       const interval = setInterval(() => {
+        current = Math.min(current + step, target);
         setCounters((prev) => {
           const next = [...prev];
-          if (next[i] < target) {
-            next[i] = Math.min(next[i] + step, target);
-          }
+          next[i] = current;
           return next;
         });
+        // Dừng hẳn interval khi đạt đích, tránh chạy vô hạn ngốn CPU
+        if (current >= target) {
+          clearInterval(interval);
+        }
       }, 16);
       return interval;
     });

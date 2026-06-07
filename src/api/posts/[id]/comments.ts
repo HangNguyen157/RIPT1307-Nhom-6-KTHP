@@ -1,4 +1,5 @@
 import { initDatabase } from '@/server/db';
+import { requireAuth } from '@/server/middlewares/auth';
 import {
   CommentEntity,
   QuestionEntity,
@@ -84,7 +85,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'POST') {
     try {
-      const { content, authorId, parentId } = req.body ?? {};
+      const { content, parentId } = req.body ?? {};
 
       // Validate input
       const validation = validateCommentInput({ content });
@@ -97,12 +98,15 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      if (!authorId) {
+      // Danh tính người bình luận lấy từ JWT, không tin vào body
+      const auth = await requireAuth(req);
+      if (!auth) {
         res
-          .status(400)
+          .status(401)
           .json({ success: false, message: 'Vui lòng đăng nhập để bình luận' });
         return;
       }
+      const authorId = auth.userId;
 
       const question = await QuestionEntity.findByPk(id);
       if (!question) {
@@ -121,7 +125,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       }
 
       const newComment = await CommentEntity.create({
-        id: Date.now().toString(),
+        id: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
         questionId: id,
         parentId: parentId || null,
         authorId,
@@ -131,11 +135,9 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         createdAt: new Date(),
       });
 
-      question.commentsCount += 1;
-      await question.save();
-
-      user.answers += 1;
-      await user.save();
+      // Tăng đếm atomic, tránh lost update
+      await question.increment('commentsCount');
+      await user.increment('answers');
 
       try {
         if (parentId) {
@@ -192,11 +194,32 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      const comment = await CommentEntity.findByPk(commentId);
-      if (!comment) {
+      const question = await QuestionEntity.findByPk(id);
+      if (!question) {
         res
           .status(404)
-          .json({ success: false, message: 'Bình luận không tồn tại' });
+          .json({ success: false, message: 'Bài viết không tồn tại' });
+        return;
+      }
+
+      // Chỉ tác giả bài viết hoặc admin được chọn câu trả lời hay nhất
+      const auth = await requireAuth(req);
+      if (
+        !auth ||
+        (auth.role !== 'admin' && auth.userId !== question.authorId)
+      ) {
+        res.status(403).json({
+          success: false,
+          message: 'Chỉ tác giả bài viết mới được chọn câu trả lời hay nhất',
+        });
+        return;
+      }
+
+      const comment = await CommentEntity.findByPk(commentId);
+      if (!comment || comment.questionId !== id) {
+        res
+          .status(404)
+          .json({ success: false, message: 'Bình luận không thuộc bài viết này' });
         return;
       }
 
@@ -210,11 +233,12 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       comment.isBest = !!isBest;
       await comment.save();
 
-      const question = await QuestionEntity.findByPk(id);
-      if (question) {
-        question.isSolved = !!isBest;
-        await question.save();
-      }
+      // Tính lại isSolved dựa trên việc còn câu trả lời hay nhất nào không
+      const bestCount = await CommentEntity.count({
+        where: { questionId: id, isBest: true },
+      });
+      question.isSolved = bestCount > 0;
+      await question.save();
 
       res.status(200).json({
         success: true,

@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   await initDatabase();
 
   // Check auth & role
-  const auth = requireAuth(req);
+  const auth = await requireAuth(req);
   if (!auth) {
     return res.status(401).json({
       success: false,
@@ -26,20 +26,6 @@ export default async function handler(req, res) {
 
   // Extract userId from URL path - optimize for UmiJS dynamic routes
   const userId = req.query?.userId || req.params?.userId;
-  console.log(
-    'Backend nhận request ban cho userId:',
-    userId,
-    'từ method:',
-    req.method,
-  );
-  console.log(
-    'req.query:',
-    req.query,
-    'req.params:',
-    req.params,
-    'req.url:',
-    req.url,
-  );
 
   if (!userId) {
     return res.status(400).json({
@@ -159,7 +145,7 @@ async function handleResetPassword(req, res, userId) {
 async function handleDeleteUser(req, res, userId) {
   try {
     // Prevent admin from deleting themselves
-    const auth = requireAuth(req);
+    const auth = await requireAuth(req);
     if (auth && auth.userId === userId) {
       return res.status(400).json({
         success: false,

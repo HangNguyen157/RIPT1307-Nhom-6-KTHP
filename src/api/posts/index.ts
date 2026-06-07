@@ -1,4 +1,5 @@
 import { initDatabase } from '@/server/db';
+import { requireAuth } from '@/server/middlewares/auth';
 import {
   QuestionEntity,
   TagEntity,
@@ -50,7 +51,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'GET') {
     try {
-      const { tag, q, sort, authorId, page, limit } = req.query ?? {};
+      const { tag, q, sort, authorId, page, limit, unanswered } = req.query ?? {};
 
       // Pagination
       const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
@@ -61,6 +62,11 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
       if (authorId) {
         whereClause.authorId = authorId;
+      }
+
+      // Lọc bài chưa được giải quyết (filter ở DB để phân trang đúng)
+      if (unanswered === '1' || unanswered === 'true') {
+        whereClause.isSolved = false;
       }
 
       if (typeof q === 'string' && q.trim()) {
@@ -131,7 +137,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
 
   if (req.method === 'POST') {
     try {
-      const { title, content, subject, tags, authorId } = req.body ?? {};
+      const { title, content, subject, tags } = req.body ?? {};
 
       // Validate input
       const validation = validateCreatePostInput({ title, content, tags });
@@ -144,13 +150,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      if (!authorId) {
-        res.status(400).json({
+      // Danh tính người đăng lấy từ JWT, không tin vào body
+      const auth = await requireAuth(req);
+      if (!auth) {
+        res.status(401).json({
           success: false,
           message: 'Vui lòng đăng nhập để đăng bài',
         });
         return;
       }
+      const authorId = auth.userId;
 
       const user = await UserEntity.findByPk(authorId);
       if (!user) {
@@ -161,7 +170,7 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
       const excerpt = content.substring(0, 180) + (content.length > 180 ? '...' : '');
 
       const newQuestion = await QuestionEntity.create({
-        id: Date.now().toString(),
+        id: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
         title: title.trim(),
         excerpt,
         content,
@@ -179,14 +188,11 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         const tagsInDb = await TagEntity.findAll({ where: { name: tags } });
         await (newQuestion as any).setQuestionTags(tagsInDb);
 
-        for (const t of tagsInDb) {
-          t.count += 1;
-          await t.save();
-        }
+        // Tăng count atomic, tránh lost update
+        await Promise.all(tagsInDb.map((t) => t.increment('count')));
       }
 
-      user.posts += 1;
-      await user.save();
+      await user.increment('posts');
 
       try {
         const { notifyNewPost } = await import('@/server/utils/email');

@@ -37,21 +37,25 @@ export function isValidPassword(password: string): boolean {
  * Validate name
  */
 export function isValidName(name: string): boolean {
-  return name && name.trim().length >= 2 && name.trim().length <= 100;
+  return Boolean(name && name.trim().length >= 2 && name.trim().length <= 100);
 }
 
 /**
  * Validate title
  */
 export function isValidTitle(title: string): boolean {
-  return title && title.trim().length >= 5 && title.trim().length <= 200;
+  return Boolean(
+    title && title.trim().length >= 5 && title.trim().length <= 200,
+  );
 }
 
 /**
  * Validate content
  */
 export function isValidContent(content: string): boolean {
-  return content && content.trim().length >= 10 && content.trim().length <= 10000;
+  return Boolean(
+    content && content.trim().length >= 10 && content.trim().length <= 10000,
+  );
 }
 
 /**
@@ -61,7 +65,12 @@ export function isValidTags(tags: string[]): boolean {
   if (!Array.isArray(tags) || tags.length === 0 || tags.length > 5) {
     return false;
   }
-  return tags.every((tag) => typeof tag === 'string' && tag.trim().length > 0 && tag.trim().length <= 50);
+  return tags.every(
+    (tag) =>
+      typeof tag === 'string' &&
+      tag.trim().length > 0 &&
+      tag.trim().length <= 50,
+  );
 }
 
 /**
@@ -69,7 +78,7 @@ export function isValidTags(tags: string[]): boolean {
  */
 export function sanitizeInput(input: string): string {
   if (typeof input !== 'string') return '';
-  
+
   return input
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -107,7 +116,8 @@ export function validateRegisterInput(data: {
   if (!data.password || !isValidPassword(data.password)) {
     errors.push({
       field: 'password',
-      message: 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số',
+      message:
+        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm: chữ hoa, chữ thường, số',
     });
   }
 
@@ -127,7 +137,10 @@ export function validateRegisterInput(data: {
 /**
  * Validate login input
  */
-export function validateLoginInput(data: { email?: string; password?: string }): ValidationResult {
+export function validateLoginInput(data: {
+  email?: string;
+  password?: string;
+}): ValidationResult {
   const errors: ValidationError[] = [];
 
   if (!data.email || !isValidEmail(data.email)) {
@@ -190,10 +203,16 @@ export function validateCreatePostInput(data: {
 /**
  * Validate comment input
  */
-export function validateCommentInput(data: { content?: string }): ValidationResult {
+export function validateCommentInput(data: {
+  content?: string;
+}): ValidationResult {
   const errors: ValidationError[] = [];
 
-  if (!data.content || data.content.trim().length < 2 || data.content.trim().length > 5000) {
+  if (
+    !data.content ||
+    data.content.trim().length < 2 ||
+    data.content.trim().length > 5000
+  ) {
     errors.push({
       field: 'content',
       message: 'Bình luận phải có từ 2 đến 5000 ký tự',

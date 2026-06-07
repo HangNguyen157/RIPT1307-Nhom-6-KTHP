@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Progress, Badge } from 'antd';
 import {
-  TeamOutlined, FileTextOutlined, CommentOutlined,
-  ArrowUpOutlined, FireOutlined, TrophyOutlined,
+  ArrowUpOutlined,
+  CommentOutlined,
+  FileTextOutlined,
+  FireOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
-import { request } from '@umijs/max';
+import { history, request } from '@umijs/max';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -20,23 +22,42 @@ const topTags = [
 ];
 
 const recentActivity = [
-  { user: 'Nguyễn Văn A', action: 'đăng bài "Giải thích OOP trong Java"', time: '10 phút trước' },
-  { user: 'Trần Thị B', action: 'bình luận trên bài "React Hooks"', time: '25 phút trước' },
+  {
+    user: 'Nguyễn Văn A',
+    action: 'đăng bài "Giải thích OOP trong Java"',
+    time: '10 phút trước',
+  },
+  {
+    user: 'Trần Thị B',
+    action: 'bình luận trên bài "React Hooks"',
+    time: '25 phút trước',
+  },
   { user: 'Lê Văn C', action: 'đăng ký tài khoản mới', time: '1 giờ trước' },
-  { user: 'Phạm Minh D', action: 'vote bài "SQL Optimization"', time: '2 giờ trước' },
-  { user: 'PGS.TS Lê Minh Đức', action: 'chọn câu trả lời hay nhất', time: '3 giờ trước' },
+  {
+    user: 'Phạm Minh D',
+    action: 'vote bài "SQL Optimization"',
+    time: '2 giờ trước',
+  },
+  {
+    user: 'PGS.TS Lê Minh Đức',
+    action: 'chọn câu trả lời hay nhất',
+    time: '3 giờ trước',
+  },
 ];
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await request<{ success: boolean; data: any }>('/api/admin/dashboard', {
-          method: 'GET',
-        });
+        const res = await request<{ success: boolean; data: any }>(
+          '/api/admin/dashboard',
+          {
+            method: 'GET',
+          },
+        );
         if (res && res.success) {
           setStats(res.data);
         }
@@ -50,12 +71,39 @@ export default function AdminDashboard() {
   }, []);
 
   const keyStats = [
-    { title: 'Tổng Người Dùng', value: stats?.totalUsers ?? 0, icon: <TeamOutlined />, color: '#3b82f6', trend: '+12%', up: true },
-    { title: 'Tổng Bài Viết', value: stats?.totalPosts ?? 0, icon: <FileTextOutlined />, color: '#dc2626', trend: '+8%', up: true },
-    { title: 'Hoạt động (Active)', value: stats?.activeUsers ?? 0, icon: <FireOutlined />, color: '#10b981', trend: 'Tài khoản hoạt động', up: true },
-    { title: 'Tổng Bình Luận', value: stats?.totalComments ?? 0, icon: <CommentOutlined />, color: '#f59e0b', trend: '+23%', up: true },
+    {
+      title: 'Tổng Người Dùng',
+      value: stats?.totalUsers ?? 0,
+      icon: <TeamOutlined />,
+      color: '#3b82f6',
+      trend: '+12%',
+      up: true,
+    },
+    {
+      title: 'Tổng Bài Viết',
+      value: stats?.totalPosts ?? 0,
+      icon: <FileTextOutlined />,
+      color: '#dc2626',
+      trend: '+8%',
+      up: true,
+    },
+    {
+      title: 'Hoạt động (Active)',
+      value: stats?.activeUsers ?? 0,
+      icon: <FireOutlined />,
+      color: '#10b981',
+      trend: 'Tài khoản hoạt động',
+      up: true,
+    },
+    {
+      title: 'Tổng Bình Luận',
+      value: stats?.totalComments ?? 0,
+      icon: <CommentOutlined />,
+      color: '#f59e0b',
+      trend: '+23%',
+      up: true,
+    },
   ];
-
 
   return (
     <div className={styles.adminDashboard}>
@@ -68,7 +116,10 @@ export default function AdminDashboard() {
       <div className={styles.statsGrid}>
         {keyStats.map((stat, i) => (
           <div key={i} className={styles.statCard}>
-            <div className={styles.statIcon} style={{ background: `${stat.color}18`, color: stat.color }}>
+            <div
+              className={styles.statIcon}
+              style={{ background: `${stat.color}18`, color: stat.color }}
+            >
               {stat.icon}
             </div>
             <div className={styles.statContent}>
@@ -76,7 +127,11 @@ export default function AdminDashboard() {
                 {stat.value.toLocaleString('vi')}
               </div>
               <div className={styles.statTitle}>{stat.title}</div>
-              <div className={`${styles.statTrend} ${stat.up ? styles.trendUp : styles.trendDown}`}>
+              <div
+                className={`${styles.statTrend} ${
+                  stat.up ? styles.trendUp : styles.trendDown
+                }`}
+              >
                 <ArrowUpOutlined /> {stat.trend}
               </div>
             </div>
@@ -111,8 +166,13 @@ export default function AdminDashboard() {
           <div className={styles.topTagsList}>
             {topTags.map((tag, i) => (
               <div key={i} className={styles.topTagItem}>
-                <div className={styles.topTagRank} style={{ color: tag.color }}>#{i + 1}</div>
-                <span className={styles.topTagDot} style={{ background: tag.color }} />
+                <div className={styles.topTagRank} style={{ color: tag.color }}>
+                  #{i + 1}
+                </div>
+                <span
+                  className={styles.topTagDot}
+                  style={{ background: tag.color }}
+                />
                 <span className={styles.topTagName}>{tag.name}</span>
                 <div className={styles.topTagBar}>
                   <div
@@ -157,10 +217,11 @@ export default function AdminDashboard() {
             { label: 'Xem Diễn Đàn', color: '#8b5cf6', path: '/forum' },
           ].map((action, i) => (
             <button
+              type="button"
               key={i}
               className={styles.quickAction}
               style={{ borderColor: action.color }}
-              onClick={() => (window.location.href = action.path)}
+              onClick={() => history.push(action.path)}
             >
               <span className={styles.quickActionLabel}>{action.label}</span>
             </button>

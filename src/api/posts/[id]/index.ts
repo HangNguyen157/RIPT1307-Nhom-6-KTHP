@@ -1,4 +1,5 @@
 import { initDatabase } from '@/server/db';
+import { requireAuth } from '@/server/middlewares/auth';
 import {
   CommentEntity,
   QuestionEntity,
@@ -19,11 +20,6 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
     const match = req.url.match(/\/api\/posts\/([^/?]+)/);
     id = match ? match[1] : undefined;
   }
-
-  console.log('API [id] route - req.query:', req.query);
-  console.log('API [id] route - req.params:', (req as any).params);
-  console.log('API [id] route - req.url:', req.url);
-  console.log('API [id] route - extracted id:', id);
 
   if (req.method === 'GET') {
     try {
@@ -46,8 +42,9 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      question.views += 1;
-      await question.save();
+      // Tăng view atomic, tránh lost update khi nhiều người xem cùng lúc
+      await question.increment('views');
+      question.views += 1; // phản ánh giá trị mới trong response
 
       const formattedQuestion = formatQuestion(question);
 
@@ -86,6 +83,16 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         res.status(404).json({
           success: false,
           message: 'Không tìm thấy bài viết',
+        });
+        return;
+      }
+
+      // Chỉ admin hoặc chính tác giả mới được xóa bài
+      const auth = await requireAuth(req);
+      if (!auth || (auth.role !== 'admin' && auth.userId !== question.authorId)) {
+        res.status(403).json({
+          success: false,
+          message: 'Bạn không có quyền xóa bài viết này',
         });
         return;
       }
