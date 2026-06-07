@@ -1,4 +1,3 @@
-import { isAdmin } from '@/server/models/User';
 import { authUtils } from '@/utils/auth';
 import {
   BarChartOutlined,
@@ -7,7 +6,7 @@ import {
   TeamOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import { Outlet, history, useLocation } from '@umijs/max';
+import { Outlet, history, useAccess, useLocation } from '@umijs/max';
 import { Button, Layout, Menu, message } from 'antd';
 import { useEffect } from 'react';
 import styles from './index.less';
@@ -17,19 +16,19 @@ const { Sider, Content } = Layout;
 export default function Admin() {
   const location = useLocation();
 
-  // Kiểm tra quyền ngay khi render — user thường sẽ không thấy
-  // bất kỳ nội dung admin nào (kể cả chớp màn hình)
-  const user = authUtils.getCurrentUser();
-  const allowed = !!user && isAdmin(user);
+  // Guard toàn phân hệ /admin — layout này bao mọi trang con nên chặn
+  // tại đây là đủ. Quyền canSeeAdmin định nghĩa tập trung tại src/access.ts,
+  // user thường không thấy bất kỳ nội dung admin nào (kể cả chớp màn hình).
+  const { canSeeAdmin } = useAccess();
 
   useEffect(() => {
-    if (!allowed) {
+    if (!canSeeAdmin) {
       message.warning('Bạn không có quyền truy cập khu vực quản trị');
       history.replace('/login');
     }
-  }, [allowed]);
+  }, [canSeeAdmin]);
 
-  if (!allowed) {
+  if (!canSeeAdmin) {
     return null;
   }
 

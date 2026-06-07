@@ -27,6 +27,13 @@ export function isAdmin(user: Pick<User, 'role'> | null | undefined): boolean {
   return user?.role === 'admin';
 }
 
+/** Giảng viên và admin có quyền kiểm duyệt nội dung (xóa bài, chọn câu trả lời hay nhất). */
+export function canModerate(
+  user: Pick<User, 'role'> | null | undefined,
+): boolean {
+  return user?.role === 'admin' || user?.role === 'giangvien';
+}
+
 export async function hashPassword(plain: string): Promise<string> {
   // Sử dụng bcryptjs đúng cách: truyền rounds trực tiếp
   // bcryptjs sẽ tự động tạo salt và hash

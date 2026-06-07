@@ -1,3 +1,4 @@
+import { canModerate } from '@/server/models/User';
 import { authUtils } from '@/utils/auth';
 import {
   ArrowLeftOutlined,
@@ -107,6 +108,8 @@ export default function PostDetail() {
   }, [questionId]);
 
   const isOwner = currentUser?.id === post?.authorId;
+  // Giảng viên + admin có quyền kiểm duyệt: xóa bài, xác nhận câu trả lời hay nhất
+  const isModerator = canModerate(currentUser);
 
   // Vote handler: single state logic
   const handleVote = async (type: 'up' | 'down') => {
@@ -236,9 +239,9 @@ export default function PostDetail() {
   };
 
   const handleSelectBest = async (answerId: string) => {
-    if (!isOwner) {
+    if (!isOwner && !isModerator) {
       message.warning(
-        'Chỉ người đặt câu hỏi mới có thể chọn câu trả lời hay nhất',
+        'Chỉ người đặt câu hỏi hoặc giảng viên/quản trị viên mới có thể chọn câu trả lời hay nhất',
       );
       return;
     }
@@ -349,7 +352,7 @@ export default function PostDetail() {
       return;
     }
 
-    if (!isOwner && currentUser.role !== 'admin') {
+    if (!isOwner && !isModerator) {
       message.error('Bạn không có quyền xóa bài viết này');
       return;
     }
@@ -556,7 +559,7 @@ export default function PostDetail() {
           >
             <ShareAltOutlined /> Chia Sẻ
           </button>
-          {(isOwner || currentUser?.role === 'admin') && (
+          {(isOwner || isModerator) && (
             <button
               type="button"
               className={`${styles.actionBtn} ${styles.deleteBtn}`}
@@ -714,7 +717,7 @@ export default function PostDetail() {
                     >
                       Trả Lời
                     </button>
-                    {isOwner && !answer.isBest && (
+                    {(isOwner || isModerator) && !answer.isBest && (
                       <button
                         type="button"
                         className={styles.selectBestBtn}

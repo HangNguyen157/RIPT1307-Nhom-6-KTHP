@@ -1,5 +1,5 @@
 import { initDatabase } from '@/server/db';
-import { requireAuth } from '@/server/middlewares/auth';
+import { requireAuth, requireRole } from '@/server/middlewares/auth';
 import {
   CommentEntity,
   QuestionEntity,
@@ -87,9 +87,10 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      // Chỉ admin hoặc chính tác giả mới được xóa bài
+      // Chỉ người kiểm duyệt (admin/giảng viên) hoặc chính tác giả mới được xóa bài
       const auth = await requireAuth(req);
-      if (!auth || (auth.role !== 'admin' && auth.userId !== question.authorId)) {
+      const isModerator = requireRole(auth, ['admin', 'giangvien']);
+      if (!auth || (!isModerator && auth.userId !== question.authorId)) {
         res.status(403).json({
           success: false,
           message: 'Bạn không có quyền xóa bài viết này',

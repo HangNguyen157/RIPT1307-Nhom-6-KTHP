@@ -1,5 +1,5 @@
 import { initDatabase } from '@/server/db';
-import { requireAuth } from '@/server/middlewares/auth';
+import { requireAuth, requireRole } from '@/server/middlewares/auth';
 import {
   CommentEntity,
   QuestionEntity,
@@ -202,15 +202,15 @@ export default async function handler(req: UmiApiRequest, res: UmiApiResponse) {
         return;
       }
 
-      // Chỉ tác giả bài viết hoặc admin được chọn câu trả lời hay nhất
+      // Tác giả bài viết hoặc người kiểm duyệt (admin/giảng viên)
+      // được chọn câu trả lời hay nhất
       const auth = await requireAuth(req);
-      if (
-        !auth ||
-        (auth.role !== 'admin' && auth.userId !== question.authorId)
-      ) {
+      const isModerator = requireRole(auth, ['admin', 'giangvien']);
+      if (!auth || (!isModerator && auth.userId !== question.authorId)) {
         res.status(403).json({
           success: false,
-          message: 'Chỉ tác giả bài viết mới được chọn câu trả lời hay nhất',
+          message:
+            'Chỉ tác giả bài viết hoặc giảng viên/quản trị viên mới được chọn câu trả lời hay nhất',
         });
         return;
       }

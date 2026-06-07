@@ -4,14 +4,15 @@ import {
   FireOutlined,
   HomeOutlined,
   LogoutOutlined,
+  SafetyCertificateOutlined,
   SearchOutlined,
   SettingOutlined,
   TagsOutlined,
   TrophyOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { history, useLocation } from '@umijs/max';
-import { Avatar, Button, Dropdown, Space } from 'antd';
+import { history, useAccess, useLocation, useModel } from '@umijs/max';
+import { Avatar, Button, Dropdown, Space, Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
 import NotificationDropdown from '@/components/NotificationDropdown';
@@ -31,20 +32,27 @@ const SEARCH_SUGGESTIONS = [
   'Thuật toán sắp xếp',
 ];
 
+// Nhãn + màu hiển thị cho từng vai trò — giúp phân biệt role ngay trên Header
+const ROLE_TAGS: Record<string, { label: string; color: string }> = {
+  admin: { label: 'Quản trị viên', color: 'red' },
+  giangvien: { label: 'Giảng viên', color: 'purple' },
+  sinhvien: { label: 'Sinh viên', color: 'blue' },
+};
+
 export default function Header() {
   const location = useLocation();
 
-  const [currentUser, setCurrentUser] = useState(authUtils.getCurrentUser());
+  // Lấy user từ initialState (đồng bộ với access plugin) thay vì đọc
+  // localStorage trực tiếp — login/logout cập nhật là Header đổi theo ngay
+  const { initialState, setInitialState } = useModel('@@initialState');
+  const access = useAccess();
+  const currentUser = initialState?.currentUser ?? null;
 
   const [searchValue, setSearchValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setCurrentUser(authUtils.getCurrentUser());
-  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -60,9 +68,14 @@ export default function Header() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     authUtils.logout();
-    setCurrentUser(null);
+    // Reset initialState để mọi quyền (useAccess) trở về trạng thái khách
+    await setInitialState((s: any) => ({
+      ...s,
+      name: 'EduForum',
+      currentUser: null,
+    }));
     history.push('/');
   };
 
@@ -104,6 +117,16 @@ export default function Header() {
       path: '/leaderboard',
       icon: <TrophyOutlined />,
     },
+    // Mục riêng của GIẢNG VIÊN (+ admin) — sinh viên không thấy
+    ...(access.canModerate
+      ? [
+          {
+            label: 'Kiểm Duyệt',
+            path: '/moderation',
+            icon: <SafetyCertificateOutlined />,
+          },
+        ]
+      : []),
   ];
 
   const userMenuItems = [
@@ -122,7 +145,15 @@ export default function Header() {
           </Avatar>
 
           <div>
-            <div className={styles.userName}>{currentUser.name}</div>
+            <div className={styles.userName}>
+              {currentUser.name}{' '}
+              <Tag
+                color={ROLE_TAGS[currentUser.role]?.color}
+                style={{ marginLeft: 4 }}
+              >
+                {ROLE_TAGS[currentUser.role]?.label ?? currentUser.role}
+              </Tag>
+            </div>
 
             {repLevel && (
               <div className={styles.userRep}>
@@ -161,7 +192,8 @@ export default function Header() {
       onClick: () => history.push('/leaderboard'),
     },
 
-    ...(currentUser?.role === 'admin'
+    // Chỉ admin thấy mục Quản Trị — quyền lấy từ src/access.ts qua useAccess()
+    ...(access.canSeeAdmin
       ? [
           { type: 'divider' as const },
 
@@ -224,6 +256,7 @@ export default function Header() {
 
               {searchValue && (
                 <button
+                  type="button"
                   className={styles.searchClear}
                   onClick={() => {
                     setSearchValue('');
@@ -272,6 +305,17 @@ export default function Header() {
                 >
                   + Đặt Câu Hỏi
                 </Button>
+
+                {/* Tag vai trò luôn hiển thị — phân biệt GV/Admin với SV */}
+                {ROLE_TAGS[currentUser.role] &&
+                  currentUser.role !== 'sinhvien' && (
+                    <Tag
+                      color={ROLE_TAGS[currentUser.role].color}
+                      style={{ marginRight: 0 }}
+                    >
+                      {ROLE_TAGS[currentUser.role].label}
+                    </Tag>
+                  )}
 
                 <Dropdown
                   menu={{ items: userMenuItems }}

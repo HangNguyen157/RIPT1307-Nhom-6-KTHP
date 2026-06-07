@@ -75,6 +75,14 @@ export default defineConfig({
       component: './Notifications',
     },
     {
+      // Khu kiểm duyệt cho GIẢNG VIÊN (admin cũng vào được) —
+      // page tự chặn bằng useAccess().canModerate (src/access.ts)
+      name: 'Kiểm Duyệt',
+      path: '/moderation',
+      component: './Moderation',
+      access: 'canModerate',
+    },
+    {
       path: '/login',
       component: './Login',
     },
@@ -86,7 +94,10 @@ export default defineConfig({
     // 3. Cấu hình phân hệ Admin (Gộp lại thành cấu trúc lồng nhau)
     {
       path: '/admin',
-      component: './Admin', // đóng vai trò là Layout Admin bảo vệ route
+      // Layout Admin — tự chặn user không phải admin bằng useAccess()
+      // (quyền canSeeAdmin định nghĩa tập trung tại src/access.ts)
+      component: './Admin',
+      access: 'canSeeAdmin',
       routes: [
         {
           path: '/admin',

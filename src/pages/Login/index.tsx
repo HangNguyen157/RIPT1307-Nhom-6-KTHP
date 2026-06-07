@@ -8,7 +8,7 @@ import {
   TrophyOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import { Button, Checkbox, Form, Input, Space, message } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
@@ -17,13 +17,26 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const demoUsers = authUtils.getDemoCredentials();
+  const { setInitialState } = useModel('@@initialState');
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
-      await authUtils.login(values.email, values.password);
+      const user = await authUtils.login(values.email, values.password);
+
+      // Cập nhật initialState ngay để access plugin (useAccess)
+      // nhận quyền mới mà không cần reload trang
+      await setInitialState((s: any) => ({
+        ...s,
+        name: user.name,
+        currentUser: user,
+      }));
+
       message.success('Đăng nhập thành công!');
-      setTimeout(() => history.push('/home'), 500);
+
+      // Điều hướng theo vai trò: admin vào thẳng khu quản trị
+      const target = user.role === 'admin' ? '/admin/dashboard' : '/home';
+      setTimeout(() => history.push(target), 500);
     } catch (error: any) {
       // Display error message from backend or generic fallback
       const errorMsg =
@@ -108,6 +121,7 @@ export default function Login() {
               <div className={styles.demoButtons}>
                 {demoUsers.map((u) => (
                   <button
+                    type="button"
                     key={u.email}
                     className={styles.demoBtn}
                     onClick={() => fillDemo(u.email)}

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Layout, Drawer, Button } from 'antd';
-import { Outlet, useLocation, history } from '@umijs/max';
 import {
-  MenuOutlined,
-  HomeOutlined,
   CommentOutlined,
   EditOutlined,
+  HomeOutlined,
+  MenuOutlined,
   TagsOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
+import { history, Outlet, useLocation } from '@umijs/max';
+import { Button, Drawer, Layout } from 'antd';
+import { useState } from 'react';
 
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -24,6 +24,12 @@ export default function AppLayout() {
   const location = useLocation();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const isFullWidth = FULL_WIDTH_PAGES.includes(location.pathname);
+
+  // Phân hệ /admin có layout quản trị riêng (src/pages/Admin/index.tsx) —
+  // không bọc Header/Sidebar của user để tách bạch giao diện theo vai trò
+  if (location.pathname.startsWith('/admin')) {
+    return <Outlet />;
+  }
 
   return (
     <div className={styles.appWrapper}>
@@ -58,9 +64,7 @@ export default function AppLayout() {
         )}
 
         <Content
-          className={`${styles.content} ${
-            isFullWidth ? styles.fullWidth : ''
-          }`}
+          className={`${styles.content} ${isFullWidth ? styles.fullWidth : ''}`}
         >
           <Outlet />
         </Content>
@@ -68,6 +72,7 @@ export default function AppLayout() {
 
       <nav className={styles.mobileBottomNav}>
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/home')}
         >
@@ -76,6 +81,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/forum')}
         >
@@ -84,6 +90,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={`${styles.navItem} ${styles.navItemCenter}`}
           onClick={() => history.push('/post/new')}
         >
@@ -92,6 +99,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/tags')}
         >
@@ -100,6 +108,7 @@ export default function AppLayout() {
         </button>
 
         <button
+          type="button"
           className={styles.navItem}
           onClick={() => history.push('/leaderboard')}
         >

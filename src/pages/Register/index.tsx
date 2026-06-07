@@ -9,7 +9,7 @@ import {
   TrophyOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import { Button, Checkbox, Form, Input, Select, message } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
@@ -18,6 +18,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [role, setRole] = useState('sinhvien');
+  const { setInitialState } = useModel('@@initialState');
 
   const handleSubmit = async (values: any) => {
     if (!values.terms) {
@@ -27,7 +28,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await authUtils.register({
+      const user = await authUtils.register({
         name: values.fullName,
         email: values.email,
         password: values.password,
@@ -35,6 +36,14 @@ export default function Register() {
         department: values.department,
         studentId: values.studentId,
       });
+
+      // Đồng bộ initialState để useAccess nhận quyền ngay sau đăng ký
+      await setInitialState((s: any) => ({
+        ...s,
+        name: user.name,
+        currentUser: user,
+      }));
+
       message.success('Đăng ký thành công!');
       setTimeout(() => {
         history.push('/home');
