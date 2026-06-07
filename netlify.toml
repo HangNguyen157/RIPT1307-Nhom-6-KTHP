@@ -4,7 +4,7 @@
 # 1. Định cấu hình Proxy cho API Routes đến backend Vercel
 [[redirects]]
   from = "/api/*"
-  to = "https://ript1307-nhom-6-kthp.vercel.app/api/:splat"
+  to = "https://ript1307-nhom-6-kthp-aj1fpilk2-ltw-nhom6.vercel.app/api/:splat"
   status = 200
   force = true
 
