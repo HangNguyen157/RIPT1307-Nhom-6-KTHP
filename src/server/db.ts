@@ -1,3 +1,4 @@
+import mysql2 from 'mysql2';
 import { Sequelize } from 'sequelize';
 
 const dbName = process.env.DB_NAME || 'edu_forum';
@@ -17,6 +18,8 @@ export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   port: dbPort,
   dialect: 'mysql',
+  // Import tĩnh để bundler đóng gói mysql2 vào serverless function (Vercel)
+  dialectModule: mysql2,
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   dialectOptions: useSsl
     ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } }
