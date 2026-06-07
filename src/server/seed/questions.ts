@@ -1,10 +1,11 @@
-import type { Question } from '../models/Question';
 import type { Comment } from '../models/Comment';
+import type { Question } from '../models/Question';
 
 export const MOCK_QUESTIONS: Question[] = [
   {
     id: '1',
-    title: 'Giải thích OOP trong Java: Class, Object, Inheritance và Polymorphism',
+    title:
+      'Giải thích OOP trong Java: Class, Object, Inheritance và Polymorphism',
     excerpt:
       'OOP là nền tảng của Java. Trong bài viết này, tôi sẽ giải thích chi tiết về các khái niệm cốt lõi như Class, Object, Inheritance và cách sử dụng trong thực tế...',
     author: 'Nguyễn Văn A',
@@ -42,6 +43,7 @@ export const MOCK_QUESTIONS: Question[] = [
     excerpt:
       'Stack và Queue là hai cấu trúc dữ liệu quan trọng. Hôm nay chúng ta sẽ tìm hiểu về cách thực hiện, ứng dụng trong thực tế và so sánh với các CTDL khác...',
     author: 'Lê Văn C',
+    authorId: '3',
     tags: ['Cấu Trúc Dữ Liệu', 'Thuật Toán', 'Java'],
     votes: 34,
     comments: 8,
@@ -58,6 +60,7 @@ export const MOCK_QUESTIONS: Question[] = [
     excerpt:
       'JOIN là một trong những khái niệm quan trọng nhất trong SQL. Bài viết này sẽ giáo dạy bạn cách dùng các loại JOIN, subquery và tối ưu performance...',
     author: 'Phạm Minh D',
+    authorId: '5',
     tags: ['SQL', 'Database', 'Optimization'],
     votes: 56,
     comments: 15,
@@ -74,6 +77,7 @@ export const MOCK_QUESTIONS: Question[] = [
     excerpt:
       'Git là công cụ không thể thiếu trong phát triển phần mềm. Hãy học cách sử dụng Git và GitHub trong môi trường team...',
     author: 'Hoàng Anh E',
+    authorId: '6',
     tags: ['Git', 'GitHub', 'DevOps'],
     votes: 78,
     comments: 31,
@@ -201,7 +205,8 @@ Về **Inheritance**, đây là cơ chế quan trọng nhất trong OOP. Con k�
           author: 'Trần Văn B',
           authorId: '4',
           timestamp: '45 phút trước',
-          content: 'Cảm ơn thầy! Phần về polymorphism thầy có thể giải thích thêm không ạ?',
+          content:
+            'Cảm ơn thầy! Phần về polymorphism thầy có thể giải thích thêm không ạ?',
           votes: 3,
         },
       ],
