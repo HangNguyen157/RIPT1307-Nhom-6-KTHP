@@ -59319,7 +59319,10 @@ async function login(input) {
   if (found) {
     const checkVerify = await verifyPassword(password, found.password);
     if (found.status === "banned") {
-      throw new AuthError("T\xE0i kho\u1EA3n c\u1EE7a b\u1EA1n \u0111\xE3 b\u1ECB kh\xF3a b\u1EDFi qu\u1EA3n tr\u1ECB vi\xEAn", 403);
+      throw new AuthError(
+        "T\xE0i kho\u1EA3n c\u1EE7a b\u1EA1n \u0111\xE3 b\u1ECB kh\xF3a b\u1EDFi qu\u1EA3n tr\u1ECB vi\xEAn",
+        403
+      );
     }
     if (checkVerify) {
       const userObj = {

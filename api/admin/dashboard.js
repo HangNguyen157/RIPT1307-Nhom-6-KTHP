@@ -59289,6 +59289,7 @@ var middlewares_default = async (req, res, next) => {
 init_db();
 
 // src/server/middlewares/auth.ts
+init_entities();
 init_User();
 
 // src/server/services/authService.ts
@@ -59307,7 +59308,6 @@ function verifyToken(token) {
 }
 
 // src/server/middlewares/auth.ts
-init_entities();
 var AUTH_HEADER = "authorization";
 async function parseToken(token) {
   if (!token) return null;

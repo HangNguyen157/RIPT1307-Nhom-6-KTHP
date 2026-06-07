@@ -70561,6 +70561,7 @@ var middlewares_default = async (req, res, next) => {
 init_db();
 
 // src/server/middlewares/auth.ts
+init_entities();
 init_User();
 
 // src/server/services/authService.ts
@@ -70579,7 +70580,6 @@ function verifyToken(token) {
 }
 
 // src/server/middlewares/auth.ts
-init_entities();
 var AUTH_HEADER = "authorization";
 async function parseToken(token) {
   if (!token) return null;
@@ -70607,16 +70607,22 @@ init_lib();
 
 // src/utils/validation.ts
 function isValidTitle(title) {
-  return Boolean(title && title.trim().length >= 5 && title.trim().length <= 200);
+  return Boolean(
+    title && title.trim().length >= 5 && title.trim().length <= 200
+  );
 }
 function isValidContent(content) {
-  return Boolean(content && content.trim().length >= 10 && content.trim().length <= 1e4);
+  return Boolean(
+    content && content.trim().length >= 10 && content.trim().length <= 1e4
+  );
 }
 function isValidTags(tags) {
   if (!Array.isArray(tags) || tags.length === 0 || tags.length > 5) {
     return false;
   }
-  return tags.every((tag) => typeof tag === "string" && tag.trim().length > 0 && tag.trim().length <= 50);
+  return tags.every(
+    (tag) => typeof tag === "string" && tag.trim().length > 0 && tag.trim().length <= 50
+  );
 }
 function validateCreatePostInput(data) {
   const errors = [];
