@@ -10,11 +10,17 @@ console.log(
   `[Database] Đang kết nối tới MySQL: host=${dbHost}, port=${dbPort}, database=${dbName}, user=${dbUser}`,
 );
 
+// MySQL cloud (TiDB Cloud, Aiven, PlanetScale...) bắt buộc SSL — bật bằng env DB_SSL=true
+const useSsl = process.env.DB_SSL === 'true';
+
 export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   port: dbPort,
   dialect: 'mysql',
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  dialectOptions: useSsl
+    ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } }
+    : {},
   pool: {
     max: 5,
     min: 0,

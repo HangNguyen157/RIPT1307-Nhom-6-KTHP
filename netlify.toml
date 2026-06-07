@@ -1,5 +1,9 @@
 [build]
+  command = "npm run build"
   publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
 
 # 1. Định cấu hình Proxy cho API Routes đến backend Vercel
 [[redirects]]
