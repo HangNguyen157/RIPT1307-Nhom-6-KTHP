@@ -43,9 +43,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
   useEffect(() => {
     const fetchSidebarData = async () => {
       try {
+        // /api/tags trả về cả tags lẫn subjects (gộp 1 endpoint)
         const resTags = await request<{
           success: boolean;
-          data: { list: any[] };
+          data: { list: any[]; subjects: { name: string; count: number }[] };
         }>('/api/tags');
         if (resTags?.success) {
           setPopularTags(
@@ -55,14 +56,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
               color: t.color || TAG_FALLBACK_COLOR,
             })),
           );
-        }
-
-        const resSubjects = await request<{
-          success: boolean;
-          data: { list: any[] };
-        }>('/api/subjects');
-        if (resSubjects?.success) {
-          setSubjects(resSubjects.data.list);
+          setSubjects(resTags.data.subjects || []);
         }
       } catch (error) {
         console.error('Lỗi tải dữ liệu sidebar:', error);
