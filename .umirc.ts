@@ -23,7 +23,6 @@ export default defineConfig({
     platform: 'vercel',
   },
 
-
   layout: false,
   routes: [
     {
@@ -71,6 +70,11 @@ export default defineConfig({
       component: './Profile',
     },
     {
+      name: 'Thông Báo',
+      path: '/notifications',
+      component: './Notifications',
+    },
+    {
       path: '/login',
       component: './Login',
     },
@@ -110,7 +114,6 @@ export default defineConfig({
         },
       ],
     },
-
   ],
   npmClient: 'npm',
 });
